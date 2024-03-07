@@ -6,27 +6,37 @@ const { MyClass, Student } = require('./main');
 test('Test MyClass addStudent', () => {
   const myClass = new MyClass();
   const student = new Student();
-  student.setName('John Doe');
-  const newStudentId = myClass.addStudent(student);
-  assert.ok(newStudentId > -1, 'Student ID should be a positive number');
 
-  // Test adding null or undefined student
-  //assert.throws(() => myClass.addStudent(null), Error, 'Adding null student should throw an error');
-  //assert.throws(() => myClass.addStudent(undefined), Error, 'Adding undefined student should throw an error');
+ //check if student is instance of Student
+ const notAStudent = 123
+ const notAStudentInstance = myClass.addStudent(notAStudent);
+ assert.strictEqual(notAStudentInstance, -1, "If it's not a Student instance, it should return -1.");
+
+ // push student to Student list
+ student.setName("Joy");
+ const addStudentResult = myClass.addStudent(student);
+ assert.strictEqual(myClass.students[0], student, "The student has not been added to the student list.");
+
+ // return id
+ assert.strictEqual(addStudentResult, 0, "Id is not positive number.")
 });
 
 // Test MyClass getStudentById functionality
 test('Test MyClass getStudentById', () => {
   const myClass = new MyClass();
   const student = new Student();
-  student.setName('Jane Smith');
-  const newStudentId = myClass.addStudent(student);
-  const retrievedStudent = myClass.getStudentById(newStudentId);
-  assert.strictEqual(retrievedStudent.getName(), 'Jane Smith', 'Retrieved student name should match');
+  student.setName('Tiffany');
+  myClass.addStudent(student);
+  
+  // Id is negative number
+  assert.strictEqual(myClass.getStudentById(-1), null, "Id should not be negative number");
 
-  // Test getting an invalid student ID
-  //assert.throws(() => myClass.getStudentById(-1), Error, 'Getting a student with an invalid ID should throw an error');
-  //assert.throws(() => myClass.getStudentById(0), Error, 'Getting a student with an invalid ID should throw an error');
+  //Id is not exist
+  assert.strictEqual(myClass.getStudentById(myClass.students.length+1), null,  "Id is not exist");
+
+  // student exist
+  assert.strictEqual(myClass.getStudentById(0), student);
+
 });
 
 // Test Student setName functionality
@@ -35,22 +45,25 @@ test('Test Student setName', () => {
   student.setName('Alice');
   assert.strictEqual(student.getName(), 'Alice', 'Student name should be set correctly');
 
-  // Test setting an empty name
-  student.setName('');
-  assert.strictEqual(student.getName(), '', 'Student name should be set to an empty string');
+  // Test not string value
+  student.setName(123);
+    assert.strictEqual(student.getName(), 'Alice', "userName should not be changed to anything other than a String");
 
-  // Test setting null or undefined name
-  //assert.throws(() => student.setName(null), Error, 'Setting null name should throw an error');
-  //assert.throws(() => student.setName(undefined), Error, 'Setting undefined name should throw an error');
+  
 });
 
 // Test Student getName functionality
 test('Test Student getName', () => {
   const student = new Student();
   student.setName('Bob');
-  assert.strictEqual(student.getName(), 'Bob', 'Student name should be retrieved correctly');
 
-  // Test getting the name of a student without a name set
+
+// Test getting the name of a student without a name set
   const studentWithoutName = new Student();
   assert.strictEqual(studentWithoutName.getName(), '', 'Student name should be an empty string if not set');
+
+  //return exist name
+  assert.strictEqual(student.getName(), 'Bob', 'Student name should be retrieved correctly');
+
+  
 });
