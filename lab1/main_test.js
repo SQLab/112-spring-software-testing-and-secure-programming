@@ -2,36 +2,33 @@ const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
-const myClass = new MyClass();
-const studentId = 1;
-
-test("Test MyClass's addStudent", () => {
-    
-    
-    const names = ['John', 'Jane', 'Doe', 'Smith'];
-    names.forEach(name => {
-    const student = new Student();
-    student.setName(name);
-    const newStudentId = myClass.addStudent(student);
-    const newStudentName = myClass.getStudentById(newStudentId).getName();
-    console.log('[+] Added student with id: %d, name: %s', newStudentId, newStudentName);
-    });
+//Test MyClass addStudent functionality
+test('Test MyClass addStudent', () => {
+  const myClass = new MyClass();
+  const student = new Student();
+  student.setName('John Doe');
+  const newStudentId = myClass.addStudent(student);
+  assert.ok(newStudentId > -1, 'Student ID should be a positive number');
 });
 
-test("Test MyClass's getStudentById", () => {
-    
-    const StudentName = myClass.getStudentById(studentId).getName();
-    console.log('[+] Get student with id: %d, name: %s', 1, StudentName);
-    
+//Test MyCLass getStudentById functionaliy
+test('Test MyClasss getStudentById', () => {
+  const myClass = new MyClass();
+  const student = new Student();
+  student.setName('Jane Smith');
+  const newStudentId = myClass.addStudent(student);
+  const retrievedStudent = myClass.getStudentById(newStudentId);
+  assert.strictEqual(retrievedStudent.getName(), 'Jane Smith', 'Retrieved student name should match');
 });
-
-test("Test Student's setName", () => {
-    const newStudentName = "Jimmy";
-    myClass.getStudentById(1).setName(newStudentName);
-    console.log('[+] Set student name: %s', newStudentName);
+//Test Student setName functionality
+test('Test Students setName', () => {
+  const student = new Student();
+  student.setName('Alice');
+  assert.strictEqual(student.getName(), 'Alice', 'Student name should be set correctly');
 });
-
-test("Test Student's getName", () => {
-    const studentName = myClass.getStudentById(1).getName();
-    console.log('[+] Get student name: %s', studentName);
+//Test Student getName functionality
+test('Test Students getName', () => {
+  const student = new Student();
+  student.setName('Bob');
+  assert.strictEqual(student.getName(), 'Bob', 'Student name should be retrieved correctly');
 });
