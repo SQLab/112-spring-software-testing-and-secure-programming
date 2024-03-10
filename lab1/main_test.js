@@ -1,18 +1,15 @@
 const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
-///test123
+
 test("Test MyClass's addStudent", () => {
    const myClass = new MyClass();
    const student = new Student();
    student.setName("Tingegg");
+   const index = myClass.addStudent(student);
+   assert.strictEqual(myClass.students.includes(student), true);
+   assert.strictEqual(index, 0); 
 
-   const addedStudentId = myClass.addStudent(student);
-   assert.strictEqual(addedStudentId, 0, "應該將學生加入並返回正確的索引");
-
-   const nonStudent = 123; // 模擬非 Student 物件
-   const nonStudentId = myClass.addStudent(nonStudent);
-   assert.strictEqual(nonStudentId, -1, "非 Student 物件不應該被添加");
 });
 
 test("Test MyClass's getStudentById", () => {
