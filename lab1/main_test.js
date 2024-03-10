@@ -10,6 +10,9 @@ test("Test MyClass's addStudent", () => {
    assert.strictEqual(myClass.students.includes(student), true);
    assert.strictEqual(index, 0); 
 
+   const faultresult = myClass.addStudent("NotAStudent");
+   assert.strictEqual(faultresult, -1); 
+
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -20,22 +23,22 @@ test("Test MyClass's getStudentById", () => {
    const foundStudent = myClass.getStudentById(index);
    assert.strictEqual(foundStudent, student);
 
+   const faultfoundStudent = myClass.getStudentById(999); 
+   assert.strictEqual(faultfoundStudent, null); 
+
 });
 
 test("Test Student's setName", () => {
    const student = new Student();
-   student.setName("SaSa");	
-   assert.strictEqual(student.getName(), "SaSa");
-   // throw new Error("Test not implemented");
+   student.setName("Charlie");
+   assert.strictEqual(student.getName(), "Charlie");
+   student.setName(null);
+   assert.strictEqual(student.getName(), ''); 
 });
 
 test("Test Student's getName", () => {
-    const student = new Student();
-    const nameBefore = student.getName();
-    student.setName("DaDa");
-    const nameAfter = student.getName();
-    assert.strictEqual(nameBefore, "");
-    assert.strictEqual(nameAfter,"HaHa");	
-  //  throw new Error("Test not implemented");
+   const student = new Student();
+   student.setName("David");
+   assert.strictEqual(student.getName(), "David");
 });
 
