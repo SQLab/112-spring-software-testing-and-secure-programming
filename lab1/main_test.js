@@ -15,10 +15,10 @@ test('Test MyClass addStudent', () => {
  // push student to Student list
  student.setName("Joy");
  const addStudentResult = myClass.addStudent(student);
- assert.strictEqual(myClass.students[0], student, "The student has not been added to the student list.");
+ assert.strictEqual(myClass.students[0], student, "The student has not been added to the student list. Add success");
 
  // return id
- assert.strictEqual(addStudentResult, 0, "Id is not positive number.")
+ assert.strictEqual(addStudentResult, 0, "Id should be 0 or positive number.")
 });
 
 // Test MyClass getStudentById functionality
@@ -29,13 +29,13 @@ test('Test MyClass getStudentById', () => {
   myClass.addStudent(student);
   
   // Id is negative number
-  assert.strictEqual(myClass.getStudentById(-1), null, "Id should not be negative number");
+  assert.strictEqual(myClass.getStudentById(-1), null, "Id should not be negative number, otherwise it will return null");
 
   //Id is not exist
   assert.strictEqual(myClass.getStudentById(myClass.students.length+1), null,  "Id is not exist");
 
   // student exist
-  assert.strictEqual(myClass.getStudentById(0), student);
+  assert.strictEqual(myClass.getStudentById(0), student, "return student object");
 
 });
 
@@ -43,11 +43,11 @@ test('Test MyClass getStudentById', () => {
 test('Test Student setName', () => {
   const student = new Student();
   student.setName('Alice');
-  assert.strictEqual(student.getName(), 'Alice', 'Student name should be set correctly');
+  assert.strictEqual(student.getName(), 'Alice', 'Student name set correctly');
 
   // Test not string value
   student.setName(123);
-    assert.strictEqual(student.getName(), 'Alice', "userName should not be changed to anything other than a String");
+    assert.strictEqual(student.getName(), 'Alice', "userName should be in tyoe of a string value");
 
   
 });
@@ -63,7 +63,7 @@ test('Test Student getName', () => {
   assert.strictEqual(studentWithoutName.getName(), '', 'Student name should be an empty string if not set');
 
   //return exist name
-  assert.strictEqual(student.getName(), 'Bob', 'Student name should be retrieved correctly');
+  assert.strictEqual(student.getName(), 'Bob', 'Student name retrieved correctly');
 
   
 });
