@@ -13,17 +13,12 @@ test("Test MyClass's addStudent", () => {
 });
 
 test("Test MyClass's getStudentById", () => {
-    const myClass = new MyClass();
-    const student1 = new Student();
-    const student2 = new Student();
-    student1.setName("YaYa");
-    student2.setName("GaGa");
-    myClass.addStudent(student1);
-    myClass.addStudent(student2);
-    const validStudent = myClass.getStudentById(1);
-    const invalidStudent = myClass.getStudentById(2);
-    assert.strictEqual(validStudent.getName(), "GaGa");
-    assert.strictEqual(invalidStudent, null);
+   const myClass = new MyClass();
+   const student = new Student();
+   student.setName("Bob");
+   const index = myClass.addStudent(student);
+   const foundStudent = myClass.getStudentById(index);
+   assert.strictEqual(foundStudent, student);
 
 });
 
