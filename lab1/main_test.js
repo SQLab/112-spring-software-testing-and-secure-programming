@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
-test("Test MyClass's addStudent", () => {
+test("Test MyClass's addStudent" , async () =>{
    const myClass = new MyClass();
    const student = new Student();
    student.setName("Tingegg");
@@ -15,7 +15,7 @@ test("Test MyClass's addStudent", () => {
 
 });
 
-test("Test MyClass's getStudentById", () => {
+test("Test MyClass's getStudentById", async () => {
    const myClass = new MyClass();
    const student = new Student();
    student.setName("Bob");
@@ -28,7 +28,7 @@ test("Test MyClass's getStudentById", () => {
 
 });
 
-test("Test Student's setName", () => {
+test("Test Student's setName", async () => {
    const student = new Student();
    student.setName("Charlie");
    assert.strictEqual(student.getName(), "Charlie");
@@ -36,9 +36,13 @@ test("Test Student's setName", () => {
    assert.strictEqual(student.getName(), ''); 
 });
 
-test("Test Student's getName", () => {
+test("Test Student's getName", async () => {
+   const myClass = new MyClass();
    const student = new Student();
    student.setName("David");
    assert.strictEqual(student.getName(), "David");
+   student.setName("Eve");
+   await myClass.addStudent(student);
+   assert.strictEqual(myClass.students.length, 1); 
 });
 
