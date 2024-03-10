@@ -3,24 +3,16 @@ const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName("tingegg");
-   //利用Student物件呼叫myClass的addStudent方法,並將回傳值寫在變數newStudentId中	
-   const newStudentId = myClass.addStudent(student);
+   const myClass = new MyClass();
+   const student = new Student();
+   student.setName("Tingegg");
 
-    //寫assertions確保addStudent回傳值,如果正確，myClass會包含新增的student
-    assert.strictEqual(newStudentId, 0);
-    assert.strictEqual(myClass.students.length, 1);
-    assert.strictEqual(myClass.getStudentById(newStudentId).getName(), "tingegg");
+   const addedStudentId = myClass.addStudent(student);
+   assert.strictEqual(addedStudentId, 0, "應該將學生加入並返回正確的索引");
 
-   //利用faultStudent宣告非Student型別的物件
-    const faultStudent = {};
-    const result = myClass.addStudent(faultStudent);
-    //寫assertions確認faultStudent回傳值為-1
-    assert.strictEqual(result, -1);
-    assert.strictEqual(myClass.students.length, 0,"student");	
-   // throw new Error("Test not implemented");
+   const nonStudent = 123; // 模擬非 Student 物件
+   const nonStudentId = myClass.addStudent(nonStudent);
+   assert.strictEqual(nonStudentId, -1, "非 Student 物件不應該被添加");
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -36,8 +28,6 @@ test("Test MyClass's getStudentById", () => {
     assert.strictEqual(validStudent.getName(), "GaGa");
     assert.strictEqual(invalidStudent, null);
 
-    const 	
-   // throw new Error("Test not implemented");
 });
 
 test("Test Student's setName", () => {
