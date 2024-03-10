@@ -31,7 +31,7 @@ test('Test MyClass getStudentById', () => {
   // Id is negative number
   assert.strictEqual(myClass.getStudentById(-1), null, "Id should not be negative number, otherwise it will return null");
 
-  //Id is not exist
+  // Id is not exist
   assert.strictEqual(myClass.getStudentById(myClass.students.length+1), null,  "Id is not exist");
 
   // student exist
@@ -41,13 +41,16 @@ test('Test MyClass getStudentById', () => {
 
 // Test Student setName functionality
 test('Test Student setName', () => {
-  const student = new Student();
-  student.setName('Alice');
-  assert.strictEqual(student.getName(), 'Alice', 'Student name set correctly');
+  const student1 = new Student();
+  const student2 = new Student();
 
-  // Test not string value
-  student.setName(123);
-    assert.strictEqual(student.getName(), 'Alice', "userName should be in tyoe of a string value");
+  // pass a value to setName that is a string type
+  student1.setName('Alice');
+  assert.strictEqual(student1.getName(), 'Alice', 'Student name set correctly');
+
+  // pass a value to setName that is not a string type
+  student2.setName(123);
+    assert.strictEqual(student2.getName(), '', "userName should be in type of a string value");
 
   
 });
@@ -55,14 +58,12 @@ test('Test Student setName', () => {
 // Test Student getName functionality
 test('Test Student getName', () => {
   const student = new Student();
+
+  // Test getting the name of a student without setting a name
+  assert.strictEqual(student.getName(), '', 'Student name should be an empty string if not set');
+
+  // Test after set a name to student can return name
   student.setName('Bob');
-
-
-// Test getting the name of a student without a name set
-  const studentWithoutName = new Student();
-  assert.strictEqual(studentWithoutName.getName(), '', 'Student name should be an empty string if not set');
-
-  //return exist name
   assert.strictEqual(student.getName(), 'Bob', 'Student name retrieved correctly');
 
   
