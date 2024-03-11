@@ -28,7 +28,7 @@ test("Test Student's setName", () => {
     student.setName('TestName');
     assert.strictEqual(student.getName(), 'TestName');
 
-    student.setName(Ttest);
+    student.setName(14747146);
     assert.strictEqual(student.getName(), 'TestName');
 });
 test("Test Student's getName", () => {
