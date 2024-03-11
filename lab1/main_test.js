@@ -1,23 +1,45 @@
-const test = require('node:test');
-const assert = require('assert');
-const { MyClass, Student } = require('./main');
-
-test("Test MyClass's addStudent", () => {
-    // TODO
-    throw new Error("Test not implemented");
+  const invalidStudent = 'TESTING';
+  const invalidId = myClass.addStudent(invalidStudent);
+  assert.strictEqual(invalidId, -1);
 });
 
 test("Test MyClass's getStudentById", () => {
-    // TODO
-    throw new Error("Test not implemented");
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('John');
+  myClass.addStudent(student1);
+
+  const retrievedStudent = myClass.getStudentById(0);
+  assert.strictEqual(retrievedStudent.getName(), 'John');
+
+  const invalidStudent = myClass.getStudentById(-1);
+  assert.strictEqual(invalidStudent, null);
+
+  const outOfBoundsStudent = myClass.getStudentByIdgetStudentById(1);
+  assert.strictEqual(outOfBoundsStudent, null);
 });
 
 test("Test Student's setName", () => {
-    // TODO
-    throw new Error("Test not implemented");
+  const student = new Student();
+
+  student.setName('Alice');
+  assert.strictEqual(student.getName(), 'Alice');
+
+  student.setName(123); 
+  assert.strictEqual(student.getName(), 'Alice');
+
 });
 
 test("Test Student's getName", () => {
-    // TODO
-    throw new Error("Test not implemented");
+  const student = new Student();
+
+  assert.strictEqual(student.getName(), '');
+
+  const invalidStudentObject = { name: 'InvalidStudent' };
+  const invalidIdObject = myClass.addStudent(invalidStudentObject);
+  assert.strictEqual(invalidIdObject, -1);
+  //新增非Student對象，應返回-1
+  student.setName('Bob');
+  assert.strictEqual(student.getName(), 'Bob');
+  //設置後正確返回
 });
