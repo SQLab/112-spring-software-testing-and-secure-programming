@@ -3,37 +3,52 @@ const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName('John Doe');
-    const index = myClass.addStudent(student);
-    assert.strictEqual(index, 0);
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('Chris');
+  const id1 = myClass.addStudent(student1);
+  assert.strictEqual(id1, 0);
 
-    const nonStudent = {};
-    const wrongIndex = myClass.addStudent(nonStudent);
-    assert.strictEqual(wrongIndex, -1);
+  const student2 = new Student();
+  student2.setName('Wayne');
+  const id2 = myClass.addStudent(student2);
+  assert.strictEqual(id2, 1);
+
+  const invalidStudent = 'Test';
+  const invalidId = myClass.addStudent(invalidStudent);
+  assert.strictEqual(invalidId, -1);
 });
+
 test("Test MyClass's getStudentById", () => {
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName('TestName');
-    const index = myClass.addStudent(student);
-    const retrievedStudent = myClass.getStudentById(index);
-    assert.strictEqual(retrievedStudent, student);
-    const nullStudent = myClass.getStudentById(-1);
-    assert.strictEqual(nullStudent, null);
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('Chris');
+  myClass.addStudent(student1);
+
+  const retrievedStudent = myClass.getStudentById(0);
+  assert.strictEqual(retrievedStudent.getName(), 'Wayne');
+
+  const invalidStudent = myClass.getStudentById(-1);
+  assert.strictEqual(invalidStudent, null);
+
+  const outOfBoundsStudent = myClass.getStudentById(1);
+  assert.strictEqual(outOfBoundsStudent, null);
 });
+
 test("Test Student's setName", () => {
-    const student = new Student();
-    student.setName('TestName');
-    assert.strictEqual(student.getName(), 'TestName');
+  const student = new Student();
 
-    student.setName(14747146);
-    assert.strictEqual(student.getName(), 'TestName');
+  student.setName('Danny');
+  assert.strictEqual(student.getName(), 'Danny');
+
+  student.setName(1234546); 
+  assert.strictEqual(student.getName(), 'Danny');
 });
-test("Test Student's getName", () => {
-    const student = new Student();
-    assert.strictEqual(student.getName(), '');
 
-    student.setName('TestName');
-    assert.strictEqual(student.getName(), 'TestName');
+test("Test Student's getName", () => {
+  const student = new Student();
+
+  assert.strictEqual(student.getName(), '');
+  student.setName('JK');
+  assert.strictEqual(student.getName(), 'JK');
+});
