@@ -47,8 +47,8 @@ test("Test Student's setName", () => {
         const newStudentId = myClass.addStudent(student);
         const setName = myClass.getStudentById(newStudentId).name;
         assert.strictEqual(setName, name, "Student's setName didn't set it correctly");
-        student.setName(987); 
-        assert.notStrictEqual(student.name, 987, "Student's setName should not set number");
+        student.setName(1048576); 
+        assert.notStrictEqual(student.name, 1048576, "Student's setName should not set number");
     });
 });
 
