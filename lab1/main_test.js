@@ -13,12 +13,12 @@ test("Test MyClass's addStudent", () => {
   student2.setName('Jane');
   const id2 = myClass.addStudent(student2);
   assert.strictEqual(id2, 1);
-  //新增兩個有效的student，測試是否正確
+  // Add two valid students and test if the IDs are correct
 
   const invalidStudent = 'TESTING';
   const invalidId = myClass.addStudent(invalidStudent);
   assert.strictEqual(invalidId, -1);
-  //新增無效的student
+  // Add an invalid student and test if the ID is -1
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -26,19 +26,19 @@ test("Test MyClass's getStudentById", () => {
   const student1 = new Student();
   student1.setName('John');
   myClass.addStudent(student1);
-  //添加一個student
+  // Add a student
 
   const retrievedStudent = myClass.getStudentById(0);
   assert.strictEqual(retrievedStudent.getName(), 'John');
-  //對應ID
+  // Match ID
 
   const invalidStudent = myClass.getStudentById(-1);
   assert.strictEqual(invalidStudent, null);
-  //無效ID
+  // Invalid ID
 
   const outOfBoundsStudent = myClass.getStudentById(1);
   assert.strictEqual(outOfBoundsStudent, null);
-  //越界ID
+  // Out-of-bounds ID
 });
 
 test("Test Student's setName", () => {
@@ -46,21 +46,20 @@ test("Test Student's setName", () => {
 
   student.setName('Alice');
   assert.strictEqual(student.getName(), 'Alice');
-  //測試有效名稱
+  // Test with a valid name
 
   student.setName(123); 
   assert.strictEqual(student.getName(), 'Alice');
-  //測試非字串
-
+  // Test with a non-string input
 });
 
 test("Test Student's getName", () => {
   const student = new Student();
 
   assert.strictEqual(student.getName(), '');
-  //初始化，未設置應返回空
+  // Initialization, should return an empty string
 
   student.setName('Bob');
   assert.strictEqual(student.getName(), 'Bob');
-  //設置後正確返回
+  // After setting the name, should return 'Bob'
 });
