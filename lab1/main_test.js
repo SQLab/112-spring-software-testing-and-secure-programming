@@ -2,67 +2,50 @@ const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
-
-test("Test MyClass's addStudent", async () => {
+test("Test MyClass's addStudent", () => {
     const myClass = new MyClass();
     const student = new Student();
+
+    // Test adding a valid student
+    assert.strictEqual(myClass.addStudent(student), 0);
+
+    // Test adding an invalid student
+    assert.strictEqual(myClass.addStudent("not a student"), -1);
+});
+
+test("Test MyClass's getStudentById", () => {
+    const myClass = new MyClass();
+    const student = new Student();
+    myClass.addStudent(student);
+
+    // Test getting a student by valid id
+    assert.strictEqual(myClass.getStudentById(0), student);
+
+    // Test getting a student by invalid id
+    assert.strictEqual(myClass.getStudentById(-1), null);
+    assert.strictEqual(myClass.getStudentById(100), null);
+});
+
+test("Test Student's setName", () => {
+    const student = new Student();
+
+    // Test setting a valid name
     student.setName("Alice");
-    const index = myClass.addStudent(student);
-    assert.strictEqual(myClass.students.includes(student), true);
-    assert.strictEqual(index, 0); 
+    assert.strictEqual(student.getName(), "Alice");
+
+    // Test setting an invalid name
+    student.setName(123);
+    assert.strictEqual(student.getName(), "Alice");
 });
 
-
-test("Test MyClass's getStudentById", async () => {
-    const myClass = new MyClass();
+test("Test Student's getName", () => {
     const student = new Student();
+
+    // Test name before setting
+    assert.strictEqual(student.getName(), '');
+
+    // Test name after setting
     student.setName("Bob");
-    const index = myClass.addStudent(student);
-    const foundStudent = myClass.getStudentById(index);
-    assert.strictEqual(foundStudent, student);
+    assert.strictEqual(student.getName(), "Bob");
 });
-
-
-test("Test Student's setName", async () => {
-    const student = new Student();
-    student.setName("Charlie");
-    assert.strictEqual(student.getName(), "Charlie");
-});
-
-
-test("Test Student's getName", async () => {
-    const student = new Student();
-    student.setName("David");
-    assert.strictEqual(student.getName(), "David");
-});
-
-
-test("Test MyClass's addStudent with non-Student input", async () => {
-    const myClass = new MyClass();
-    const result = myClass.addStudent("NotAStudent");
-    assert.strictEqual(result, -1); 
-});
-
-test("Test MyClass's getStudentById with invalid id", async () => {
-    const myClass = new MyClass();
-    const foundStudent = myClass.getStudentById(999); 
-    assert.strictEqual(foundStudent, null); 
-});
-
-
-test("Test Student's setName with non-string input", async () => {
-    const student = new Student();
-    student.setName(null);
-    assert.strictEqual(student.getName(), ''); 
-});
-
-
-test("Test async behavior", async () => {
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName("Eve");
-    await myClass.addStudent(student);
-    assert.strictEqual(myClass.students.length, 1); 
-});
-
 
