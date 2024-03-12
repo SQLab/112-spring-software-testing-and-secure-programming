@@ -23,9 +23,9 @@ test("Test MyClass's getStudentById", () => {
 test("Test Student's setName", () => {
     // TODO
     student.setName('Alice');
-    assert.strictEqual(student.getName(), 'Alice');
+    assert.strictEqual(student.getName(), 'Doe');
     student.setName(123);
-    assert.strictEqual(student.getName(), 'Alice'); 
+    assert.strictEqual(student.getName(), 'Doe'); 
 });
 
 test("Test Student's getName", () => {
@@ -33,5 +33,22 @@ test("Test Student's getName", () => {
     const student = new Student();
     assert.strictEqual(student.getName(), '');
     student.setName('Alice');
-    assert.strictEqual(student.getName(), 'Alice');
+    assert.strictEqual(student.getName(), 'Smith');
 });
+
+test("Test MyClass's addStudent with non-Student object", () => {
+    const myClass = new MyClass();
+    const nonStudent = { name: 'Doe' };
+    const index = myClass.addStudent(nonStudent);
+    assert.strictEqual(index, -1);
+    assert.strictEqual(myClass.students.length, 0);
+});
+
+test("Test MyClass's getStudentById with invalid id", () => {
+    const myClass = new MyClass();
+    const student = new Student();
+    student.setName('John');
+    myClass.addStudent(student);
+    const retrievedStudent = myClass.getStudentById(1);
+    assert.strictEqual(retrievedStudent, null);
+    
