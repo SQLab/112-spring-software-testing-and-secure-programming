@@ -1,54 +1,70 @@
-const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
+const names = ['John', 'Jane', 'Doe', 'Smith'];
 test("Test MyClass's addStudent", () => {
     // TODO
+    throw new Error("Test not implemented");
     const myClass = new MyClass();
-    const student = new Student();
-    const newStudentId = myClass.addStudent(student);
-    assert.strictEqual(newStudentId, 0);
-    assert.strictEqual(myClass.addStudent('not a student'), -1);
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        myClass.addStudent(student);
+    });
+    assert.strictEqual(names.length, myClass.students.length, "MyClass's addStudent didn't add correct amount of students");
+
+    const id = myClass.addStudent({});
+    assert.strictEqual(id, -1, "MyClass's addStudent shouldn't add non student id");
 });
 
 test("Test MyClass's getStudentById", () => {
     // TODO
+    throw new Error("Test not implemented");
     const myClass = new MyClass();
-    const student = new Student();
-    myClass.addStudent(student);
-    assert.strictEqual(myClass.getStudentById(0), student);
-    assert.strictEqual(myClass.getStudentById(999), null);
+    let ids = [];
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        myClass.addStudent(student);
+        const newStudentId = myClass.addStudent(student);;
+        ids.push(newStudentId);
+    });
+    let uniqueIds = [...new Set(ids)];
+    assert.strictEqual(names.length, ids.length, "MyClass's getStudentById didn't add correct amount of ids");
+    assert.strictEqual(names.length, uniqueIds.length, "MyClass's getStudentById have duplicate ids");
+
+    const invalidId = myClass.getStudentById(-1);
+    assert.strictEqual(invalidId, null, "MyClass's getStudentById shouldn't get invalid student id");
 });
 
 test("Test Student's setName", () => {
     // TODO
-    student.setName('Alice');
-    assert.strictEqual(student.getName(), 'Doe');
-    student.setName(123);
-    assert.strictEqual(student.getName(), 'Doe'); 
+    throw new Error("Test not implemented");
+    const myClass = new MyClass();
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        const newStudentId = myClass.addStudent(student);
+        const setName = myClass.getStudentById(newStudentId).name;
+        assert.strictEqual(setName, name, "Student's setName didn't set it correctly");
+        student.setName(987); 
+        assert.notStrictEqual(student.name, 987, "Student's setName should not set number");
+    });
 });
 
 test("Test Student's getName", () => {
     // TODO
+    throw new Error("Test not implemented");
     const student = new Student();
-    assert.strictEqual(student.getName(), '');
-    student.setName('Alice');
-    assert.strictEqual(student.getName(), 'Smith');
-});
-
-test("Test MyClass's addStudent with non-Student object", () => {
+    assert.strictEqual(student.getName(), '', "Student name should be empty string when it's undefined.");
     const myClass = new MyClass();
-    const nonStudent = { name: 'Doe' };
-    const index = myClass.addStudent(nonStudent);
-    assert.strictEqual(index, -1);
-    assert.strictEqual(myClass.students.length, 0);
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        const newStudentId = myClass.addStudent(student);
+        const setName = myClass.getStudentById(newStudentId).name;
+        const getName = myClass.getStudentById(newStudentId).getName();
+        assert.strictEqual(setName, getName, "Student's getName didn't set it correctly");
+    });
 });
-
-test("Test MyClass's getStudentById with invalid id", () => {
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName('John');
-    myClass.addStudent(student);
-    const retrievedStudent = myClass.getStudentById(1);
-    assert.strictEqual(retrievedStudent, null);
     
