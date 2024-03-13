@@ -4,56 +4,60 @@ const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
     // TODO
-    const myClass = new MyClass();
-    const student = new Student();
-
-    student.setName("Jack");
-
-    assert.strictEqual(myClass.addStudent(student), 0);
-    assert.strictEqual(myClass.addStudent("student"), -1);
-
     throw new Error("Test not implemented");
+    const myClass = new MyClass();
+    // if student is not an instance of Student, return -1
+    assert.strictEqual(myClass.addStudent({}), -1);
+
+    // normal case
+    const names = ['John', 'Jane', 'Doe', 'Smith'];
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        const newStudentId = myClass.addStudent(student);
+        const newStudentName = myClass.getStudentById(newStudentId).getName();
+        assert.strictEqual(newStudentName, name);
+    });
 });
 
 test("Test MyClass's getStudentById", () => {
     // TODO
-    const myClass = new MyClass();
-    const student = new Student();
-
-    student.setName("Rose");
-
-    assert.strictEqual(myClass.addStudent(student), 0);
-    assert.strictEqual(myClass.getStudentById(0), myClass.students[0]);
-
-    assert.ifError(myClass.getStudentById(1));
-    assert.ifError(myClass.getStudentById(-3));
-
     throw new Error("Test not implemented");
+    const myClass = new MyClass();
+    // if id is less than 0, return null
+    assert.strictEqual(myClass.getStudentById(-1), null);
+
+    // normal case
+    const names = ['John', 'Jane', 'Doe', 'Smith'];
+    names.forEach(name => {
+        const student = new Student();
+        student.setName(name);
+        const newStudentId = myClass.addStudent(student);
+        const newStudent = myClass.getStudentById(newStudentId);
+        assert.strictEqual(student, newStudent);
+    });
+    // if id is greater than or equal to the length of students, return null
+    assert.strictEqual(myClass.getStudentById(names.length), null);
 });
 
 test("Test Student's setName", () => {
     // TODO
-    const student = new Student();
-    student.setName("Peter");
-
-    assert.strictEqual(student.name,"Peter");
-
-    const student1 = new Student();
-    student1.setName(123456789);
-
-    assert.strictEqual(student1.name,undefined);
-    
     throw new Error("Test not implemented");
+    const student = new Student();
+    student.setName('John');
+    assert.strictEqual(student.getName(), 'John');
+    // Test if setName accepts only string
+    student.setName(123);
+    assert.strictEqual(student.getName(), 'John');
 });
 
 test("Test Student's getName", () => {
     // TODO
-    const student = new Student();
-    student.setName("Alice");
-    assert.strictEqual(student.getName(),"Alice");
-
-    const student1 = new Student();
-    assert.strictEqual(student1.getName(),"");
-    
     throw new Error("Test not implemented");
+    const student = new Student();
+    // Test if getName returns empty string if name is undefined
+    assert.strictEqual(student.getName(), '');
+    // Test if getName returns the name set by setName
+    student.setName('John');
+    assert.strictEqual(student.getName(), 'John');
 });
