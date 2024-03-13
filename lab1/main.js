@@ -1,55 +1,62 @@
-// NOTICE: DO NOT MODIFY THE CODE IN THIS FILE
-// But you can uncomment code below and run this file to understand how to use the classes
+const test = require('node:test');
+const assert = require('assert');
+const { MyClass, Student } = require('./main');
 
-class MyClass {
-    constructor() {
-        this.students = [];
-    }
+test("Test MyClass's addStudent", () => {
+  const myClass = new MyClass();
+  //create 2 students John & Jane
+  const student1 = new Student();
+  student1.setName('John');
+  const id1 = myClass.addStudent(student1);
+  assert.strictEqual(id1, 0);
 
-    addStudent(student) {
-        if (!(student instanceof Student)) {
-            return -1;
-        }
-        this.students.push(student);
-        return this.students.length - 1;
-    }
+  const student2 = new Student();
+  student2.setName('Jane');
+  const id2 = myClass.addStudent(student2);
+  assert.strictEqual(id2, 1);
+    
+  //新增一個TESTING student
+  const invalidStudent = 'TESTING';
+  const invalidId = myClass.addStudent(invalidStudent);
+  assert.strictEqual(invalidId, -1);
+  
+});
 
-    getStudentById(id) {
-        if (id < 0 || id >= this.students.length) {
-            return null;
-        }
-        return this.students[id];
-    }
-}
+test("Test MyClass's getStudentById", () => {
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('John');
+  myClass.addStudent(student1);
+  
+  const retrievedStudent = myClass.getStudentById(0);
+  assert.strictEqual(retrievedStudent.getName(), 'John');
+  
+  const invalidStudent = myClass.getStudentById(-1);
+  assert.strictEqual(invalidStudent, null);
+  
+  const outOfBoundsStudent = myClass.getStudentById(1);
+  assert.strictEqual(outOfBoundsStudent, null);
+  
+});
 
-class Student {
-    constructor() {
-        this.name = undefined;
-    }
+test("Test Student's setName", () => {
+  const student = new Student();
+  //測試變數是否有效
+  student.setName('Alice');
+  assert.strictEqual(student.getName(), 'Alice');
+  
+  student.setName(123); 
+  assert.strictEqual(student.getName(), 'Alice');
 
-    setName(userName) {
-        if (typeof userName !== 'string') {
-            return;
-        }
-        this.name = userName;
-    }
+});
 
-    getName() {
-        if (this.name === undefined) {
-            return '';
-        }
-        return this.name;
-    }
-}
-
-// const myClass = new MyClass();
-// const names = ['John', 'Jane', 'Doe', 'Smith'];
-// names.forEach(name => {
-//     const student = new Student();
-//     student.setName(name);
-//     const newStudentId = myClass.addStudent(student);
-//     const newStudentName = myClass.getStudentById(newStudentId).getName();
-//     console.log('[+] Added student with id: %d, name: %s', newStudentId, newStudentName);
-// });
-
-module.exports = { MyClass, Student };
+test("Test Student's getName", () => {
+  const student = new Student();
+  // 初始化未設置
+  assert.strictEqual(student.getName(), '');
+  
+  // 設置變數後返回
+  student.setName('Bob');
+  assert.strictEqual(student.getName(), 'Bob');
+  
+});
