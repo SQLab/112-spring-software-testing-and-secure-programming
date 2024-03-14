@@ -6,10 +6,6 @@ test.mock.method(fs, 'readFile', (file, options, callback) => {
 });
 const { Application, MailSystem } = require('./main');
 
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
-
-
 test('Test MailSystem : write()', () => {
     const ms = new MailSystem();
     assert.strictEqual(ms.write('alpha'), 'Congrats, alpha!');
