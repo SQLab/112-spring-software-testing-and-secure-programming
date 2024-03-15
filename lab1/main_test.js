@@ -14,10 +14,11 @@ test("Test MyClass's addStudent", () => {
   const id2 = myClass.addStudent(student2);
   assert.strictEqual(id2, 1);
 
+
   const invalidStudent = 'TESTING';
   const invalidId = myClass.addStudent(invalidStudent);
   assert.strictEqual(invalidId, -1);
-  // Add an invalid student and test if the ID is -1
+
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -28,14 +29,18 @@ test("Test MyClass's getStudentById", () => {
   student1.setName('John');
   myClass.addStudent(student1);
 
+
   const retrievedStudent = myClass.getStudentById(0);
   assert.strictEqual(retrievedStudent.getName(), 'John');
+
 
   const invalidStudent = myClass.getStudentById(-1);
   assert.strictEqual(invalidStudent, null);
 
+
   const outOfBoundsStudent = myClass.getStudentById(1);
   assert.strictEqual(outOfBoundsStudent, null);
+
 });
 
 test("Test Student's setName", () => {
@@ -46,8 +51,11 @@ test("Test Student's setName", () => {
   student.setName('Alice');
   assert.strictEqual(student.getName(), 'Alice');
 
+
   student.setName(123); 
   assert.strictEqual(student.getName(), 'Alice');
+
+
 });
 
 test("Test Student's getName", () => {
@@ -58,6 +66,8 @@ test("Test Student's getName", () => {
 
   assert.strictEqual(student.getName(), '');
 
+
   student.setName('Bob');
   assert.strictEqual(student.getName(), 'Bob');
+
 });
