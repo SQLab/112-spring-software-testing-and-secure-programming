@@ -13,6 +13,7 @@ test("Test MyClass's addStudent", () => {
     // Adding an invalid student
     const invalidStudentId = myClass.addStudent({});
     assert.strictEqual(invalidStudentId, -1);
+    throw new Error("Test not implemented");
 });
 
 test("Test MyClass's getStudentById", () => {
@@ -31,6 +32,7 @@ test("Test MyClass's getStudentById", () => {
     // Getting a non-existing student
     const nonExistingStudent = myClass.getStudentById(2);
     assert.strictEqual(nonExistingStudent, null);
+throw new Error("Test not implemented");
 });
 
 test("Test Student's setName", () => {
@@ -43,7 +45,9 @@ test("Test Student's setName", () => {
     // Setting an invalid name
     student.setName(123); // Setting a non-string name
     assert.strictEqual(student.getName(), ''); // Name should remain unchanged
+throw new Error("Test not implemented");
 });
+
 
 test("Test Student's getName", () => {
     const student = new Student();
@@ -54,5 +58,6 @@ test("Test Student's getName", () => {
     // Getting name after setting it
     student.setName('Jane');
     assert.strictEqual(student.getName(), 'Jane');
+throw new Error("Test not implemented");
 });
 
