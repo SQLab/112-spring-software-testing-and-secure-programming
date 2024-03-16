@@ -4,17 +4,6 @@ const sinon = require('sinon');
 const mock_fs = require('mock-fs');
 const { Application, MailSystem } = require('./main');
 
-test.beforeEach(() => {
-    const mockNameList = 'Alice\nBob\nCharlie';
-    mock_fs({
-        'name_list.txt': mockNameList
-    });
-});
-
-test.afterEach(() => {
-    mock_fs.restore();
-});
-
 test('should return a message context', () => {
     const mailSystem = new MailSystem();
     const name = 'John';
@@ -23,28 +12,40 @@ test('should return a message context', () => {
     assert(consoleStub.calledWith('--write mail for John--'));
     assert.strictEqual(context, 'Congrats, John!');
 
-    consoleStub.restore(); // Restore the stubbed console.log() function
-});
+    sinon.restore();
+  });
 
-test('should return true if mail is sent successfully', () => {
+test('should return true if mail is sent successfully', (t) => {
     const mailSystem = new MailSystem();
     const name = 'John';
 
-    // Stub Math.random() to control the success of sending mail
-    const mathRandomStub = sinon.stub(Math, 'random');
-    mathRandomStub.onFirstCall().returns(1); // Success
-    mathRandomStub.onSecondCall().returns(0.4); // Failure
 
-    const is_send_success = mailSystem.send('Joy', "test mail");
-    assert.strictEqual(is_send_success, true);
+    // test send mail success return true
+    const consoleStub_success = sinon.stub(console, 'log');
+	t.mock.method(Math,'random', () => 1);
+    is_send = mailSystem.send('Joy', "test mail");
+    assert(consoleStub_success.calledWith('mail sent'));
+    assert.strictEqual(is_send, true);
+    consoleStub_success.restore();
 
-    const is_send_fail = mailSystem.send('Joy', "test mail");
-    assert.strictEqual(is_send_fail, false);
+    // test send mail fail return false
+    const consoleStub_fail = sinon.stub(console, 'log');
+	t.mock.method(Math,'random', () => 0.4);
+    is_send = mailSystem.send('Joy', "test mail");
+    assert(consoleStub_fail.calledWith('mail failed'));
+    assert.strictEqual(is_send, false);
+    consoleStub_fail.restore();
 
-    mathRandomStub.restore(); // Restore the stubbed Math.random() function
-});
 
-test('getNames()', async () => {
+  });
+ 
+
+
+test('should return name_list ', async()=>{
+    const mockNameList = 'Alice\nBob\nCharlie';
+    mock_fs({
+      'name_list.txt': mockNameList
+    });
     const app = new Application();
     const [people, selected] = await app.getNames(); // Ensure that names are populated
 
@@ -52,28 +53,49 @@ test('getNames()', async () => {
     assert.deepStrictEqual(selected, []);
 });
 
-test('Application - should return null if all people are selected', () => {
+    
+test('should return null if all people are selected', async (t) => {
     const app = new Application();
     app.people = ['Alice', 'Bob', 'Charlie'];
     app.selected = ['Alice', 'Bob', 'Charlie'];
+    
+    const result = app.selectNextPerson();
+    assert.strictEqual(result, null);
+  });
+
+  //Test case for getRandomPerson() method
+test('should return a random person', () => {
+    // Stub Math.random() to return a fixed value
+    const mathRandomStub = sinon.stub(Math, 'random').returns(0.5);
+
+    // Create an instance of the Application class
+    const app = new Application();
+    app.people = ['Alice', 'Bob', 'Charlie'];
+    // Call the getRandomPerson() method
+    const randomPerson = app.getRandomPerson();
+
+    // Ensure that the random person is one of the people in the list
+    assert(app.people.includes(randomPerson));
+
+    // Restore the stubbed Math.random() function
+    mathRandomStub.restore();
+});
+
+test('should select and return a person who has not been selected yet', () => {
+    const app = new Application();
+    app.people = ['Alice', 'Bob', 'Charlie'];
+
+    const mathRandomStub = sinon.stub(Math, 'random').returns(0.5);
 
     const result = app.selectNextPerson();
 
-    assert.strictEqual(result, null);
-});
+    assert.ok(app.people.includes(result));
+    assert.ok(app.selected.includes(result));
 
-test('Application - should select and return a person who has not been selected yet', () => {
-    const app = new Application();
-    app.people = ['Alice', 'Bob', 'Charlie'];
-    app.selected = ['Alice', 'Bob'];
+    mathRandomStub.restore();
+  });
 
-    const next_result = app.selectNextPerson();
-
-    assert.ok(app.people.includes(next_result));
-    assert.ok(app.selected.includes(next_result));
-});
-
-test('Application - should call write and send methods of MailSystem for each selected person', () => {
+test('should call write and send methods of MailSystem for each selected person', () => {
     const mailSystem = new MailSystem();
     const writeStub = sinon.stub(mailSystem, 'write').returns('Message context');
     const sendStub = sinon.stub(mailSystem, 'send').returns(true);
@@ -87,6 +109,6 @@ test('Application - should call write and send methods of MailSystem for each se
     assert.strictEqual(writeStub.callCount, 3);
     assert.strictEqual(sendStub.callCount, 3);
 
-    writeStub.restore(); // Restore the stubbed write() method
-    sendStub.restore(); // Restore the stubbed send() method
-});
+    writeStub.restore();
+    sendStub.restore();
+  });
