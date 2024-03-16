@@ -85,14 +85,18 @@ test('should select and return a person who has not been selected yet', () => {
     const app = new Application();
     app.people = ['Alice', 'Bob', 'Charlie'];
 
-    const mathRandomStub = sinon.stub(Math, 'random').returns(0.5);
+    const getRandomPersonStub = sinon.stub(app, 'getRandomPerson');
+
+      getRandomPersonStub.onFirstCall().returns('Alice');
+      getRandomPersonStub.onSecondCall().returns('Bob'); 
+      getRandomPersonStub.onThirdCall().returns('Charlie');     // 设置已选择的人员
+      app.selected = ['Alice', 'Bob'];
 
     const result = app.selectNextPerson();
 
-    assert.ok(app.people.includes(result));
-    assert.ok(app.selected.includes(result));
+      assert.strictEqual(result, 'Charlie'); 
+      assert.strictEqual(getRandomPersonStub.callCount, 3); 
 
-    mathRandomStub.restore();
   });
 
 test('should call write and send methods of MailSystem for each selected person', () => {
