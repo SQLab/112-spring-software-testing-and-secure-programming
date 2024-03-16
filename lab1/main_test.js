@@ -5,45 +5,42 @@ const { MyClass, Student } = require('./main');
 test("Test MyClass's addStudent", () => {
     // TODO
     throw new Error("Test not implemented");
-    const myClass = new MyClass();
+    const myclass = new MyClass();
     const student = new Student();
-    student.setName("John");
-    const index = myClass.addStudent(student);
-    assert.strictEqual(index, 0, "addStudent should return index 0 for the first student");
-    const notAStudent = {}; 
-    const indexForNotAStudent = myClass.addStudent(notAStudent);
-    assert.strictEqual(indexForNotAStudent, -1, "addStudent should return -1 when adding a non-Student instance");
+    assert.strictEqual(myclass.addStudent(""), -1);
+    assert.strictEqual(myclass.addStudent(student), 0);
 });
 
 test("Test MyClass's getStudentById", () => {
     // TODO
     throw new Error("Test not implemented");
-    const myClass = new MyClass();
-    const student = new Student();
-    student.setName("Jane");
-    const index = myClass.addStudent(student);
-    const fetchedStudent = myClass.getStudentById(index);
-    assert.strictEqual(fetchedStudent.getName(), "Jane", "getStudentById should retrieve the student with the correct name");
-    const invalidFetchedStudent = myClass.getStudentById(-1);
-    assert.strictEqual(invalidFetchedStudent, null, "getStudentById should return null for an invalid id");
+    const myclass = new MyClass();
+    const student1 = new Student();
+    myclass.addStudent(student1);
+    assert.strictEqual(myclass.getStudentById(-1), null);
+    assert.strictEqual(myclass.getStudentById(100), null);
+    assert.strictEqual(myclass.getStudentById(0), student1);
 });
 
 test("Test Student's setName", () => {
     // TODO
     throw new Error("Test not implemented");
     const student = new Student();
-    student.setName("Doe");
-    assert.strictEqual(student.name, "Doe", "setName should correctly set the student's name");
-    student.setName(123); 
-    assert.strictEqual(student.name, "Doe", "setName should not set name when the input is not a string");
+    const name = "student1";
+    student.setName(0);
+    assert.strictEqual(student.name, undefined);
+    student.setName(name);
+    assert.strictEqual(student.name, name);
 });
 
 test("Test Student's getName", () => {
     // TODO
     throw new Error("Test not implemented");
 });
+
     const student = new Student();
-    student.setName("Smith");
-    assert.strictEqual(student.getName(), "Smith", "getName should return the correct name");
-    const newStudent = new Student();
-    assert.strictEqual(newStudent.getName(), '', "getName should return an empty string for a student without a name");
+    const name = "student1";
+    student.setName(100);
+    assert.strictEqual(student.getName(), "");
+    student.setName(name);
+    assert.strictEqual(student.getName(), name);
