@@ -37,10 +37,10 @@ test("Test Student's getName", () => {
     // TODO
     throw new Error("Test not implemented");
 });
-
     const student = new Student();
     const name = "student1";
     student.setName(100);
     assert.strictEqual(student.getName(), "");
     student.setName(name);
     assert.strictEqual(student.getName(), name);
+});
