@@ -3,8 +3,6 @@ const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
-    // TODO
-    throw new Error("Test not implemented");
     const myclass = new MyClass();
     const student = new Student();
     assert.strictEqual(myclass.addStudent(""), -1);
@@ -12,8 +10,6 @@ test("Test MyClass's addStudent", () => {
 });
 
 test("Test MyClass's getStudentById", () => {
-    // TODO
-    throw new Error("Test not implemented");
     const myclass = new MyClass();
     const student1 = new Student();
     myclass.addStudent(student1);
@@ -23,8 +19,6 @@ test("Test MyClass's getStudentById", () => {
 });
 
 test("Test Student's setName", () => {
-    // TODO
-    throw new Error("Test not implemented");
     const student = new Student();
     const name = "student1";
     student.setName(0);
@@ -34,9 +28,6 @@ test("Test Student's setName", () => {
 });
 
 test("Test Student's getName", () => {
-    // TODO
-    throw new Error("Test not implemented");
-});
     const student = new Student();
     const name = "student1";
     student.setName(100);
