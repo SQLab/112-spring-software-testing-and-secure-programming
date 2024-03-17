@@ -1,40 +1,102 @@
-
 const test = require('node:test');
 const assert = require('assert');
 const { Application, MailSystem } = require('./main');
 
-test("Test Application's selectNextPerson", () => {
+// Stub: Mock MailSystem to simulate sending mail
+class MockMailSystem extends MailSystem {
+    constructor() {
+        super();
+        this.sentMails = [];
+    }
+
+    send(name, context) {
+        console.log('--mock send mail to ' + name + '--');
+        // Simulate mail sending
+        this.sentMails.push({ name, context });
+        return true;  // Always successful in this mock
+    }
+
+    getSentMails() {
+        return this.sentMails;
+    }
+}
+
+test('Application selects and notifies one person', () => {
     const app = new Application();
-    const initialSelectedLength = app.selected.length;
+    const mockMailSystem = new MockMailSystem();
+    app.mailSystem = mockMailSystem;
+
+    // Mocking getRandomPerson to return a specific person
+    app.getRandomPerson = () => 'John Doe';
+
     const selectedPerson = app.selectNextPerson();
-    assert.strictEqual(app.selected.length, initialSelectedLength + 1, "One person should be selected");
-});
+    assert.strictEqual(selectedPerson, 'John Doe', 'Selected person should be John Doe');
 
-test("Test Application's notifySelected", () => {
-    const app = new Application();
-    const consoleSpy = jest.spyOn(console, 'log');
     app.notifySelected();
-    expect(consoleSpy).toHaveBeenCalled();
+
+    const sentMails = mockMailSystem.getSentMails();
+    assert.strictEqual(sentMails.length, 1, 'One mail should have been sent');
+    assert.strictEqual(sentMails[0].name, 'John Doe', 'Sent mail should be to John Doe');
+    assert.strictEqual(sentMails[0].context, 'Congrats, John Doe!', 'Mail content should be correct');
 });
 
-test("Test MailSystem's write method", () => {
-    const mailSystem = new MailSystem();
-    const name = "John";
-    const context = mailSystem.write(name);
-    assert.strictEqual(context, `Congrats, ${name}!`, "Context should match expected");
-});
-
-test("Test MailSystem's send method", () => {
-    const mailSystem = new MailSystem();
-    const name = "John";
-    const context = "Test context";
-    const result = mailSystem.send(name, context);
-    assert(result === true || result === false, "send method should return a boolean");
-});
-
-test("Test Application's getRandomPerson", () => {
+test('Application selects and notifies multiple people', () => {
     const app = new Application();
-    const getRandomPersonSpy = jest.spyOn(app, 'getRandomPerson');
-    app.getRandomPerson();
-    expect(getRandomPersonSpy).toHaveBeenCalled();
+    const mockMailSystem = new MockMailSystem();
+    app.mailSystem = mockMailSystem;
+
+    // Mocking getRandomPerson to return different people
+    let count = 0;
+    app.getRandomPerson = () => {
+        const people = ['Alice', 'Bob', 'Charlie'];
+        return people[count++ % people.length];
+    };
+
+    // Select and notify multiple people
+    for (let i = 0; i < 3; i++) {
+        const selectedPerson = app.selectNextPerson();
+        assert.ok(['Alice', 'Bob', 'Charlie'].includes(selectedPerson), 'Selected person should be one of Alice, Bob, Charlie');
+    }
+
+    app.notifySelected();
+
+    const sentMails = mockMailSystem.getSentMails();
+    assert.strictEqual(sentMails.length, 3, 'Three mails should have been sent');
+
+    const expectedContexts = ['Congrats, Alice!', 'Congrats, Bob!', 'Congrats, Charlie!'];
+    sentMails.forEach((mail, index) => {
+        assert.strictEqual(mail.context, expectedContexts[index], 'Mail content should be correct');
+    });
+});
+
+test('MailSystem should log "mail sent" on successful send', () => {
+    const mailSystem = new MailSystem();
+
+    // Mocking Math.random to always return a value < 0.5 (success)
+    const stub = test.stub(Math, 'random').returns(0.4);
+
+    const consoleSpy = test.spy(console, 'log');
+
+    mailSystem.send('John Doe', 'Test Mail');
+
+    stub.restore();
+    consoleSpy.restore();
+
+    assert.ok(consoleSpy.calledWith('mail sent'), 'Console should log "mail sent"');
+});
+
+test('MailSystem should log "mail failed" on failed send', () => {
+    const mailSystem = new MailSystem();
+
+    // Mocking Math.random to always return a value >= 0.5 (failure)
+    const stub = test.stub(Math, 'random').returns(0.6);
+
+    const consoleSpy = test.spy(console, 'log');
+
+    mailSystem.send('John Doe', 'Test Mail');
+
+    stub.restore();
+    consoleSpy.restore();
+
+    assert.ok(consoleSpy.calledWith('mail failed'), 'Console should log "mail failed"');
 });
