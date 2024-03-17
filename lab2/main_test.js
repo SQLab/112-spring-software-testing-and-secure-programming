@@ -1,5 +1,8 @@
 const test = require('node:test');
 const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 const { Application, MailSystem } = require('./main');
 
@@ -31,12 +34,28 @@ test('should return true if mail is sent successfully', (t) => {
  
 
 
+
+
 test('should return name_list ', async()=>{
 
-    const app = new Application();
-    const [people, selected] = await app.getNames(); // Provide the path to the temporary file
+    // Write mock name list to a temporary file
+    const nameListContent = 'Alice\nBob\nCharlie';
+    const tempFilePath = path.join('name_list.txt');
+    fs.writeFileSync(tempFilePath, nameListContent);
 
-    // Assert that the returned list matches the expected list
+    // Attach cleanup handler to the process exit event
+    process.on('exit', () => {
+        if (tempFilePath) {
+        // Clean up: Delete the temporary directory
+        fs.unlinkSync(tempFilePath);
+        }
+    });
+
+    // Instantiate Application class and call getNames with the temporary file path
+    const app = new Application();
+    const [people, selected] = await app.getNames(tempFilePath);
+
+    // Assert the results
     assert.deepStrictEqual(people, ['Alice', 'Bob', 'Charlie']);
     assert.deepStrictEqual(selected, []);
 
@@ -121,4 +140,7 @@ test('should call write and send methods of MailSystem for each selected person'
 
     assert.strictEqual(mailSystem.writeCallCount, 3);
     assert.strictEqual(mailSystem.sendCallCount, 3);
+
+
 });
+
