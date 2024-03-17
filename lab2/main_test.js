@@ -5,49 +5,99 @@ const { Application, MailSystem } = require('./main');
 // TODO: write your tests here
 // Remember to use Stub, Mock, and Spy when necessary
 
-const sinon = require('sinon');
+// Stub: 模擬郵件發送
+class MockMailSystem extends MailSystem {
+    constructor() {
+        super();
+        this.sentMails = [];
+    }
 
-test('Application selects unique people', async () => {
-  const app = new Application();
-  const people = ['Alice', 'Bob', 'Charlie'];
-  sinon.stub(app, 'getNames').resolves([people, []]);
+    send(name, context) {
+        console.log('--mock send mail to ' + name + '--');
+        this.sentMails.push({ name, context });
+        return true;  
+    }
 
-  const selected1 = await app.selectNextPerson();
-  const selected2 = await app.selectNextPerson();
-  const selected3 = await app.selectNextPerson();
+    getSentMails() {
+        return this.sentMails;
+    }
+}
 
-  assert.notEqual(selected1, selected2);
-  assert.notEqual(selected1, selected3);
-  assert.notEqual(selected2, selected3);
+test('Application selects and notifies one person', () => {
+    const app = new Application();
+    const mockMailSystem = new MockMailSystem();
+    app.mailSystem = mockMailSystem;
+
+    // 模擬 getRandomPerson 返回特定人
+    app.getRandomPerson = () => 'John Doe';
+
+    const selectedPerson = app.selectNextPerson();
+    assert.strictEqual(selectedPerson, 'John Doe', 'Selected person should be John Doe');
+
+    app.notifySelected();
+
+    const sentMails = mockMailSystem.getSentMails();
+    assert.strictEqual(sentMails.length, 1, 'One mail should have been sent');
+    assert.strictEqual(sentMails[0].name, 'John Doe', 'Sent mail should be to John Doe');
+    assert.strictEqual(sentMails[0].context, 'Congrats, John Doe!', 'Mail content should be correct');
 });
 
-test('Application notifies selected people', async () => {
-  const app = new Application();
-  const people = ['Alice'];
-  sinon.stub(app, 'getNames').resolves([people, []]);
-  sinon.stub(app.mailSystem, 'write').returns('Test context');
-  sinon.spy(app.mailSystem, 'send');
+test('Application selects and notifies multiple people', () => {
+    const app = new Application();
+    const mockMailSystem = new MockMailSystem();
+    app.mailSystem = mockMailSystem;
+    // 模擬 getRandomPerson 返回不同人
+    let count = 0;
+    app.getRandomPerson = () => {
+        const people = ['Alice', 'Bob', 'Charlie'];
+        return people[count++ % people.length];
+    };
 
-  await app.selectNextPerson();
-  await app.notifySelected();
+    // Select and notify multiple people
+    for (let i = 0; i < 3; i++) {
+        const selectedPerson = app.selectNextPerson();
+        assert.ok(['Alice', 'Bob', 'Charlie'].includes(selectedPerson), 'Selected person should be one of Alice, Bob, Charlie');
+    }
 
-  assert.strictEqual(app.mailSystem.send.callCount, 1);
-  assert.strictEqual(app.mailSystem.send.args[0][0], 'Alice');
-  assert.strictEqual(app.mailSystem.send.args[0][1], 'Test context');
+    app.notifySelected();
+
+    const sentMails = mockMailSystem.getSentMails();
+    assert.strictEqual(sentMails.length, 3, 'Three mails should have been sent');
+
+    const expectedContexts = ['Congrats, Alice!', 'Congrats, Bob!', 'Congrats, Charlie!'];
+    sentMails.forEach((mail, index) => {
+        assert.strictEqual(mail.context, expectedContexts[index], 'Mail content should be correct');
+    });
 });
 
-// 測試 MailSystem 類
-test('MailSystem writes mail content', () => {
-  const mailSystem = new MailSystem();
-  const context = mailSystem.write('John Doe');
-  assert.strictEqual(context, 'Congrats, John Doe!');
+test('MailSystem should log "mail sent" on successful send', () => {
+    const mailSystem = new MailSystem();
+
+    // 返回 < 0.5 (success)
+    const stub = test.stub(Math, 'random').returns(0.4);
+
+    const consoleSpy = test.spy(console, 'log');
+
+    mailSystem.send('John Doe', 'Test Mail');
+
+    stub.restore();
+    consoleSpy.restore();
+
+    assert.ok(consoleSpy.calledWith('mail sent'), 'Console should log "mail sent"');
 });
 
-test('MailSystem sends mail with success or failure', async () => {
-  const mailSystem = new MailSystem();
-  sinon.stub(console, 'log'); // console.log 输出
+test('MailSystem should log "mail failed" on failed send', () => {
+    const mailSystem = new MailSystem();
 
-  await mailSystem.send('John Doe', 'Test context');
-  assert(console.log.calledWith('--send mail to John Doe--'));
-  assert(console.log.calledWith('mail sent')); // 或 mail failed
+    // 返回 >= 0.5 (failure)
+    const stub = test.stub(Math, 'random').returns(0.6);
+
+    const consoleSpy = test.spy(console, 'log');
+
+    mailSystem.send('John Doe', 'Test Mail');
+
+    stub.restore();
+    consoleSpy.restore();
+
+    assert.ok(consoleSpy.calledWith('mail failed'), 'Console should log "mail failed"');
 });
