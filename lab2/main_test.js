@@ -22,9 +22,17 @@ test('notifySelected sends mail to all selected people', async () => {
     // 驗證 send 方法是否被調用了正確的次數（應為已選擇人數）
     assert.strictEqual(mockMailSystem.send.callCount, app.selected.length);
 
+
+
+    
+
     // 確保 send 方法被正確的參數調用
     app.selected.forEach((person) => {
         assert(mockMailSystem.send.calledWith(person, `Congrats, ${person}!`));
     });
 });
+
+
+
+
 
