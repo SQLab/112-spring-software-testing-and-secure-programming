@@ -7,16 +7,18 @@ test('notifySelected sends mail to all selected people', async () => {
     const mockMailSystem = sinon.createStubInstance(MailSystem);
     mockMailSystem.send.returns(true); // Assume sending mail is always successful
 
-    // Stub the Application.getNames method before creating an instance
-    sinon.stub(Application.prototype, 'getNames').resolves([['Alice', 'Bob', 'Charlie'], ['Alice']]);
+    // Stub the getNames method of the Application class
+    const getNamesStub = sinon.stub(Application.prototype, 'getNames');
+    getNamesStub.resolves([['Alice', 'Bob', 'Charlie'], []]);
 
     const app = new Application();
-    app.mailSystem = mockMailSystem; // Use the mocked MailSystem
+    await getNamesStub.lastCall.returnValue;  // Ensure the stubbed getNames method has resolved
 
-    // No need to call getNames as it should be invoked by the constructor
+    app.mailSystem = mockMailSystem; // Replace the real MailSystem with the mocked one
 
-    app.selectNextPerson(); // Select the next person (could be anyone from the list except 'Alice')
-    await app.notifySelected(); // Assuming notifySelected should be async and wait for all sends
+    // Select next person for testing
+    app.selectNextPerson();
+    await app.notifySelected(); // Wait for notifySelected to complete
 
     // Verify that the send method was called the correct number of times
     assert.strictEqual(mockMailSystem.send.callCount, app.selected.length);
@@ -24,5 +26,8 @@ test('notifySelected sends mail to all selected people', async () => {
     app.selected.forEach((person) => {
         assert(mockMailSystem.send.calledWith(person, `Congrats, ${person}!`));
     });
+
+    // Restore the stubbed method to its original behavior
+    getNamesStub.restore();
 });
 
