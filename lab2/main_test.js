@@ -1,69 +1,69 @@
-const test = require('node:test');
-const assert = require('assert');
-const fs = require('fs');
-test.mock.method(fs, 'readFile', (file, options, callback) => {
-    callback(null, 'alpha\nbeta\ngama');
+const testFramework = require('node:test');
+const assertFramework = require('assert');
+const fileSystem = require('fs');
+testFramework.mock.method(fileSystem, 'readFile', (filePath, readOptions, readCallback) => {
+    readCallback(null, 'charlie\ndelta\necho');
 });
-const { Application, MailSystem } = require('./main');
+const { SystemApp, PostSystem } = require('./main');
 
-test('Test MailSystem : write()', () => {
-    const ms = new MailSystem();
-    assert.strictEqual(ms.write('alpha'), 'Congrats, alpha!');
-    assert.strictEqual(ms.write(null), 'Congrats, null!');
-    assert.strictEqual(ms.write(48763), 'Congrats, 48763!');
-});
-
-test('Test MailSystem : send()', () => {
-    const ms = new MailSystem();
-    const name = 'alpha';
-    test.mock.method(Math, 'random', () => 0.6);
-    assert.strictEqual(ms.send(name, 'success'), true);
-    test.mock.method(Math, 'random', () => 0.4);
-    assert.strictEqual(ms.send(name, 'fail'), false);
+testFramework('Test PostSystem : compose()', () => {
+    const ps = new PostSystem();
+    assertFramework.strictEqual(ps.compose('charlie'), 'Congrats, charlie!');
+    assertFramework.strictEqual(ps.compose(null), 'Congrats, null!');
+    assertFramework.strictEqual(ps.compose(48763), 'Congrats, 48763!');
 });
 
-test('Test Application : getNames()', async () => {
-    const app = new Application();
-    const name_list = ['alpha', 'beta', 'gama'];
-    const names = await app.getNames();
-    assert.deepStrictEqual(names, [name_list, []])
+testFramework('Test PostSystem : dispatch()', () => {
+    const ps = new PostSystem();
+    const personName = 'charlie';
+    testFramework.mock.method(Math, 'random', () => 0.6);
+    assertFramework.strictEqual(ps.dispatch(personName, 'success'), true);
+    testFramework.mock.method(Math, 'random', () => 0.4);
+    assertFramework.strictEqual(ps.dispatch(personName, 'fail'), false);
 });
 
-test('Test Application : getRandomPerson()', async (test) => {
-    const app = new Application();
-    const names = await app.getNames();
-    test.mock.method(Math, 'random', () => 0);
-    assert.strictEqual(app.getRandomPerson(), 'alpha');
-    test.mock.method(Math, 'random', () => 0.4);
-    assert.strictEqual(app.getRandomPerson(), 'beta');
-    test.mock.method(Math, 'random', () => 0.7);
-    assert.strictEqual(app.getRandomPerson(), 'gama');
+testFramework('Test SystemApp : listNames()', async () => {
+    const sysApp = new SystemApp();
+    const personList = ['charlie', 'delta', 'echo'];
+    const resultNames = await sysApp.listNames();
+    assertFramework.deepStrictEqual(resultNames, [personList, []])
 });
 
-test('Test Application : selectNextPerson()', async (test) => {
-    const app = new Application();
-    const names = await app.getNames();
-    app.selected = ['alpha'];
-    let cnt = 0;
-    test.mock.method(app, 'getRandomPerson', () => {
-        if (cnt <= names.length) { 
-            return names[0][cnt++]; 
+testFramework('Test SystemApp : chooseRandomIndividual()', async (testFramework) => {
+    const sysApp = new SystemApp();
+    const resultNames = await sysApp.listNames();
+    testFramework.mock.method(Math, 'random', () => 0);
+    assertFramework.strictEqual(sysApp.chooseRandomIndividual(), 'charlie');
+    testFramework.mock.method(Math, 'random', () => 0.4);
+    assertFramework.strictEqual(sysApp.chooseRandomIndividual(), 'delta');
+    testFramework.mock.method(Math, 'random', () => 0.7);
+    assertFramework.strictEqual(sysApp.chooseRandomIndividual(), 'echo');
+});
+
+testFramework('Test SystemApp : pickNextIndividual()', async (testFramework) => {
+    const sysApp = new SystemApp();
+    const resultNames = await sysApp.listNames();
+    sysApp.chosen = ['charlie'];
+    let count = 0;
+    testFramework.mock.method(sysApp, 'chooseRandomIndividual', () => {
+        if (count <= resultNames.length) { 
+            return resultNames[0][count++]; 
         }
     });
-    assert.strictEqual(app.selectNextPerson(), 'beta');
-    assert.deepStrictEqual(app.selected, ['alpha', 'beta']);
-    assert.strictEqual(app.selectNextPerson(), 'gama');
-    assert.deepStrictEqual(app.selected, ['alpha', 'beta', 'gama']);
-    assert.strictEqual(app.selectNextPerson(), null);
+    assertFramework.strictEqual(sysApp.pickNextIndividual(), 'delta');
+    assertFramework.deepStrictEqual(sysApp.chosen, ['charlie', 'delta']);
+    assertFramework.strictEqual(sysApp.pickNextIndividual(), 'echo');
+    assertFramework.deepStrictEqual(sysApp.chosen, ['charlie', 'delta', 'echo']);
+    assertFramework.strictEqual(sysApp.pickNextIndividual(), null);
 });
 
-test('Test Application : notifySelected()', async (test) => {
-    const app = new Application();
-    app.people = ['alpha', 'beta', 'gama'];
-    app.selected = ['alpha', 'beta', 'gama'];
-    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
-    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
-    app.notifySelected();
-    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);
-    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);
+testFramework('Test SystemApp : alertChosen()', async (testFramework) => {
+    const sysApp = new SystemApp();
+    sysApp.individuals = ['charlie', 'delta', 'echo'];
+    sysApp.chosen = ['charlie', 'delta', 'echo'];
+    sysApp.postSystem.dispatch = testFramework.mock.fn(sysApp.postSystem.dispatch);
+    sysApp.postSystem.compose = testFramework.mock.fn(sysApp.postSystem.compose);
+    sysApp.alertChosen();
+    assertFramework.strictEqual(sysApp.postSystem.dispatch.mock.calls.length, 3);
+    assertFramework.strictEqual(sysApp.postSystem.compose.mock.calls.length, 3);
 });
