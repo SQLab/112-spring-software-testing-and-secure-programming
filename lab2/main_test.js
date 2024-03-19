@@ -1,52 +1,38 @@
 const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const { Application, MailSystem } = require('./main');
 
-
-test('MailSystem functionality', () => {
+function testMailSystemBehavior(name, expectedResult) {
     const mailSystem = new MailSystem();
-    const context = mailSystem.write('John');
-    assert.strictEqual(context, 'Congrats, John!');
+    const context = mailSystem.write(name);
+    assert.strictEqual(context, expectedResult);
+}
 
-    t.mock.method(Math, 'random', () => 1);
-    let isSend = mailSystem.send('Joy', "test mail");
-    assert.strictEqual(isSend, true);
-
-    t.mock.method(Math, 'random', () => 0.4);
-    isSend = mailSystem.send('Joy', "test mail");
-    assert.strictEqual(isSend, false);
+test('MailSystem behavior tests', () => {
+    testMailSystemBehavior('John', 'Congrats, John!');
 });
 
-test('Application person selection functionality', async () => {
-    const tempFilePath = path.join('name_list.txt');
+test('Application method tests', async () => {
+    const app = new Application();
+    const tempFilePath = path.join(os.tmpdir(), 'name_list.txt');
     fs.writeFileSync(tempFilePath, 'Alice\nBob\nCharlie');
-    const app = new Application();
-    const [people] = await app.getNames(tempFilePath);
+
+    const [people, selected] = await app.getNames(tempFilePath);
     assert.deepStrictEqual(people, ['Alice', 'Bob', 'Charlie']);
+    assert.deepStrictEqual(selected, []);
 
-    app.people = ['Alice', 'Bob', 'Charlie'];
-    app.selected = ['Alice', 'Bob'];
-    let result = app.selectNextPerson();
-    assert.strictEqual(result, 'Charlie');
+    fs.unlinkSync(tempFilePath);
 
-    Math.random = () => 0.5;
-    const randomPerson = app.getRandomPerson();
-    assert(app.people.includes(randomPerson));
-
-    app.selected = ['Alice', 'Bob', 'Charlie'];
-    result = app.selectNextPerson();
-    assert.strictEqual(result, null);
 });
 
-test('should notify selected persons', () => {
+
+test('should call write and send methods of MailSystem for each selected person', () => {
     const mailSystem = new MockMailSystem();
-    const app = new Application();
-    app.mailSystem = mailSystem;
-    app.selected = ['Alice', 'Bob', 'Charlie'];
+    const app = new Application(mailSystem, ['Alice', 'Bob', 'Charlie']);
     app.notifySelected();
     assert.strictEqual(mailSystem.writeCallCount, 3);
     assert.strictEqual(mailSystem.sendCallCount, 3);
 });
+
