@@ -1,122 +1,64 @@
-const test = require('node:test');
-const assert = require('assert');
-const fs = require('fs');
-const path = require('path');
-
+});
 const { Application, MailSystem } = require('./main');
 
-test('should return a message context', () => {
-    const mailSystem = new MailSystem();
-    const userName = 'Evan';
-
-    const context = mailSystem.write(userName);
-    assert.strictEqual(context, 'Congrats, Evan!');
+test('Test MailSystem : write()', () => {
+    const ms = new MailSystem();
+    assert.strictEqual(ms.write('alpha'), 'Congrats, alpha!');
+    assert.strictEqual(ms.write(null), 'Congrats, null!');
+    assert.strictEqual(ms.write(48763), 'Congrats, 48763!');
 });
 
-test('should return true if mail is sent successfully', (t) => {
-    const mailSystem = new MailSystem();
-    const userName = 'Evan';
-
-    // test send mail success return true
-    t.mock.method(Math, 'random', () => 1);
-    let isSent = mailSystem.send('Liam', "test mail");
-    assert.strictEqual(isSent, true);
-
-    // test send mail fail return false
-    t.mock.method(Math, 'random', () => 0.4);
-    isSent = mailSystem.send('Liam', "test mail");
-    assert.strictEqual(isSent, false);
+test('Test MailSystem : send()', () => {
+    const ms = new MailSystem();
+    const name = 'alpha';
+    test.mock.method(Math, 'random', () => 0.6);
+    assert.strictEqual(ms.send(name, 'success'), true);
+    test.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(ms.send(name, 'fail'), false);
 });
 
-test('should return name_list', async () => {
-    // Write mock name list to a temporary file
-    const nameListContent = 'Emma\nNoah\nOlivia';
-    const tempFilePath = path.join(os.tmpdir(), 'name_list.txt');
-    fs.writeFileSync(tempFilePath, nameListContent);
+test('Test Application : getNames()', async () => {
+    const app = new Application();
+    const name_list = ['alpha', 'beta', 'gama'];
+    const names = await app.getNames();
+    assert.deepStrictEqual(names, [name_list, []])
+});
 
-    // Attach cleanup handler to the process exit event
-    process.on('exit', () => {
-        if (tempFilePath) {
-            fs.unlinkSync(tempFilePath);
+test('Test Application : getRandomPerson()', async (test) => {
+    const app = new Application();
+    const names = await app.getNames();
+    test.mock.method(Math, 'random', () => 0);
+    assert.strictEqual(app.getRandomPerson(), 'alpha');
+    test.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(app.getRandomPerson(), 'beta');
+    test.mock.method(Math, 'random', () => 0.7);
+    assert.strictEqual(app.getRandomPerson(), 'gama');
+});
+
+test('Test Application : selectNextPerson()', async (test) => {
+    const app = new Application();
+    const names = await app.getNames();
+    app.selected = ['alpha'];
+    let cnt = 0;
+    test.mock.method(app, 'getRandomPerson', () => {
+        if (cnt <= names.length) { 
+            return names[0][cnt++]; 
         }
     });
-
-    // Instantiate Application class and call getNames with the temporary file path
-    const app = new Application();
-    const [people, selected] = await app.getNames(tempFilePath);
-
-    // Assert the results
-    assert.deepStrictEqual(people, ['Emma', 'Noah', 'Olivia']);
-    assert.deepStrictEqual(selected, []);
+    assert.strictEqual(app.selectNextPerson(), 'beta');
+    assert.deepStrictEqual(app.selected, ['alpha', 'beta']);
+    assert.strictEqual(app.selectNextPerson(), 'gama');
+    assert.deepStrictEqual(app.selected, ['alpha', 'beta', 'gama']);
+    assert.strictEqual(app.selectNextPerson(), null);
 });
 
-test('should return null if all people are selected', async (t) => {
+test('Test Application : notifySelected()', async (test) => {
     const app = new Application();
-    app.people = ['Emma', 'Noah', 'Olivia'];
-    app.selected = ['Emma', 'Noah', 'Olivia'];
-
-    const result = app.selectNextPerson();
-    assert.strictEqual(result, null);
-});
-
-test('should return a random person', () => {
-    // Stub Math.random() to return a fixed value
-    Math.random = () => 0.5;
-    const app = new Application();
-    app.people = ['Emma', 'Noah', 'Olivia'];
-    const randomPerson = app.getRandomPerson();
-
-    assert(app.people.includes(randomPerson));
-});
-
-test('should select and return a person who has not been selected yet', () => {
-    const app = new Application();
-    app.people = ['Emma', 'Noah', 'Olivia'];
-
-    let getRandomPersonCallCount = 0;
-    app.getRandomPerson = () => {
-        switch (getRandomPersonCallCount++) {
-            case 0:
-                return 'Emma';
-            case 1:
-                return 'Noah';
-            case 2:
-                return 'Olivia';
-        }
-    };
-
-    app.selected = ['Emma', 'Noah'];
-    const result = app.selectNextPerson();
-
-    assert.strictEqual(result, 'Olivia');
-    assert.strictEqual(getRandomPersonCallCount, 3);
-});
-
-class MockMailSystem {
-    constructor() {
-        this.writeCallCount = 0;
-        this.sendCallCount = 0;
-    }
-
-    write() {
-        this.writeCallCount++;
-        return 'Message context';
-    }
-
-    send() {
-        this.sendCallCount++;
-        return true;
-    }
-}
-
-test('should call write and send methods of MailSystem for each selected person', () => {
-    const mailSystem = new MockMailSystem();
-    const app = new Application();
-    app.mailSystem = mailSystem;
-    app.selected = ['Emma', 'Noah', 'Olivia'];
-
+    app.people = ['alpha', 'beta', 'gama'];
+    app.selected = ['alpha', 'beta', 'gama'];
+    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
+    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
     app.notifySelected();
-
-    assert.strictEqual(mailSystem.writeCallCount, 3);
-    assert.strictEqual(mailSystem.sendCallCount, 3);
+    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);
+    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);
 });
