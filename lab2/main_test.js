@@ -5,30 +5,23 @@ const sinon = require('sinon');
 
 test('notifySelected sends mail to all selected people', async () => {
     const mockMailSystem = sinon.createStubInstance(MailSystem);
-    mockMailSystem.send.returns(true);  
-	// 假設發送郵件總是成功
+    mockMailSystem.send.returns(true); // Assuming sending mail is always successful
 
     const app = new Application();
-    app.mailSystem = mockMailSystem;  
-	// 使用模擬的 MailSystem
+    app.mailSystem = mockMailSystem; // Use the mocked MailSystem
 
-    // 假設 getNames 方法返回特定的名單
-    app.getNames = async () => {
-        return [['Alice', 'Bob', 'Charlie'], ['Alice']];
-    };
+    // Stub the getNames method to return specific names and selections
+    sinon.stub(app, 'getNames').resolves([['Alice', 'Bob', 'Charlie'], ['Alice']]);
 
     await app.getNames();
-    app.selectNextPerson();  // 選擇下一個人（假設為 Bob）
+    app.selectNextPerson(); // Select the next person (assume it's Bob)
     app.notifySelected();
-    // 驗證 send 方法是否被調用了正確的次數（應為已選擇人數）
+
+    // Verify that the send method was called the correct number of times (should be the number of selected people)
     assert.strictEqual(mockMailSystem.send.callCount, app.selected.length);
-    // 確保 send 方法被正確的參數調用
+    // Ensure the send method was called with the correct parameters
     app.selected.forEach((person) => {
         assert(mockMailSystem.send.calledWith(person, `Congrats, ${person}!`));
     });
 });
-
-
-
-
 
