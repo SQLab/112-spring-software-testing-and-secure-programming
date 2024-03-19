@@ -1,8 +1,10 @@
 const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { Application, MailSystem } = require('./main');
+
 
 test('MailSystem functionality', () => {
     const mailSystem = new MailSystem();
