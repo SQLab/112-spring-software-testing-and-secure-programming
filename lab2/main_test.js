@@ -43,9 +43,9 @@ test('Test MockMailSystem', () => {
   const app = new Application();
   const mockMailSystem = new MockMailSystem();
   app.mailSystem = mockMailSystem;
-  app.selected = ['John', 'Jane']; // 添加一些已选中的人
+  app.selected = ['John', 'Jane']; 
   app.notifySelected();
 
-  assert.strictEqual(mockMailSystem.writeCalled, true); // 使用 assert 断言 write 方法被调用
-  assert.strictEqual(mockMailSystem.sendCalled, true); // 使用 assert 断言 send 方法被调用
+  assert.strictEqual(mockMailSystem.writeCalled, true); 
+  assert.strictEqual(mockMailSystem.sendCalled, true); 
 });
