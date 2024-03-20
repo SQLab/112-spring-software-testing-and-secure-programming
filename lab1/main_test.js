@@ -1,4 +1,4 @@
-const test = require('node:test');
+//const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 //建立 MyClass及Student
