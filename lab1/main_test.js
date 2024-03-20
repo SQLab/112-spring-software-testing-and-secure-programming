@@ -3,27 +3,63 @@ const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
 test("Test MyClass's addStudent", () => {
-    const myClass = new MyClass();
-    const student = new Student("John");
-    myClass.addStudent(student);
-    assert.strictEqual(myClass.students.length, 1);
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('John');
+  const id1 = myClass.addStudent(student1);
+  assert.strictEqual(id1, 0);
+
+  const student2 = new Student();
+  student2.setName('Jane');
+  const id2 = myClass.addStudent(student2);
+  assert.strictEqual(id2, 1);
+  
+
+  const invalidStudent = 'TESTING'; // 增加測試不合法學生的情況
+  const invalidId = myClass.addStudent(invalidStudent);
+  assert.strictEqual(invalidId, -1);
+  
 });
 
 test("Test MyClass's getStudentById", () => {
-    const myClass = new MyClass();
-    const student = new Student("Jane");
-    myClass.addStudent(student);
-    const retrievedStudent = myClass.getStudentById(student.id);
-    assert.strictEqual(retrievedStudent, student);
+  const myClass = new MyClass();
+  const student1 = new Student();
+  student1.setName('John');
+  myClass.addStudent(student1);
+  
+
+  const retrievedStudent = myClass.getStudentById(0);
+  assert.strictEqual(retrievedStudent.getName(), 'John');
+  
+
+  const invalidStudent = myClass.getStudentById(-1);
+  assert.strictEqual(invalidStudent, null);
+  
+
+  const outOfBoundsStudent = myClass.getStudentById(1);
+  assert.strictEqual(outOfBoundsStudent, null);
+  
 });
 
 test("Test Student's setName", () => {
-    const student = new Student("Tom");
-    student.setName("Jerry");
-    assert.strictEqual(student.getName(), "Jerry");
+  const student = new Student();
+
+  student.setName('Alice');
+  assert.strictEqual(student.getName(), 'Alice');
+  
+
+  student.setName(123); // 添加測試當傳入非字符串參數時的情況
+  assert.strictEqual(student.getName(), 'Alice');
+  
 });
 
 test("Test Student's getName", () => {
-    const student = new Student("Alice");
-    assert.strictEqual(student.getName(), "Alice");
+  const student = new Student();
+
+  assert.strictEqual(student.getName(), ''); // 確保在姓名未設置時返回空字符串
+  
+
+  student.setName('Bob');
+  assert.strictEqual(student.getName(), 'Bob');
+  
 });
