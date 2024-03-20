@@ -51,5 +51,3 @@ test("Test Student's getName", () => {
     student.setName("Bob");
     assert.strictEqual(student.getName(), "Bob");
 });
-
-`
