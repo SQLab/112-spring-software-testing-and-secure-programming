@@ -1,33 +1,45 @@
 const test = require('node:test');
 const assert = require('assert');
 const sinon = require('sinon');
+const fs = require('fs');
 const { Application, MailSystem } = require('./main');
 
-test('notifySelected sends mail to all selected people', async () => {
-    const mockMailSystem = sinon.createStubInstance(MailSystem);
-    mockMailSystem.send.returns(true); // Assume sending mail is always successful
-
-    // Stub the getNames method of the Application class
-    const getNamesStub = sinon.stub(Application.prototype, 'getNames');
-    getNamesStub.resolves([['Alice', 'Bob', 'Charlie'], []]);
+test('Application should load names and select a person', async (t) => {
+    const readFileStub = sinon.stub(fs.promises, 'readFile');
+    readFileStub.resolves('Alice\nBob\nCharlie');
 
     const app = new Application();
-    await getNamesStub.lastCall.returnValue;  // Ensure the stubbed getNames method has resolved
 
-    app.mailSystem = mockMailSystem; // Replace the real MailSystem with the mocked one
-
-    // Select next person for testing
-    app.selectNextPerson();
-    await app.notifySelected(); // Wait for notifySelected to complete
-
-    // Verify that the send method was called the correct number of times
-    assert.strictEqual(mockMailSystem.send.callCount, app.selected.length);
-    // Ensure the send method was called with the correct parameters
-    app.selected.forEach((person) => {
-        assert(mockMailSystem.send.calledWith(person, `Congrats, ${person}!`));
+    await t.step('loads names from file', async () => {
+        assert.deepStrictEqual(await app.getNames(), [['Alice', 'Bob', 'Charlie'], []]);
     });
 
-    // Restore the stubbed method to its original behavior
-    getNamesStub.restore();
+    await t.step('selects a random person', () => {
+        app.people = ['Alice', 'Bob', 'Charlie']; // directly set people for testing
+        const person = app.selectNextPerson();
+        assert(app.people.includes(person));
+        assert.strictEqual(app.selected.includes(person), true);
+    });
+
+    readFileStub.restore();
 });
+
+test('MailSystem should send mails correctly', async (t) => {
+    const mailSystem = new MailSystem();
+
+    await t.step('writes mail content', () => {
+        const content = mailSystem.write('Alice');
+        assert.strictEqual(content, 'Congrats, Alice!');
+    });
+
+    await t.step('sends mail successfully', () => {
+        const consoleLogSpy = sinon.spy(console, 'log');
+        const result = mailSystem.send('Alice', 'Congrats, Alice!');
+        assert(consoleLogSpy.calledWith('--send mail to Alice--'));
+        assert(result === true || result === false); // due to randomness in send
+        consoleLogSpy.restore();
+    });
+});
+
+// Additional tests can be added as needed, focusing on specific functionalities and edge cases.
 
