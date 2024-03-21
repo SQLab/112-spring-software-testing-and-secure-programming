@@ -1,40 +1,73 @@
 const test = require('node:test');
 const assert = require('assert');
-const sinon = require('sinon');
+const mockfs = require('node-mock-fs');
 const { Application, MailSystem } = require('./main');
 
-test('MailSystem should handle sending mail correctly', async (t) => {
+test('MailSystem', async (t) => {
     const mailSystem = new MailSystem();
-    const mailSystemMock = sinon.mock(mailSystem);
 
-    await t.step('sends mail successfully', () => {
-        // Expectation: send will be called once with specific arguments and will return true
-        mailSystemMock.expects('send').once().withArgs('Alice', 'Congrats, Alice!').returns(true);
-
-        const content = mailSystem.write('Alice');
-        assert.strictEqual(content, 'Congrats, Alice!');
-
-        const sendResult = mailSystem.send('Alice', content);
-        assert.strictEqual(sendResult, true);
-
-        // Verify that all expectations on the mock were met
-        mailSystemMock.verify();
+    t.test('write', (t) => {
+        const name = 'John';
+        const context = mailSystem.write(name);
+        assert.strictEqual(context, 'Congrats, John!');
+        t.end();
     });
 
-    await t.step('fails to send mail', () => {
-        // Resetting expectations for the next scenario
-        mailSystemMock.restore(); // Restore original method before setting new expectations
-        mailSystemMock.expects('send').once().withArgs('Bob', 'Congrats, Bob!').returns(false);
+    t.test('send', (t) => {
+        const name = 'Jane';
+        const context = 'Hello, Jane!';
+        const consoleSpy = t.mock('console');
 
-        const content = mailSystem.write('Bob');
-        assert.strictEqual(content, 'Congrats, Bob!');
+        consoleSpy.once('log', (message) => {
+            assert.strictEqual(message, '--send mail to Jane--');
+        });
 
-        const sendResult = mailSystem.send('Bob', content);
-        assert.strictEqual(sendResult, false);
+        consoleSpy.once('log', (message) => {
+            assert(message === 'mail sent' || message === 'mail failed');
+        });
 
-        // Verify that all expectations on the mock were met
-        mailSystemMock.verify();
+        mailSystem.send(name, context);
+        consoleSpy.restore();
+        t.end();
     });
 });
 
+test('Application', async (t) => {
+    mockfs({
+        'name_list.txt': 'Alice\nBob\nCharlie\nDave\nEve',
+    });
 
+    const app = new Application();
+    await app.getNames();
+
+    t.test('getRandomPerson', (t) => {
+        const randomPerson = app.getRandomPerson();
+        assert(app.people.includes(randomPerson));
+        t.end();
+    });
+
+    t.test('selectNextPerson', (t) => {
+        const selectedPerson = app.selectNextPerson();
+        assert(app.selected.includes(selectedPerson));
+        t.end();
+    });
+
+    t.test('notifySelected', (t) => {
+        const consoleSpy = t.mock('console');
+
+        consoleSpy.callCount(Math.log, (callCount) => {
+            assert.strictEqual(callCount, 0);
+        });
+
+        app.notifySelected();
+
+        consoleSpy.callCount(Math.log, (callCount) => {
+            assert.strictEqual(callCount, app.selected.length * 3 + 1);
+        });
+
+        consoleSpy.restore();
+        t.end();
+    });
+
+    mockfs.restore();
+});
