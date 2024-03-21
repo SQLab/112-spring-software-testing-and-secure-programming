@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('assert');
+
 const EventEmitter = require('events');
 const { Application, MailSystem } = require('./main');
 
