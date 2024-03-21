@@ -39,20 +39,20 @@ test('Application_getNames()', async () => {
 // 測試 Application_getRandomPerson() 方法
 test('Application_getRandomPerson()', async () => {
     const app = new Application();
-    const names = await app.getNames();
+    const [names] = await app.getNames();                             // 等待獲取名字列表
     const randomPerson = app.getRandomPerson();
-    assert.ok(names[0].includes(randomPerson));                       // 確認隨機獲取的人員在名字列表中
+    assert.ok(names.includes(randomPerson));                          // 確認隨機獲取的人員在名字列表中
 });
 
 // 測試 Application_selectNextPerson() 方法
 test('Application_selectNextPerson()', async () => {
     const app = new Application();
-    const names = await app.getNames();
+    const [names] = await app.getNames();
     app.selected = ['Alice'];
     let cnt = 0;
     test.mock.method(app, 'getRandomPerson', () => {
         if (cnt <= names.length) { 
-            return names[0][cnt++]; 
+            return names[cnt++]; 
         }
     });
     assert.strictEqual(app.selectNextPerson(), 'john');               // 確認選擇下一個人員的功能
@@ -65,11 +65,11 @@ test('Application_selectNextPerson()', async () => {
 // 測試 Application_notifySelected() 方法
 test('Application_notifySelected()', async () => {
     const app = new Application();
-    app.people = ['Alice', 'john', 'Bob'];
-    app.selected = ['Alice', 'john', 'Bob'];
+    const [people] = await app.getNames();
+    app.selected = [...people];
     app.mailSystem.send = test.mock.fn(app.mailSystem.send);
     app.mailSystem.write = test.mock.fn(app.mailSystem.write);
     app.notifySelected();
-    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);     // 確認發送郵件的次數
-    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);    // 確認編寫郵件的次數
+    assert.strictEqual(app.mailSystem.send.mock.calls.length, people.length);  // 確認發送郵件的次數
+    assert.strictEqual(app.mailSystem.write.mock.calls.length, people.length); // 確認編寫郵件的次數
 });
