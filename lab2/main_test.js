@@ -1,102 +1,75 @@
 const test = require('node:test');
 const assert = require('assert');
+const fs = require('fs');
+
+// 模擬 fs.readFile ，返回假數據
+test.mock.method(fs, 'readFile', (file, options, callback) => {
+    callback(null, 'Alice\njohn\nBob');
+});
+
+// 從 main.js 導入 Application 和 MailSystem 類
 const { Application, MailSystem } = require('./main');
 
-// Stub: Mock MailSystem to simulate sending mail
-class MockMailSystem extends MailSystem {
-    constructor() {
-        super();
-        this.sentMails = [];
-    }
-
-    send(name, context) {
-        console.log('--mock send mail to ' + name + '--');
-        // Simulate mail sending
-        this.sentMails.push({ name, context });
-        return true;  // Always successful in this mock
-    }
-
-    getSentMails() {
-        return this.sentMails;
-    }
-}
-
-test('Application selects and notifies one person', () => {
-    const app = new Application();
-    const mockMailSystem = new MockMailSystem();
-    app.mailSystem = mockMailSystem;
-
-    // Mocking getRandomPerson to return a specific person
-    app.getRandomPerson = () => 'John Doe';
-
-    const selectedPerson = app.selectNextPerson();
-    assert.strictEqual(selectedPerson, 'John Doe', 'Selected person should be John Doe');
-
-    app.notifySelected();
-
-    const sentMails = mockMailSystem.getSentMails();
-    assert.strictEqual(sentMails.length, 1, 'One mail should have been sent');
-    assert.strictEqual(sentMails[0].name, 'John Doe', 'Sent mail should be to John Doe');
-    assert.strictEqual(sentMails[0].context, 'Congrats, John Doe!', 'Mail content should be correct');
+// testMailSystem_write() 
+test('MailSystem_write()', () => {
+    const ms = new MailSystem();
+    assert.equal(ms.write('Alice'), 'Congrats, Alice!');
+    assert.equal(ms.write(null), 'Congrats, null!');
+    assert.equal(ms.write(512558020), 'Congrats, 512558020!');  
 });
 
-test('Application selects and notifies multiple people', () => {
+// test MailSystem_send() 
+test('MailSystem_send()', () => {
+    const ms = new MailSystem();
+    const name = 'Alice';
+    test.mock.method(Math, 'random', () => 0.6);                      
+    assert.equal(ms.send(name, 'success'), true);             
+    test.mock.method(Math, 'random', () => 0.4);                     
+    assert.equal(ms.send(name, 'fail'), false);                 
+});
+
+// test Application_getNames() 
+test('Application_getNames()', async () => {
     const app = new Application();
-    const mockMailSystem = new MockMailSystem();
-    app.mailSystem = mockMailSystem;
+    const name_list = ['Alice', 'john', 'Bob'];
+    const names = await app.getNames();
+    assert.deepStrictEqual(names, [name_list, []]);                   
+});
 
-    // Mocking getRandomPerson to return different people
-    let count = 0;
-    app.getRandomPerson = () => {
-        const people = ['Alice', 'Bob', 'Charlie'];
-        return people[count++ % people.length];
-    };
+// test Application_getRandomPerson() 
+test('Application_getRandomPerson()', async () => {
+    const app = new Application();
+    const names = await app.getNames();
+    const randomPerson = app.getRandomPerson();
+    assert.ok(names[0].includes(randomPerson));                       
+});
 
-    // Select and notify multiple people
-    for (let i = 0; i < 3; i++) {
-        const selectedPerson = app.selectNextPerson();
-        assert.ok(['Alice', 'Bob', 'Charlie'].includes(selectedPerson), 'Selected person should be one of Alice, Bob, Charlie');
-    }
-
-    app.notifySelected();
-
-    const sentMails = mockMailSystem.getSentMails();
-    assert.strictEqual(sentMails.length, 3, 'Three mails should have been sent');
-
-    const expectedContexts = ['Congrats, Alice!', 'Congrats, Bob!', 'Congrats, Charlie!'];
-    sentMails.forEach((mail, index) => {
-        assert.strictEqual(mail.context, expectedContexts[index], 'Mail content should be correct');
+// test Application_selectNextPerson() 
+test('Application_selectNextPerson()', async () => {
+    const app = new Application();
+    const names = await app.getNames();
+    app.selected = ['Alice'];
+    let cnt = 0;
+    test.mock.method(app, 'getRandomPerson', () => {
+        if (cnt <= names[0].length) { 
+            return names[0][cnt++]; 
+        }
     });
+    assert.strictEqual(app.selectNextPerson(), 'john');               
+    assert.deepStrictEqual(app.selected, ['Alice', 'john']);          
+    assert.strictEqual(app.selectNextPerson(), 'Bob');                
+    assert.deepStrictEqual(app.selected, ['Alice', 'john', 'Bob']);   
+    assert.strictEqual(app.selectNextPerson(), null);                 
 });
 
-test('MailSystem should log "mail sent" on successful send', () => {
-    const mailSystem = new MailSystem();
-
-    // Mocking Math.random to always return a value < 0.5 (success)
-    const stub = test.stub(Math, 'random').returns(0.4);
-
-    const consoleSpy = test.spy(console, 'log');
-
-    mailSystem.send('John Doe', 'Test Mail');
-
-    stub.restore();
-    consoleSpy.restore();
-
-    assert.ok(consoleSpy.calledWith('mail sent'), 'Console should log "mail sent"');
-});
-
-test('MailSystem should log "mail failed" on failed send', () => {
-    const mailSystem = new MailSystem();
-
-    // Mocking Math.random to always return a value >= 0.5 (failure)
-    const stub = test.stub(Math, 'random').returns(0.6);
-
-    const consoleSpy = test.spy(console, 'log');
-
-    mailSystem.send('John Doe', 'Test Mail');
-
-    stub.restore();
-    consoleSpy.restore();
-
-    assert.ok(consoleSpy.calledWith('mail failed'), 'Console should log "mail failed"');
+// test Application_notifySelected() 
+test('Application_notifySelected()', async () => {
+    const app = new Application();
+    app.people = ['Alice', 'john', 'Bob'];
+    app.selected = ['Alice', 'john', 'Bob'];
+    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
+    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
+    app.notifySelected();
+    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);     
+    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);    
 });
