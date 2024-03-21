@@ -38,7 +38,7 @@ class MockMailSystem extends MailSystem {
     return true;
   }
 }
-//a
+
 test('Test MockMailSystem', () => {
   const app = new Application();
   const mockMailSystem = new MockMailSystem();
