@@ -1,4 +1,5 @@
 const assert = require('assert');
+
 const sinon = require('sinon');
 const { Application, MailSystem } = require('./main');
 
@@ -34,4 +35,8 @@ async function runTests() {
 }
 
 runTests();
+=======
+const { Application, MailSystem } = require('./main');
 
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
