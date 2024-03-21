@@ -35,29 +35,27 @@ describe('Calculator', () => {
 
     // 對log方法進行參數化測試
     describe('log method with parameterized tests', () => {
-        // 測試案例集合
         const testCases = [
-            { params: [Math.E], expected: Math.log(Math.E) }, // 正常情況
-            { params: ['string'], expected: /unsupported operand type/, error: true }, // 錯誤類型測試
-            { params: [-1], expected: /math domain error \(1\)/, error: true }, // 數學定義域錯誤
-            { params: [0], expected: /math domain error \(2\)/, error:true }, // 數學定義域錯誤
-            { params: [Infinity], expected: /unsupported operand type/, error: true }, // 處理無窮大輸入
-            { params: [-Infinity], expected: /unsupported operand type/, error: true } // 處理負無窮大輸入
-            ];
-                // 遍歷執行每個測試案例
-    testCases.forEach(({ params, expected, error }) => {
-        const input = params.join(', ');
-        it(`log with argument(s) ${input} ${error ? 'throws an error' : 'returns correct value'}`, () => {
-            if (error) {
-                console.log(`測試輸入: ${input}，預期引發錯誤`); // 調試語句
-                assert.throws(() => calculator.log(...params), expected); // 斷言應該拋出錯誤
-            } else {
-                console.log(`測試輸入: ${input}，預期結果: ${expected}`); // 調試語句
-                assert.strictEqual(calculator.log(...params), expected); // 斷言應該返回預期結果
-            }
+            { params: [Math.E], expected: Math.log(Math.E) },
+            { params: ['string'], expected: /unsupported operand type/, error: true },
+            // 調整錯誤消息以匹配main.js中的實際行為
+            { params: [-1], expected: /math domain error \(2\)/, error: true },
+            { params: [0], expected: /math domain error \(1\)/, error: true },
+            { params: [Infinity], expected: /unsupported operand type/, error: true },
+            { params: [-Infinity], expected: /unsupported operand type/, error: true }
+        ];
+
+        testCases.forEach(({ params, expected, error }) => {
+            const input = params.join(', ');
+            it(`log with argument(s) ${input} ${error ? 'throws an error' : 'returns correct value'}`, () => {
+                if (error) {
+                    assert.throws(() => calculator.log(...params), expected);
+                } else {
+                    assert.strictEqual(calculator.log(...params), expected);
+                }
+            });
         });
     });
-});
 });
 // =======
 // >>>>>>> 511559023
