@@ -2,6 +2,9 @@ const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
 
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
+
 test.mock.method(fs, 'readFile', (file, options, callback) => {
     callback(null, 'martin\njohn\ntom');
 });
