@@ -55,4 +55,3 @@ test('MailSystem should write and send mail correctly', () => {
 
     mailSystem.send.restore(); // Restore the spy
 });
-
