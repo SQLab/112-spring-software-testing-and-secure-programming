@@ -93,17 +93,16 @@ test('Test getRandomPerson without duplicate people', () => {
   const getNamesStub = new GetNamesStub(people);
   const app = new Application();
   app.getNames = getNamesStub.getNames.bind(getNamesStub);
+  app.people = people; // 直接設置 app.people 屬性
 
   const selectedPeople = new Set();
 
   // Execute until all people are selected without duplicates
   while (selectedPeople.size < people.length) {
-    const [_, selected] = app.getNames();
     const person = app.selectNextPerson();
     assert.ok(people.includes(person), 'Selected person should be in the people array');
     assert.ok(!selectedPeople.has(person), 'Selected person should not be repeated');
     selectedPeople.add(person);
-    selected.push(person);
   }
 
   assert.strictEqual(selectedPeople.size, people.length, 'All people should be selected eventually');
