@@ -1,47 +1,79 @@
 const test = require('node:test');
 const assert = require('assert');
+const fs = require('fs');
+
+// 模擬文件讀取操作
+test.mock.method(fs, 'readFile', (file, options, callback) => {
+    callback(null, 'martin\njohn\ntom');
+});
+
+// 導入需要測試的類
 const { Application, MailSystem } = require('./main');
 
-test('Application sends email when invoked', () => {
-  // Stub: 使用 Stub 來模擬 MailSystem 的行為
-  const mailSystemStub = {
-    sendMail: jest.fn()
-  };
-  
-  const app = new Application(mailSystemStub);
-  app.sendEmail();
-
-  // 驗證 sendMail 方法被調用
-  expect(mailSystemStub.sendMail).toHaveBeenCalled();
+// 測試 MailSystem 類的 write 方法
+test('MailSystem_write()', () => {
+    const mailSystem = new MailSystem();
+    assert.strictEqual(mailSystem.write('martin'), 'Congrats, martin!');
+    assert.strictEqual(mailSystem.write(null), 'Congrats, null!');
+    assert.strictEqual(mailSystem.write(48763), 'Congrats, 48763!');
 });
 
-test('Application does not send email when disabled', () => {
-  // Mock: 使用 Mock 來模擬 MailSystem 的行為
-  const mailSystemMock = {
-    sendMail: jest.fn()
-  };
-
-  const app = new Application(mailSystemMock);
-  app.disableEmail();
-  app.sendEmail();
-
-  // 驗證 sendMail 方法未被調用
-  expect(mailSystemMock.sendMail).not.toHaveBeenCalled();
+// 測試 MailSystem 類的 send 方法
+test('MailSystem_send()', () => {
+    const mailSystem = new MailSystem();
+    const name = 'martin';
+    test.mock.method(Math, 'random', () => 0.6);
+    assert.strictEqual(mailSystem.send(name, 'success'), true);
+    test.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(mailSystem.send(name, 'fail'), false);
 });
 
-test('Application retries sending email on failure', () => {
-  // Spy: 使用 Spy 來監視 MailSystem 的行為
-  const mailSystemSpy = jest.spyOn(MailSystem.prototype, 'sendMail');
+// 測試 Application 類的 getNames 方法
+test('Application_getNames()', async () => {
+    const app = new Application();
+    const nameList = ['martin', 'john', 'tom'];
+    const names = await app.getNames();
+    assert.deepStrictEqual(names, [nameList, []]);
+});
 
-  const app = new Application(new MailSystem());
-  app.sendEmail();
+// 測試 Application 類的 getRandomPerson 方法
+test('Application_getRandomPerson()', async () => {
+    const app = new Application();
+    const names = await app.getNames();
+    test.mock.method(Math, 'random', () => 0);
+    assert.strictEqual(app.getRandomPerson(), 'martin');
+    test.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(app.getRandomPerson(), 'john');
+    test.mock.method(Math, 'random', () => 0.7);
+    assert.strictEqual(app.getRandomPerson(), 'tom');
+});
 
-  // 模擬 sendMail 失敗
-  mailSystemSpy.mockImplementationOnce(() => { throw new Error('Failed to send email'); });
+// 測試 Application 類的 selectNextPerson 方法
+test('Application_selectNextPerson()', async () => {
+    const app = new Application();
+    const names = await app.getNames();
+    app.selected = ['martin'];
+    let count = 0;
+    test.mock.method(app, 'getRandomPerson', () => {
+        if (count <= names.length) { 
+            return names[0][count++]; 
+        }
+    });
+    assert.strictEqual(app.selectNextPerson(), 'john');
+    assert.deepStrictEqual(app.selected, ['martin', 'john']);
+    assert.strictEqual(app.selectNextPerson(), 'tom');
+    assert.deepStrictEqual(app.selected, ['martin', 'john', 'tom']);
+    assert.strictEqual(app.selectNextPerson(), null);
+});
 
-  // 再次調用 sendEmail 方法，應該會進行重試
-  app.sendEmail();
-
-  // 驗證 sendMail 方法被調用了兩次
-  expect(mailSystemSpy).toHaveBeenCalledTimes(2);
+// 測試 Application 類的 notifySelected 方法
+test('Application_notifySelected()', async () => {
+    const app = new Application();
+    app.people = ['martin', 'john', 'tom'];
+    app.selected = ['martin', 'john', 'tom'];
+    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
+    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
+    app.notifySelected();
+    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);
+    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);
 });
