@@ -1,8 +1,20 @@
 const test = require('node:test');
 const assert = require('assert');
-const EventEmitter = require('events');
+const fs = require('fs').promises; // 使用 promises 版本的 fs，以便使用 async/await
+
 const { Application, MailSystem } = require('./main');
 
+// 在測試之前創建名為 'name_list.txt' 的文件
+test.before(async () => {
+  await fs.writeFile('name_list.txt', 'John\nAlice\nBob');
+});
+
+// 測試完成後刪除 'name_list.txt' 文件
+test.after(async () => {
+  await fs.unlink('name_list.txt');
+});
+
+// 其他測試代碼保持不變
 test('write() should return context', () => {
   const mailSystem = new MailSystem();
   const context = mailSystem.write('John');
@@ -24,15 +36,13 @@ test('Test MailSystem send random', () => {
   assert.strictEqual(success, true, 'Mail should be sent successfully as Math.random() > 0.5');
 });
 
-class GetNamesStub extends EventEmitter {
+class GetNamesStub {
   constructor(people) {
-    super();
     this.people = people;
   }
 
   async getNames() {
     const selected = [];
-    this.emit('getNames', null, [this.people, selected]);
     return [this.people, selected];
   }
 }
@@ -71,6 +81,7 @@ test('Test MockMailSystem', () => {
   const mockMailSystem = new MockMailSystem();
   app.mailSystem = mockMailSystem;
   app.selected = ['John', 'Jane'];
+  app.people = ['John', 'Jane']; // 直接設置 app.people 屬性
 
   app.notifySelected();
 
@@ -90,9 +101,7 @@ test('getNames() should return correct people and selected arrays', async () => 
 
 test('Test getRandomPerson without duplicate people', () => {
   const people = ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve'];
-  const getNamesStub = new GetNamesStub(people);
   const app = new Application();
-  app.getNames = getNamesStub.getNames.bind(getNamesStub);
   app.people = people; // 直接設置 app.people 屬性
 
   const selectedPeople = new Set();
@@ -107,3 +116,4 @@ test('Test getRandomPerson without duplicate people', () => {
 
   assert.strictEqual(selectedPeople.size, people.length, 'All people should be selected eventually');
 });
+
