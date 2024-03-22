@@ -6,7 +6,6 @@ const fs = require('fs');
 test.mock.method(fs, 'readFile', (file, options, callback) => {
     callback(null, 'martin\njohn\ntom');
 });
-
 // 導入需要測試的類
 const { Application, MailSystem } = require('./main');
 
