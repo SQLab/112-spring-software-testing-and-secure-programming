@@ -1,72 +1,151 @@
 const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
-// 模擬 fs.readFile 方法，返回假數據
 test.mock.method(fs, 'readFile', (file, options, callback) => {
-    callback(null, 'Alice\njohn\nBob');
+    callback(null, 'martin\njohn\ntom');
 });
-// 從 main.js 導入 Application 和 MailSystem 類
 const { Application, MailSystem } = require('./main');
-// 測試 MailSystem_write() 方法
-test('MailSystem_write()', () => {
-    const ms = new MailSystem();
-    assert.strictEqual(ms.write('Alice'), 'Congrats, Alice!');        // 確認寫入郵件的功能
-    assert.strictEqual(ms.write(null), 'Congrats, null!');            // 確認處理空值的功能
-    assert.strictEqual(ms.write(512558014), 'Congrats, 512558014!');  // 確認處理數字名稱的功能
-});
-// 測試 MailSystem_send() 方法
-test('MailSystem_send()', () => {
-    const ms = new MailSystem();
-    const name = 'Alice';
-    test.mock.method(Math, 'random', () => 0.6);                      // 假設 Math.random() 始終返回 0.6
-    assert.strictEqual(ms.send(name, 'success'), true);               // 確認發送成功郵件的功能
-    test.mock.method(Math, 'random', () => 0.4);                      // 假設 Math.random() 始終返回 0.4
-    assert.strictEqual(ms.send(name, 'fail'), false);                 // 確認發送失敗郵件的功能
-});
-// 測試 Application_getNames() 方法
-test('Application_getNames()', async () => {
-    const app = new Application();
-    const name_list = ['Alice', 'john', 'Bob'];
-    const names = await app.getNames();
-    assert.deepStrictEqual(names, [name_list, []]);                   // 確認獲取名字列表的功能
-});
-// 測試 Application_getRandomPerson() 方法
-test('Application_getRandomPerson()', async () => {
-    const app = new Application();
-    const names = await app.getNames();
-    const [names] = await app.getNames();                             // 等待獲取名字列表
-    const randomPerson = app.getRandomPerson();
-    assert.ok(names[0].includes(randomPerson));                       // 確認隨機獲取的人員在名字列表中
-    assert.ok(names.includes(randomPerson));                          // 確認隨機獲取的人員在名字列表中
-});
 
-// 測試 Application_selectNextPerson() 方法
-test('Application_selectNextPerson()', async () => {
-    const app = new Application();
-    const names = await app.getNames();
-    const [names] = await app.getNames();
-    app.selected = ['Alice'];
-    let cnt = 0;
-    test.mock.method(app, 'getRandomPerson', () => {
-        if (cnt <= names.length) { 
-            return names[0][cnt++]; 
-            return names[cnt++]; 
+//write tests use Stub, Mock, and Spy when necessary
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
+
+
+const fs = require('fs');
+const path = require('path');
+test('should name_list.txt ', ()=>{
+    const Listna = 'martin\njohn\ntom';
+    const tmppa = path.join('name_list.txt');
+    fs.writeFileSync(tmppa,Listna);
+    process.on('exit', () => {
+        if (tmppa) {
+         fs.unlinkSync(tmppa);
         }
     });
-    assert.strictEqual(app.selectNextPerson(), 'john');               // 確認選擇下一個人員的功能
-@@ -65,11 +65,11 @@ test('Application_selectNextPerson()', async () => {
-// 測試 Application_notifySelected() 方法
-test('Application_notifySelected()', async () => {
+test('MailSystem_write()', () => {
+    const ms = new MailSystem();
+    assert.strictEqual(ms.write('martin'), 'Congrats, martin!');
+    assert.strictEqual(ms.write(null), 'Congrats, null!');
+    assert.strictEqual(ms.write(48763), 'Congrats, 48763!');
+});
+
+test('should be able to write mail', () => {
+    const mailSystem = new MailSystem();
+    assert.strictEqual(mailSystem.write('test'), 'Congrats, test!');
+    assert.strictEqual(mailSystem.write(null), 'Congrats, null!');
+    assert.strictEqual(mailSystem.write(1111), 'Congrats, 1111!');
+});
+
+test('should be able to send mail', () => {
+    const mailSystem = new MailSystem();
+    const success = mailSystem.send('test', 'test');
+    test.mock.method(Math, 'random', () => 1);
+    assert.strictEqual(mailSystem.send('ok', 'success'),true);
+test('MailSystem_send()', () => {
+    const ms = new MailSystem();
+    const name = 'martin';
+    test.mock.method(Math, 'random', () => 0.6);
+    assert.strictEqual(ms.send(name, 'success'), true);
+    test.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(mailSystem.send('fa', 'fail'),false);
+});   
+
+test('should be able to get names', async () => {
     const app = new Application();
-    app.people = ['Alice', 'john', 'Bob'];
-    app.selected = ['Alice', 'john', 'Bob'];
-    const [people] = await app.getNames();
-    app.selected = [...people];
-    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
-    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
+    const [names,sel] = await app.getNames('martin', 'john', 'tom');
+    assert.deepStrictEqual(names, ['martin', 'john', 'tom']);
+    assert.deepStrictEqual(sel, []);
+    assert.strictEqual(ms.send(name, 'fail'), false);
+});
+
+test('should selected', () => {
+test('Application_getNames()', async () => {
+    const app = new Application();
+    app.pe= ['martin', 'john', 'tom'];
+    app.sel = ['martin', 'john', 'tom'];
+    const result = app.selectNextPerson();
+    assert.strictEqual(result, null);
+    const name_list = ['martin', 'john', 'tom'];
+    const names = await app.getNames();
+    assert.deepStrictEqual(names, [name_list, []])
+});
+
+
+test('should be able to get random person',  async (test) => {
+test('Application_getRandomPerson()', async (test) => {
+    const app = new Application();
+    const names = await app.getNames();
+    test.mock.method(Math, 'random', () => 0);
+@@ -59,28 +42,26 @@ test('should be able to get random person',  async (test) => {
+    assert.strictEqual(app.getRandomPerson(), 'john');
+    test.mock.method(Math, 'random', () => 0.7);
+    assert.strictEqual(app.getRandomPerson(), 'tom');
+
+});
+
+test('should be able to select next person', async (test) => {
+test('Application_selectNextPerson()', async (test) => {
+    const app = new Application();
+    const person = await app.getNames();
+    const names = await app.getNames();
+    app.selected = ['martin'];
+    let cn = 0;
+    let cnt = 0;
+    test.mock.method(app, 'getRandomPerson', () => {
+        if (cn <= person.length) { 
+            return person[0][cn++]; 
+        if (cnt <= names.length) { 
+            return names[0][cnt++]; 
+        }
+     });
+    });
+    assert.strictEqual(app.selectNextPerson(), 'john');
+    assert.deepStrictEqual(app.selected, ['martin', 'john']);
+    assert.strictEqual(app.selectNextPerson(), 'tom');
+    assert.deepStrictEqual(app.selected, ['martin', 'john', 'tom']);
+    assert.strictEqual(app.selectNextPerson(), null);
+
+});
+
+test('should be able to notify selected', () => {
+test('Application_notifySelected()', async (test) => {
+    const app = new Application();
+    app.people = ['martin', 'john', 'tom'];
+    app.selected = ['martin', 'john', 'tom'];
+@@ -89,36 +70,4 @@ test('should be able to notify selected', () => {
     app.notifySelected();
-    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);     // 確認發送郵件的次數
-    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);    // 確認編寫郵件的次數
-    assert.strictEqual(app.mailSystem.send.mock.calls.length, people.length);  // 確認發送郵件的次數
-    assert.strictEqual(app.mailSystem.write.mock.calls.length, people.length); // 確認編寫郵件的次數
+    assert.strictEqual(app.mailSystem.send.mock.calls.length, 3);
+    assert.strictEqual(app.mailSystem.write.mock.calls.length, 3);
+
+});
+
+test('should not been selected ', () => {
+    const app = new Application();
+    let getRandomPersonCallCount = 0;
+    app.getRandomPerson = () => {
+        switch (getRandomPersonCallCount++) {
+            case 0:
+                return 'martin';
+            case 1:
+                return 'john';
+            case 2:
+                return 'tom';
+        }
+    };
+    app.selected = ['martin', 'john'];
+    const result = app.selectNextPerson();
+    assert.strictEqual(result, 'tom'); 
+    assert.strictEqual(getRandomPersonCallCount, 3); 
+});     
+
+test('should write and send person', () => {
+     const app = new Application();
+     this.writeCallCount = 0;
+     this.sendCallCount = 0;
+     this.writeCallCount++;
+     this.sendCallCount++;
+     app.selected = ['martin', 'john', 'tom'];
+    app.notifySelected();
+    assert.strictEqual(this.writeCallCount, 1);
+    assert.strictEqual(this.sendCallCount, 1);
 });
