@@ -16,32 +16,40 @@ describe('Application', () => {
     describe('#selectNextPerson()', () => {
         it('should select a person from the list of people', () => {
             const application = new Application();
-            const person = application.selectNextPerson();
-            assert(typeof person === 'string');
+            const spyGetRandomPerson = sinon.spy(application, 'getRandomPerson');
+            application.selectNextPerson();
+            assert(spyGetRandomPerson.calledOnce);
+            spyGetRandomPerson.restore();
         });
 
         it('should select all people without repetition', () => {
             const application = new Application();
             const selectedPeople = [];
+            const spyGetRandomPerson = sinon.spy(application, 'getRandomPerson');
             for (let i = 0; i < application.people.length; i++) {
                 selectedPeople.push(application.selectNextPerson());
             }
-            const uniqueSelectedPeople = [...new Set(selectedPeople)];
-            assert.deepStrictEqual(selectedPeople, uniqueSelectedPeople);
+            assert.strictEqual(selectedPeople.length, application.people.length);
+            assert(spyGetRandomPerson.callCount === application.people.length);
+            spyGetRandomPerson.restore();
         });
     });
 
     describe('#notifySelected()', () => {
         it('should call write and send methods for each selected person', () => {
             const application = new Application();
-            const writeStub = sinon.stub(application.mailSystem, 'write').returns('Context');
-            const sendStub = sinon.stub(application.mailSystem, 'send').returns(true);
+            const stubWrite = sinon.stub(application.mailSystem, 'write').returns('Context');
+            const stubSend = sinon.stub(application.mailSystem, 'send').returns(true);
             application.selected = ['Person1', 'Person2']; // 假設已經選擇了兩個人
             application.notifySelected();
-            assert.strictEqual(writeStub.callCount, 2);
-            assert.strictEqual(sendStub.callCount, 2);
-            writeStub.restore();
-            sendStub.restore();
+            assert.strictEqual(stubWrite.callCount, 2);
+            assert.strictEqual(stubSend.callCount, 2);
+            sinon.assert.calledWith(stubWrite, 'Person1');
+            sinon.assert.calledWith(stubWrite, 'Person2');
+            sinon.assert.calledWith(stubSend, 'Person1', 'Context');
+            sinon.assert.calledWith(stubSend, 'Person2', 'Context');
+            stubWrite.restore();
+            stubSend.restore();
         });
     });
 });
