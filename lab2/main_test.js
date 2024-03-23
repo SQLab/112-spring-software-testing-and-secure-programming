@@ -46,7 +46,7 @@ class GetNamesStub {
     return [this.people, selected];
   }
 }
-@@ -71,6 +81,7 @@ test('Test MockMailSystem', () => {
+test('Test MockMailSystem', () => {
   const mockMailSystem = new MockMailSystem();
   app.mailSystem = mockMailSystem;
   app.selected = ['John', 'Jane'];
@@ -54,7 +54,7 @@ class GetNamesStub {
 
   app.notifySelected();
 
-@@ -90,9 +101,7 @@ test('getNames() should return correct people and selected arrays', async () =>
+test('getNames() should return correct people and selected arrays', async () =>
 
 test('Test getRandomPerson without duplicate people', () => {
   const people = ['Alice', 'Bob', 'Charlie', 'Dave', 'Eve'];
@@ -74,3 +74,25 @@ test('Test getRandomPerson without duplicate people', () => {
 
   assert.strictEqual(selectedPeople.size, people.length, 'All people should be selected eventually');
 });
+const sinon = require('sinon');
+const { Application, MailSystem } = require('./main');
+
+test('Application should notify selected person via MailSystem', async () => {
+    const mockMailSystem = sinon.createStubInstance(MailSystem);
+    mockMailSystem.write.returns('Congrats, Alice!');
+    mockMailSystem.send.returns(true);
+
+    // Directly stub the Application's prototype to affect all instances
+    sinon.stub(Application.prototype, 'getNames').resolves(['Alice', 'Bob', 'Charlie']);
+
+    const app = new Application();
+    app.mailSystem = mockMailSystem;
+    app.people = ['Alice', 'Bob', 'Charlie'];
+    app.selected = ['Alice'];
+
+    await app.notifySelected();
+
+    assert(mockMailSystem.send.calledWith('Alice', 'Congrats, Alice!'));
+});
+
+
