@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('assert');
 const { Application, MailSystem } = require('./main');
-
+const { send } = require('process');
+const fs = require('fs');
 // TODO: write your tests here
 // Remember to use Stub, Mock, and Spy when necessary
 // Test MailSystem functionality
