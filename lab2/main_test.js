@@ -4,8 +4,6 @@ const { Application, MailSystem } = require('./main');
 const { send } = require('process');
 const fs = require('fs');
 
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
 // Remember to use Stub, Mock, and Spy when necessary
 
 test('MailSystem write', (t) => {
@@ -32,9 +30,9 @@ test('MailSystem send', (t) => {
     sendmail = MSs.send(MSsName, 'mail context');
     assert.strictEqual(sendmail, true, 'random => 1 should be send');
 
-    t.mock.method(Math, 'random', () => 0.2);
+    t.mock.method(Math, 'random', () => 0.3);
     sendmail = MSs.send(MSsName, 'mail context');
-    assert.strictEqual(sendmail, false, 'random => 0.2 shouldn\'t be send');
+    assert.strictEqual(sendmail, false, 'random => 0.3 shouldn\'t be send');
 
 })
 
