@@ -1,50 +1,55 @@
-//const { describe, it } = require('node:test');
-//const assert = require('assert');
+const { describe, it } = require('node:test');
+const assert = require('assert');
 const { Calculator } = require('./main');
 
-// TODO: write your tests here
-describe("Calculator Test", () => {
-  const calculator = new Calculator();
-  it("Calculator.exp() Test", () => {
-      let expTestcase = [
-          { param: 1, expected: Math.exp(1) },
-          { param: 0, expected: Math.exp(0) },
-          { param: -1, expected: Math.exp(-1) },
-          { param: 'c8763', expected: Error, msg: "unsupported operand type" },
-          { param: true, expected: Error, msg: "unsupported operand type" },
-          { param: Infinity, expected: Error, msg: "unsupported operand type" },
-          { param: Number.MAX_VALUE, expected: Error, msg: "overflow" },
-      ];
+describe('Calculator', () => {
+    const calculator = new Calculator(); 
 
-      expTestcase.map(({ param, expected, msg }) => {
-          if (expected === Error) {
-              assert.throws(() => calculator.exp(param), expected, msg);
-          }
-          else {
-              assert.strictEqual(calculator.exp(param), expected);
-          }
-      });
-  });
+    // 對exp方法進行參數化測試
+    describe('exp method with parameterized tests', () => {
+       
+        const testCases = [
+            { params: [1], expected: Math.exp(1) }, 
+            { params: ['string'], expected: /unsupported operand type/, error: true }, 
+            { params: [1000], expected: /overflow/, error: true },
+            { params: [Number.MAX_VALUE], expected: /overflow/, error: true }, 
+        ];
 
-  it("Calculator.log() Test", () => {
-      let logTestcase = [
-          { param: 3, expected: Math.log(3) },
-          { param: 2, expected: Math.log(2) },
-          { param: 1, expected: Math.log(1) },
-          { param: 'c8763', expected: Error, msg: "unsupported operand type" },
-          { param: true, expected: Error, msg: "unsupported operand type" },
-          { param: Infinity, expected: Error, msg: "unsupported operand type" },
-          { param: 0, expected: Error, msg: "math domain error (1)" },
-          { param: -1, expected: Error, msg: "math domain error (2)" },
-      ];
+        // 遍歷執行每個測試案例
+        testCases.forEach(({ params, expected, error }) => {
+            const input = params.join(', ');
+            it(`exp with argument(s) ${input} ${error ? 'throws an error' : 'returns correct value'}`, () => {
+                if (error) {
+                    console.log(`input test: ${input}，預期引發錯誤`); 
+                    assert.throws(() => calculator.exp(...params), expected); 
+                } else {
+                    console.log(`input test: ${input}，預期結果: ${expected}`); 
+                    assert.strictEqual(calculator.exp(...params), expected); 
+                }
+            });
+        });
+    });
 
-      logTestcase.map(({ param, expected, msg }) => {
-          if (expected === Error) { 
-              assert.throws(() => calculator.log(param), expected, msg);
-          }
-          else {
-              assert.strictEqual(calculator.log(param), expected);
-          }
-      });
-  });
+    // 對log方法進行參數化測試
+    describe('log method with parameterized tests', () => {
+        const testCases = [
+            { params: [Math.E], expected: Math.log(Math.E) },
+            { params: ['string'], expected: /unsupported operand type/, error: true },
+            { params: [-1], expected: /math domain error \(2\)/, error: true },
+            { params: [0], expected: /math domain error \(1\)/, error: true },
+            { params: [Infinity], expected: /unsupported operand type/, error: true },
+            { params: [-Infinity], expected: /unsupported operand type/, error: true }
+        ];
+
+        testCases.forEach(({ params, expected, error }) => {
+            const input = params.join(', ');
+            it(`log with argument(s) ${input} ${error ? 'throws an error' : 'returns correct value'}`, () => {
+                if (error) {
+                    assert.throws(() => calculator.log(...params), expected);
+                } else {
+                    assert.strictEqual(calculator.log(...params), expected);
+                }
+            });
+        });
+    });
 });
