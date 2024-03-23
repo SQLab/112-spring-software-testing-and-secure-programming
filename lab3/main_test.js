@@ -3,37 +3,48 @@ const assert = require('assert');
 const { Calculator } = require('./main');
 
 // TODO: write your tests here
-const { expect } = require('chai');
-const Calculator = require('./Calculator'); // Assuming Calculator class is defined in Calculator.js
-
-describe('Calculator', function() {
-  describe('exp', function() {
-    it('should compute the exponential value correctly', function() {
-      const calculator = new Calculator();
-      const testData = [
-        { input: 0, expected: 1 },
-        { input: 1, expected: Math.exp(1) },
-        { input: 2, expected: Math.exp(2) },
-        // Add more test cases as needed
+describe("Calculator Test", () => {
+  const calculator = new Calculator();
+  it("Calculator.exp() Test", () => {
+      let expTestcase = [
+          { param: 1, expected: Math.exp(1) },
+          { param: 0, expected: Math.exp(0) },
+          { param: -1, expected: Math.exp(-1) },
+          { param: 'c8763', expected: Error, msg: "unsupported operand type" },
+          { param: true, expected: Error, msg: "unsupported operand type" },
+          { param: Infinity, expected: Error, msg: "unsupported operand type" },
+          { param: Number.MAX_VALUE, expected: Error, msg: "overflow" },
       ];
 
-      testData.forEach(({ input, expected }) => {
-        expect(calculator.exp(input)).to.be.closeTo(expected, 0.0001); // Using closeTo for floating point comparison
+      expTestcase.map(({ param, expected, msg }) => {
+          if (expected === Error) {
+              assert.throws(() => calculator.exp(param), expected, msg);
+          }
+          else {
+              assert.strictEqual(calculator.exp(param), expected);
+          }
       });
-    });
+  });
 
-    it('should throw an error for non-finite inputs', function() {
-      const calculator = new Calculator();
-      const testData = [
-        NaN,
-        Infinity,
-        -Infinity,
-        // Add more non-finite inputs as needed
+  it("Calculator.log() Test", () => {
+      let logTestcase = [
+          { param: 3, expected: Math.log(3) },
+          { param: 2, expected: Math.log(2) },
+          { param: 1, expected: Math.log(1) },
+          { param: 'c8763', expected: Error, msg: "unsupported operand type" },
+          { param: true, expected: Error, msg: "unsupported operand type" },
+          { param: Infinity, expected: Error, msg: "unsupported operand type" },
+          { param: 0, expected: Error, msg: "math domain error (1)" },
+          { param: -1, expected: Error, msg: "math domain error (2)" },
       ];
 
-      testData.forEach(input => {
-        expect(() => calculator.exp(input)).to.throw('unsupported operand type');
+      logTestcase.map(({ param, expected, msg }) => {
+          if (expected === Error) { 
+              assert.throws(() => calculator.log(param), expected, msg);
+          }
+          else {
+              assert.strictEqual(calculator.log(param), expected);
+          }
       });
-    });
   });
 });
