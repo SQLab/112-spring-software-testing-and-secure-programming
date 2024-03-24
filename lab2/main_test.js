@@ -10,7 +10,7 @@ test.mock.method(fs, 'readFile', (file, options, callback) => {
 const { Application, MailSystem } = require('./main');
 
 
-test('Test write() ', () => {
+test('Test MailSystem_write() ', () => {
     const mailSystem = new MailSystem();
     
     assert.equal(mailSystem.write('John'), 'Congrats, John!', 'Write method should return the correct context');
@@ -18,7 +18,7 @@ test('Test write() ', () => {
   });
   
 
-test('Test send()_Random', () => {
+test('Test MailSystem_send()_Random', () => {
     const mailSystem = new MailSystem();
     const name = 'John';
     const context = 'test';
@@ -54,14 +54,14 @@ test('getNames() ', async () => {
   });
 
 
-test('Application_getRandomPerson()', async () => {
+test('Test Application_getRandomPerson()', async () => {
     const app = new Application();
     const names = await app.getNames();
     const randomPerson = app.getRandomPerson();
     assert.ok(names[0].includes(randomPerson));                       
 });
 
-test('Application_selectNextPerson()', async () => {
+test('Test Application_selectNextPerson()', async () => {
     const app = new Application();
     const names = await app.getNames();
     app.selected = ['Alice'];
