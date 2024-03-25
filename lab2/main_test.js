@@ -4,6 +4,9 @@ const assert = require('assert');
 const fs = require('fs').promises;
 const { Application, MailSystem } = require('./main');
 
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
+
 // 在測試之前創建名字列表文件
 test.before(async () => {
     await fs.writeFile('name_list.txt', 'Dick\nesis\nGoodes');
