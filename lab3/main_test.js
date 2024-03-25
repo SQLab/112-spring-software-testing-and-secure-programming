@@ -3,54 +3,61 @@ const assert = require('assert');
 const { Calculator } = require('./main');
 
 describe('Calculator', () => {
-    describe('exp', () => {
-        const calculator = new Calculator();
-
-        // Test cases for error results
-        it('should throw error for unsupported operand type', () => {
-            assert.throws(() => calculator.exp(NaN), /unsupported operand type/);
-            assert.throws(() => calculator.exp(Infinity), /unsupported operand type/);
-        });
-
-        // Parameterized test cases for non-error results
-        const nonErrorTestCases = [
-            { input: 0, expected: 1 },
-            { input: 1, expected: Math.exp(1) },
-            { input: -1, expected: Math.exp(-1) },
-            { input: 2, expected: Math.exp(2) }, // Add more cases
-            { input: -2, expected: Math.exp(-2) },
-            { input: 0.5, expected: Math.exp(0.5) }
-        ];
-        nonErrorTestCases.forEach(({ input, expected }) => {
-            it(`should return ${expected} for input ${input}`, () => {
-                assert.strictEqual(calculator.exp(input), expected);
-            });
-        });
+  describe('add', () => {
+    it('should add two numbers correctly', () => {
+      const result = Calculator.add(3, 5);
+      assert.strictEqual(result, 8);
     });
 
-    describe('log', () => {
-        const calculator = new Calculator();
-
-        // Test cases for error results
-        it('should throw error for unsupported operand type', () => {
-            assert.throws(() => calculator.log(NaN), /unsupported operand type/);
-            assert.throws(() => calculator.log(0), /unsupported operand type/);
-            assert.throws(() => calculator.log(-1), /unsupported operand type/);
-        });
-
-        // Parameterized test cases for non-error results
-        const nonErrorTestCases = [
-            { input: 1, expected: 0 },
-            { input: Math.E, expected: 1 },
-            { input: Math.pow(Math.E, 2), expected: 2 },
-            { input: 10, expected: Math.log(10) }, // Add more cases
-            { input: 100, expected: Math.log(100) },
-            { input: 0.1, expected: Math.log(0.1) }
-        ];
-        nonErrorTestCases.forEach(({ input, expected }) => {
-            it(`should return ${expected} for input ${input}`, () => {
-                assert.strictEqual(calculator.log(input), expected);
-            });
-        });
+    it('should throw an error if any parameter is not a number', () => {
+      assert.throws(() => {
+        Calculator.add(3, '5');
+      }, TypeError);
     });
+  });
+
+  describe('subtract', () => {
+    it('should subtract two numbers correctly', () => {
+      const result = Calculator.subtract(10, 4);
+      assert.strictEqual(result, 6);
+    });
+
+    it('should throw an error if any parameter is not a number', () => {
+      assert.throws(() => {
+        Calculator.subtract('10', 4);
+      }, TypeError);
+    });
+  });
+
+  describe('multiply', () => {
+    it('should multiply two numbers correctly', () => {
+      const result = Calculator.multiply(2, 6);
+      assert.strictEqual(result, 12);
+    });
+
+    it('should throw an error if any parameter is not a number', () => {
+      assert.throws(() => {
+        Calculator.multiply(2, '6');
+      }, TypeError);
+    });
+  });
+
+  describe('divide', () => {
+    it('should divide two numbers correctly', () => {
+      const result = Calculator.divide(20, 5);
+      assert.strictEqual(result, 4);
+    });
+
+    it('should throw an error if dividing by zero', () => {
+      assert.throws(() => {
+        Calculator.divide(10, 0);
+      }, Error);
+    });
+
+    it('should throw an error if any parameter is not a number', () => {
+      assert.throws(() => {
+        Calculator.divide('20', 5);
+      }, TypeError);
+    });
+  });
 });
