@@ -16,7 +16,10 @@ describe('Calculator', () => {
         const nonErrorTestCases = [
             { input: 0, expected: 1 },
             { input: 1, expected: Math.exp(1) },
-            { input: -1, expected: Math.exp(-1) }
+            { input: -1, expected: Math.exp(-1) },
+            { input: 2, expected: Math.exp(2) }, // Add more cases
+            { input: -2, expected: Math.exp(-2) },
+            { input: 0.5, expected: Math.exp(0.5) }
         ];
         nonErrorTestCases.forEach(({ input, expected }) => {
             it(`should return ${expected} for input ${input}`, () => {
@@ -39,7 +42,10 @@ describe('Calculator', () => {
         const nonErrorTestCases = [
             { input: 1, expected: 0 },
             { input: Math.E, expected: 1 },
-            { input: Math.pow(Math.E, 2), expected: 2 }
+            { input: Math.pow(Math.E, 2), expected: 2 },
+            { input: 10, expected: Math.log(10) }, // Add more cases
+            { input: 100, expected: Math.log(100) },
+            { input: 0.1, expected: Math.log(0.1) }
         ];
         nonErrorTestCases.forEach(({ input, expected }) => {
             it(`should return ${expected} for input ${input}`, () => {
