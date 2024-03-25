@@ -2,6 +2,9 @@ const TestLab = require('node:test');
 const assert = require('assert');
 const fileSystem = require('fs');
 
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
+
 // 模擬 fileSystem 模組的 readFile 方法
 TestLab.mock.method(fileSystem, 'readFile', (file, options, callback) => {
     callback(null, 'amidofo\nguaninma\nyasu');
