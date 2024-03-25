@@ -24,9 +24,9 @@ test('MailSystem_write() with different names', () => {
 test('MailSystem_send() with varying success rates', () => {
     const ms = new MailSystem();
     const name = 'john';
-    test.mock.method(Math, 'random', () => Math.random() * 0.7 + 0.1); // 隨機值在0.1到0.8之間
+    test.mock.method(Math, 'random', () => 0.25); // 隨機值在0到0.25之間
     assert.strictEqual(ms.send(name, 'success'), true);
-    test.mock.method(Math, 'random', () => Math.random() * 0.4); // 隨機值在0到0.4之間
+    test.mock.method(Math, 'random', () => 0.75); // 隨機值在0.75到1之間
     assert.strictEqual(ms.send(name, 'failure'), false);
 });
 
@@ -45,7 +45,7 @@ test('Application_getRandomPerson() returns correct random person', async () => 
     test.mock.method(app, 'getNames', async () => [['john', 'mary'], []]);
     test.mock.method(Math, 'random', () => 0.3); // 固定隨機值為0.3，返回第一個人名
     assert.strictEqual(app.getRandomPerson(), 'john');
-    test.mock.method(Math, 'random', () => 0.6); // 固定隨機值為0.6，返回第二個人名
+    test.mock.method(Math, 'random', () => 0.7); // 固定隨機值為0.7，返回第二個人名
     assert.strictEqual(app.getRandomPerson(), 'mary');
 });
 
@@ -78,4 +78,3 @@ test('Application_notifySelected() sends and writes emails for all selected peop
     assert.strictEqual(app.mailSystem.send.mock.calls.length, 2);
     assert.strictEqual(app.mailSystem.write.mock.calls.length, 2);
 });
-
