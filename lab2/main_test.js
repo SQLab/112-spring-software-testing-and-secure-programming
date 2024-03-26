@@ -1,90 +1,80 @@
-const test = require('node:test');
+const TestLab = require('node:test');
 const assert = require('assert');
-const fs = require('fs');
+const fileSystem = require('fs');
 
-// 模擬 fs.readFile 方法，返回假數據
-test.mock.method(fs, 'readFile', (file, options, callback) => {
-    callback(null, 'aaa\nbbb\nccc');
+// 模擬 fileSystem 模組的 readFile 方法
+TestLab.mock.method(fileSystem, 'readFile', (file, options, callback) => {
+    callback(null, 'ray\nnina\neric');
 });
 
-// 從 main.js 導入 Application 和 MailSystem 
 const { Application, MailSystem } = require('./main');
 
-// 測試 MailSystem_write() 方法
-test('MailSystem_write()', () => {
-    const ms = new MailSystem();
-    assert.strictEqual(ms.write('aaa'), 'Congrats, aaa!');        // 確認寫入郵件的功能
-    assert.strictEqual(ms.write(511558018), 'Congrats, 511558018!');  // 確認處理數字名稱的功能
-    assert.strictEqual(ms.write(null), 'Congrats, null!');            // 確認處理空值的功能   
+// 測試 MailSystem 的 write 方法
+TestLab('MailSystem_write()', () => {
+    const mailSystem = new MailSystem();
+    assert.strictEqual(mailSystem.write('ray'), 'Congrats, ray!');
+    assert.strictEqual(mailSystem.write(null), 'Congrats, null!');
+    assert.strictEqual(mailSystem.write('3345678'), 'Congrats, 3345678!');
 });
 
-// 測試 MailSystem_send() 方法
-test('MailSystem_send()', () => {
-    const ms = new MailSystem();
-    const name = 'aaa';
-    test.mock.method(Math, 'random', () => 0.6);                      // 假設 Math.random() 始終返回 0.6
-    assert.strictEqual(ms.send(name, 'success'), true);               // 確認發送成功郵件的功能
-    test.mock.method(Math, 'random', () => 0.4);                      // 假設 Math.random() 始終返回 0.4
-    assert.strictEqual(ms.send(name, 'fail'), false);                 // 確認發送失敗郵件的功能
+// 測試 MailSystem 的 send 方法
+TestLab('MailSystem_send()', () => {
+    const mailSystem = new MailSystem();
+    const name = 'ray';
+    TestLab.mock.method(Math, 'random', () => 0.7); // 成功概率高
+    assert.strictEqual(mailSystem.send(name, 'success'), true);
+    TestLab.mock.method(Math, 'random', () => 0.3); // 失敗概率高
+    assert.strictEqual(mailSystem.send(name, 'fail'), false);
 });
 
-// 測試 Application_getNames() 方法
-test('Application_getNames()', async () => {
-    const app = new Application();
-    const name_list = ['aaa', 'bbb', 'ccc'];
-    const names = await app.getNames();
-    assert.deepStrictEqual(names, [name_list, []]);                   // 確認獲取名字列表的功能
+// 測試 Application 的 getNames 方法
+TestLab('Application_getNames()', async () => {
+    const application = new Application();
+    const nameList = ['ray', 'nina', 'eric'];
+    const names = await application.getNames();
+    assert.deepStrictEqual(names, [nameList, []]);
 });
 
-// 測試 Application_getRandomPerson() 方法
-test('Application_getRandomPerson()', async () => {
-    const app = new Application();
-    const [names] = await app.getNames();                             // 等待獲取名字列表
-    const randomPerson = app.getRandomPerson();
-    assert.ok(names.includes(randomPerson));                          // 確認隨機獲取的人員在名字列表中
+// 測試 Application 的 getRandomPerson 方法
+TestLab('Application_getRandomPerson()', async () => {
+    const application = new Application();
+    const names = await application.getNames();
+    TestLab.mock.method(Math, 'random', () => 0);
+    assert.strictEqual(application.getRandomPerson(), 'ray');
+    TestLab.mock.method(Math, 'random', () => 0.4);
+    assert.strictEqual(application.getRandomPerson(), 'nina');
+    TestLab.mock.method(Math, 'random', () => 0.7);
+    assert.strictEqual(application.getRandomPerson(), 'eric');
 });
 
-// 測試 Application_selectNextPerson() 方法
-test('Application_selectNextPerson()', async () => {
-    const app = new Application();
-    const [names] = await app.getNames();
-    app.selected = ['aaa'];
-    let cnt = 0;
-    test.mock.method(app, 'getRandomPerson', () => {
-        if (cnt <= names.length) { 
-            return names[cnt++]; 
+// 測試 Application 的 selectNextPerson 方法
+TestLab('Application_selectNextPerson()', async () => {
+    const application = new Application();
+    const names = await application.getNames();
+    application.selected = ['ray'];
+    let counter = 0;
+    TestLab.mock.method(application, 'getRandomPerson', () => {
+        if (counter < names[0].length) { 
+            return names[0][counter++]; 
+        } else {
+            return null;
         }
     });
-    assert.strictEqual(app.selectNextPerson(), 'bbb');               // 確認選擇下一個人員的功能
-    assert.deepStrictEqual(app.selected, ['aaa', 'bbb']);          // 確認已選擇的人員列表
-    assert.strictEqual(app.selectNextPerson(), 'ccc');                // 確認選擇下一個人員的功能
-    assert.deepStrictEqual(app.selected, ['aaa', 'bbb', 'ccc']);   // 確認已選擇的人員列表
-    assert.strictEqual(app.selectNextPerson(), null);                 // 確認已無可選擇的人員
+    assert.strictEqual(application.selectNextPerson(), 'nina');
+    assert.deepStrictEqual(application.selected, ['ray', 'nina']);
+    assert.strictEqual(application.selectNextPerson(), 'eric');
+    assert.deepStrictEqual(application.selected, ['ray', 'nina', 'eric']);
+    assert.strictEqual(application.selectNextPerson(), null);
 });
 
-// 測試 Application_notifySelected() 方法
-test('Application_notifySelected()', async () => {
-    const app = new Application();
-    const [people] = await app.getNames();
-    app.selected = [...people];
-    app.mailSystem.send = test.mock.fn(app.mailSystem.send);
-    app.mailSystem.write = test.mock.fn(app.mailSystem.write);
-    app.notifySelected();
-    assert.strictEqual(app.mailSystem.send.mock.calls.length, people.length);  // 確認發送郵件的次數
-    assert.strictEqual(app.mailSystem.write.mock.calls.length, people.length); // 確認編寫郵件的次數
-});
-
-// 測試 Dummy Object - MailSystem
-test('Dummy Object - MailSystem', () => {
-    class DummyMailSystem extends MailSystem {
-        send(name, status) {
-        }
-        write(name) {
-        }
-    }
-
-    const dummyMailSystem = new DummyMailSystem();
-
-    assert.strictEqual(dummyMailSystem.write('aaa'), undefined); // 測試編寫郵件的功能
-    assert.strictEqual(dummyMailSystem.send('aaa', 'success'), undefined); // 測試發送成功郵件的功能
+// 測試 Application 的 notifySelected 方法
+TestLab('Application_notifySelected()', async () => {
+    const application = new Application();
+    application.people = ['ray', 'nina', 'eric'];
+    application.selected = ['ray', 'nina', 'eric'];
+    application.mailSystem.send = TestLab.mock.fn(application.mailSystem.send);
+    application.mailSystem.write = TestLab.mock.fn(application.mailSystem.write);
+    application.notifySelected();
+    assert.strictEqual(application.mailSystem.send.mock.calls.length, 3);
+    assert.strictEqual(application.mailSystem.write.mock.calls.length, 3);
 });
