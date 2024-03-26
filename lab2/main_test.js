@@ -54,11 +54,7 @@ Test('Application_selectNextPerson()', async () => {
     application.selected = ['ray'];
     let counter = 0;
     Test.mock.method(application, 'getRandomPerson', () => {
-        if (counter < names[0].length) { 
-            return names[0][counter++]; 
-        } else {
-            return null;
-        }
+        return ['ray', 'nina', 'eric'][counter++];
     });
     assert.strictEqual(application.selectNextPerson(), 'nina');
     assert.deepStrictEqual(application.selected, ['ray', 'nina']);
