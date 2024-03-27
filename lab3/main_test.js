@@ -2,62 +2,63 @@ const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
-describe('Calculator', () => {
-  describe('add', () => {
-    it('should add two numbers correctly', () => {
-      const result = Calculator.add(3, 5);
-      assert.strictEqual(result, 8);
+describe("Calculator Test", () => {
+    const calculator = new Calculator();
+    
+    const logTestSuites = [
+        {
+            operation: "log",
+            cases: [
+                { data: 6, expected: Math.log(6) },
+                { data: 5, expected: Math.log(5) },
+                { data: 2, expected: Math.log(2) },
+                { data: 'guava', expected: Error, message: "unsupported operand type" },
+                { data: true, expected: Error, message: "unsupported operand type" },
+                { data: Infinity, expected: Error, message: "unsupported operand type" },
+                { data: 0, expected: Error, message: "math domain error (1)" },
+                { data: -1, expected: Error, message: "math domain error (2)" },
+            ]
+        }
+    ];
+
+    logTestSuites.forEach(({ operation, cases }) => {
+        it(`Calculator.${operation}() Test`, () => {
+            cases.forEach(({ data: param, expected: expectedOutput, message: msg }) => {
+                if (expectedOutput === Error) {
+                    assert.throws(() => calculator[operation](param), expectedOutput, msg);
+                } else {
+                    const result = calculator[operation](param);
+                    assert.strictEqual(result, expectedOutput, msg);
+                }
+            });
+        });
     });
 
-    it('should throw an error if any parameter is not a number', () => {
-      assert.throws(() => {
-        Calculator.add(3, '5');
-      }, TypeError);
-    });
-  });
+    const expTestSuites = [
+        {
+            operation: "exp",
+            cases: [
+                { data: 4, expected: Math.exp(4) },
+                { data: 0, expected: Math.exp(0) },
+                { data: -2, expected: Math.exp(-2) },
+                { data: 'guava666', expected: Error, message: "unsupported operand type" },
+                { data: true, expected: Error, message: "unsupported operand type" },
+                { data: Infinity, expected: Error, message: "unsupported operand type" },
+                { data: Number.MAX_VALUE, expected: Error, message: "overflow" },
+            ]
+        }
+    ];
 
-  describe('subtract', () => {
-    it('should subtract two numbers correctly', () => {
-      const result = Calculator.subtract(10, 4);
-      assert.strictEqual(result, 6);
+    expTestSuites.forEach(({ operation, cases }) => {
+        it(`Calculator.${operation}() Test`, () => {
+            cases.forEach(({ data: param, expected: expectedOutput, message: msg }) => {
+                if (expectedOutput === Error) {
+                    assert.throws(() => calculator[operation](param), expectedOutput, msg);
+                } else {
+                    const result = calculator[operation](param);
+                    assert.strictEqual(result, expectedOutput, msg);
+                }
+            });
+        });
     });
-
-    it('should throw an error if any parameter is not a number', () => {
-      assert.throws(() => {
-        Calculator.subtract('10', 4);
-      }, TypeError);
-    });
-  });
-
-  describe('multiply', () => {
-    it('should multiply two numbers correctly', () => {
-      const result = Calculator.multiply(2, 6);
-      assert.strictEqual(result, 12);
-    });
-
-    it('should throw an error if any parameter is not a number', () => {
-      assert.throws(() => {
-        Calculator.multiply(2, '6');
-      }, TypeError);
-    });
-  });
-
-  describe('divide', () => {
-    it('should divide two numbers correctly', () => {
-      const result = Calculator.divide(20, 5);
-      assert.strictEqual(result, 4);
-    });
-
-    it('should throw an error if dividing by zero', () => {
-      assert.throws(() => {
-        Calculator.divide(10, 0);
-      }, Error);
-    });
-
-    it('should throw an error if any parameter is not a number', () => {
-      assert.throws(() => {
-        Calculator.divide('20', 5);
-      }, TypeError);
-    });
-  });
 });
