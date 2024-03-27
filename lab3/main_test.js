@@ -13,7 +13,7 @@ describe('Calculator', () => {
             { param: 1, expected: Math.exp(1) },
             { param: -1, expected: Math.exp(-1) },
             { param: 'text', expected: Error, msg: 'unsupported operand type' },
-            { param: 9527, expected: Error, msg: 'overflow' },
+            { param: 5209527, expected: Error, msg: 'overflow' },
             { param: Number.MAX_VALUE, expected: Error, msg: 'overflow' }
         ];
 
