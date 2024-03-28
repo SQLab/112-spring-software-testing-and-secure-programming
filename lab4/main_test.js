@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 
-//<<<<<<< lab4
 // 等待函式
 function wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,45 +32,24 @@ function wait(ms) {
         // 點擊搜索結果中的特定項
         await page.click('#docsearch-item-5 > a');
 
-        // 等待頁面載入完成
-        // await page.waitForNavigation({ waitUntil: 'networkidle0' });
+                // 等待頁面載入完成
+                // await page.waitForNavigation({ waitUntil: 'networkidle0' });
 
-        // 使用 page.evaluate 獲取元素的文本內容
-        await wait(1000);
-        const titleText = await page.evaluate(() => {
-            const titleElement = document.querySelector('h1');
-            return titleElement ? titleElement.innerText : '';
-        });
-
-        // 列印標題文本
-        console.log(titleText);
-
-    } catch (error) {
-        // 捕捉到任何錯誤並輸出
-        console.error('發生bug:', error);
-    } finally {
-        // 確保流覽器關閉
-        await browser.close();
-    }
-//=======
-(async () => {
-    // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    // Navigate the page to a URL
-    await page.goto('https://pptr.dev/');
-
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
-
-    // Close the browser
-    await browser.close();
-//>>>>>>> 511559023
-})();
+                // 使用 page.evaluate 獲取元素的文本內容
+                await wait(1000);
+                const titleText = await page.evaluate(() => {
+                    const titleElement = document.querySelector('h1');
+                    return titleElement ? titleElement.innerText : '';
+                });
+        
+                // 列印標題文本
+                console.log(titleText);
+        
+            } catch (error) {
+                // 捕捉到任何錯誤並輸出
+                console.error('發生bug:', error);
+            } finally {
+                // 確保流覽器關閉
+                await browser.close();
+            }
+        })();
