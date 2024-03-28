@@ -7,7 +7,7 @@ function wait(ms) {
 
 (async () => {
     // 啟動流覽器並打開新頁面
-    const browser = await puppeteer.launch({ headless: false }); // headless: false 可觀察流覽器操作
+    const browser = await puppeteer.launch({ headless: true }); // headless: false 可觀察流覽器操作
     const page = await browser.newPage();
 
     // 導航到指定URL
