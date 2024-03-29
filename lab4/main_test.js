@@ -25,6 +25,7 @@ const puppeteer = require('puppeteer');
     // Print the title
     console.log(title);
 
+
     // Close the browser
     await browser.close();
 })();
