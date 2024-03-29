@@ -2,8 +2,10 @@ const puppeteer = require('puppeteer');
 
 (async () => {
     // Launch the browser and open a new blank page
+
     //const browser = await puppeteer.launch({ headless: false, executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' });
     const browser = await puppeteer.launch({ headless: false });
+
     const page = await browser.newPage();
 
     // Navigate the page to a URL
@@ -25,6 +27,7 @@ const puppeteer = require('puppeteer');
     let title = await textSelector.evaluate(element => element.textContent);
     // Print the title
     console.log(title);
+
 
 
     // Close the browser
