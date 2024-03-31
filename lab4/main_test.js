@@ -29,6 +29,6 @@ const puppeteer = require('puppeteer');
   const Title = await textSelector?.evaluate(el => el.textContent);
 
   // Print the full title
-  console.log('The title is "%s".', Title);
+  console.log(Title);
   await browser.close();
 })();
