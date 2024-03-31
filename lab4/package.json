@@ -1,5 +1,15 @@
 {
   "dependencies": {
-    "puppeteer": "^22.5.0"
-  }
+    "puppeteer": "^22.6.1"
+  },
+  "name": "lab4",
+  "description": "## Introduction",
+  "version": "1.0.0",
+  "main": "main_test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
