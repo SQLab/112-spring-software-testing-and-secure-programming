@@ -1,5 +1,6 @@
 {
   "dependencies": {
+
     "puppeteer": "^22.6.1"
   },
   "name": "lab4",
@@ -12,4 +13,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC"
+  "puppeteer": "^22.5.0"
+  }
+
 }
