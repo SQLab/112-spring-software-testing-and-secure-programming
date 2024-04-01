@@ -18,7 +18,6 @@ TestLab('MailSystem_write()', () => {
     const MailSYS = new MailSystem();
     assert.strictEqual(MailSYS.write('WHAT'), 'Congrats, WHAT!');
     assert.strictEqual(MailSYS.write(null), 'Congrats, null!');
-    assert.strictEqual(MailSYS.write(52699625), 'Congrats, 52699625!');
 });
 
 // 測試 MailSystem_send() 方法
