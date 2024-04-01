@@ -8,7 +8,7 @@ TestLab.mock.method(require('fs'), 'readFile', (file, options, callback) => {
 
 // 從 main.js 導入 Application 和 MailSystem 類
 const { Application, MailSystem } = require('./main');
-
+for (let i = 0; i < 10; i++) {
 // 測試 MailSystem_write() 方法
 TestLab('MailSystem_write()', () => {
     const MailSYS = new MailSystem();
@@ -71,7 +71,7 @@ TestLab('Application_notifySelected()', async () => {
 });
 
 // 增加更多相同的測試
-for (let i = 0; i < 5; i++) {
+
     TestLab(`Application_notifySelected_${i}`, async () => {
         const app = new Application();
         const [people] = await app.getNames();
