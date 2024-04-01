@@ -2,50 +2,21 @@ const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
-// TODO: write your tests here
+const c = new Calculator(), d = Math, e = Error;
+const t = (op, cases) => describe(`Calculator.${op}() Test`, () => cases.forEach(({ a, out, msg }) => it(`${a} should return ${out}`, () => (out === e) ? assert.throws(() => c[op](a), out, msg) : assert.strictEqual(c[op](a), out))));
 
-describe("Calculator Test", () => {
-    const calculator = new Calculator();
-    
-    const TESTLAB = [
-        {
-            operation: "exp",
-            cases: [
-                { varA: 1, expectedOutput: Math.exp(1) },
-                { varA: 0, expectedOutput: Math.exp(0) },
-                { varA: -1, expectedOutput: Math.exp(-1) },
-                { varA: '洗勒哈囉？', expectedOutput: Error, message: "unsupported operand type" },
-                { varA: true, expectedOutput: Error, message: "unsupported operand type" },
-                { varA: Infinity, expectedOutput: Error, message: "unsupported operand type" },
-                { varA: Number.MAX_VALUE, expectedOutput: Error, message: "overflow" },
-            ]
-        },
-        {
-            operation: "log",
-            cases: [
-                { varA: 3, expectedOutput: Math.log(3) },
-                { varA: 2, expectedOutput: Math.log(2) },
-                { varA: 1, expectedOutput: Math.log(1) },
-                { varA: '醉SUMER死', expectedOutput: Error, message: "unsupported operand type" },
-                { varA: true, expectedOutput: Error, message: "unsupported operand type" },
-                { varA: Infinity, expectedOutput: Error, message: "unsupported operand type" },
-                { varA: 0, expectedOutput: Error, message: "math domain error (1)" },
-                { varA: -1, expectedOutput: Error, message: "math domain error (2)" },
-            ]
-        }
-    ];
+const cases = {
+    exp: [
+        { a: 1, out: d.exp(1) }, { a: 0, out: d.exp(0) }, { a: -1, out: d.exp(-1) },
+        { a: '洗勒哈囉？', out: e, msg: "unsupported operand type" }, { a: true, out: e },
+        { a: Infinity, out: e }, { a: Number.MAX_VALUE, out: e }
+    ],
+    log: [
+        { a: 3, out: d.log(3) }, { a: 2, out: d.log(2) }, { a: 1, out: d.log(1) },
+        { a: '醉SUMER死', out: e, msg: "unsupported operand type" }, { a: true, out: e },
+        { a: Infinity, out: e }, { a: 0, out: e, msg: "math domain error (1)" },
+        { a: -1, out: e, msg: "math domain error (2)" }
+    ]
+};
 
-    TESTLAB.forEach(({ operation, cases }) => {
-        it(`Calculator.${operation}() Test`, () => {
-            cases.forEach(({ varA: param, expectedOutput: expected, message: msg }) => {
-                if (expected === Error) {
-                    assert.throws(() => calculator[operation](param), expected, msg);
-                } else {
-                    assert.strictEqual(calculator[operation](param), expected);
-                }
-            });
-        });
-    });
-});
-
-
+Object.keys(cases).forEach(op => t(op, cases[op]));
