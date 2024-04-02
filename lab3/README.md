@@ -28,4 +28,8 @@ Please note that you must not alter files other than `main_test.js`. You will ge
 
 You need to open a pull request to your branch (e.g. 311XXXXXX, your student number) and contain the code that satisfies the abovementioned requirements.
 
+<<<<<<< HEAD
 Moreover, please submit the URL of your PR to E3. Your submission will only be accepted when you present at both places.
+=======
+Moreover, please submit the URL of your PR to E3. Your submission will only be accepted when you present at both places.
+>>>>>>> main
