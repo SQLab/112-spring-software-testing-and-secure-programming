@@ -17,6 +17,7 @@ const puppeteer = require('puppeteer');
     await page.waitForSelector('#docsearch-input.DocSearch-Input'); //等待 id 為 docsearch-input 且具有 DocSearch-Input 類的元素出現在頁面上
     await page.type('#docsearch-input.DocSearch-Input', 'chipi chipi chapa chapa',{delay: 2000}); //將指定的文字 'chipi chipi chapa chapa' 輸入到 id 為 docsearch-input 且具有 DocSearch-Input 類的元素中
 
+    
     // Get the `Docs` result section
     await page.waitForSelector('#docsearch-item-5.DocSearch-Hit'); //等待 id 為 docsearch-item-5 且具有 DocSearch-Hit 類的元素出現在頁面上
     // Click on first result in `Docs` section
