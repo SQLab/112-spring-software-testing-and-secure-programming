@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
 
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
-
+    
     // Hints:
     // Click search button
     await page.click('button.DocSearch.DocSearch-Button'); //點擊指定按鈕
