@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer');
         // Navigate the page to a URL
         await page.goto('https://pptr.dev/');
 
-	    // Hints:
+	// Hints:
     	// Click search button
     	// Type into search box
     	// Wait for search result
