@@ -21,11 +21,8 @@ const puppeteer = require('puppeteer');
   // Wait and click on first result
   await page.waitForSelector('#docsearch-item-5');
   await page.click('#docsearch-item-5');
-
-
   const textSelector = await page.waitForSelector('h1');
   const Title = await textSelector?.evaluate(el => el.textContent);
-
   // Print the full title
   console.log(Title);
   await browser.close();
