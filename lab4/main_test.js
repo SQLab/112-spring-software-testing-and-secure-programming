@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch({headless:false});
   const page = await browser.newPage();
 
-  // Navigate the page to a URL
+  // Navigate the page to a URL!
   
   await page.goto('https://pptr.dev/');  
   await page.setViewport({width: 1080, height: 1024});
@@ -23,8 +23,6 @@ const puppeteer = require('puppeteer');
   await page.click('#docsearch-item-5');
 
 
-
-  // Locate the full title with a unique string
   const textSelector = await page.waitForSelector('h1');
   const Title = await textSelector?.evaluate(el => el.textContent);
 
