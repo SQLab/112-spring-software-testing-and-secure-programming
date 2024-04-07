@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 (async () => {
     // open browser
-    const browser = await puppeteer.launch({executablePath: '/usr/bin/google-chrome-stable',headless: false});
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     await page.goto('https://pptr.dev/webdriver-bidi/#measuring-progress');
