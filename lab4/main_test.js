@@ -22,9 +22,6 @@ const puppeteer = require('puppeteer');
   await page.waitForSelector('#docsearch-item-5');
   await page.click('#docsearch-item-5');
 
-
-
-  // Locate the full title with a unique string
   const textSelector = await page.waitForSelector('h1');
   const Title = await textSelector?.evaluate(el => el.textContent);
 
