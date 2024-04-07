@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
+
     // open browser
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -36,6 +37,6 @@ const puppeteer = require('puppeteer');
     const headerText = await page.$eval('h1', element => element.textContent);
     console.log(headerText);  
 
-
     await browser.close();
+
 })();
