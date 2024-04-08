@@ -1,44 +1,38 @@
 const puppeteer = require('puppeteer');
 
-async function getSearchResultTitle(searchTerm) {
-  // Launch browser in headless mode
-  const browser = await puppeteer.launch({ headless: true });
+async function getTitle() {
+  // Launch browser and create a new page
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  try {
-    // Navigate to pptr.dev
-    await page.goto('https://pptr.dev/');
+  // Navigate to the website
+  await page.goto('https://pptr.dev/');
 
-    // Open search bar
-    await page.click('button.DocSearch-Button');
+  // Click the search button
+  const searchButton = await page.$('button.DocSearch.DocSearch-Button');
+  await searchButton.click();
 
-    // Input search term and wait for results
-    await page.type('#docsearch-input', searchTerm, { delay: 100 });
-    await page.waitForSelector('.DocSearch-Dropdown-Container');
+  // Type the search query
+  const searchInput = await page.$('#docsearch-input');
+  await searchInput.type('chipi chipi chapa chapa');
 
-    // Identify the first result in the "Docs" section
-    const firstDocResult = await page.$('#docsearch-item-0'); 
+  // Wait for the results and find the Docs section
+  const docsSection = await page.waitForSelector('#docsearch-item-5');
 
-    // Click on the first result and wait for navigation
-    await Promise.all([
-      firstDocResult.click(),
-      page.waitForNavigation({ waitUntil: 'networkidle0' }),
-    ]);
+  // Click on the first result within the Docs section
+  const firstResult = await docsSection.$('a');
+  await firstResult.click();
 
-    // Extract and return the title of the page
-    const title = await page.title();
-    return title;
+  // Wait for the title element to load
+  await page.waitForSelector('h1');
 
-  } catch (error) {
-    console.error('Error during search:', error);
-  } finally {
-    // Close the browser
-    await browser.close();
-  }
+  // Extract and print the title
+  const titleElement = await page.$('h1');
+  const title = await page.evaluate(el => el.textContent, titleElement);
+  console.log(title);
+
+  // Close the browser
+  await browser.close();
 }
 
-(async () => {
-  // Call the function with the desired search term
-  const title = await getSearchResultTitle('chipi chipi chapa chapa');
-  console.log(title); 
-})();
+getTitle();
