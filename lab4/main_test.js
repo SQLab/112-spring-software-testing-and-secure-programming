@@ -37,3 +37,5 @@ const puppeteer = require('puppeteer');
     .catch(handleError)
     .finally(() => browser.close());
 })();
+
+Explanation:
