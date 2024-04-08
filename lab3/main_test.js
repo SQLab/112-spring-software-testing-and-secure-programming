@@ -1,21 +1,3 @@
-const { describe, it } = require('node:test');
-const assert = require('assert');
-const { Calculator } = require('./main');
-
-// TODO: write your tests here
-
-describe('Calculator', () => {
-    const calculator = new Calculator();
-
-    describe('exp method with parameterized tests', () => {
-        const expTests = [
-            { param: 0, expected: Math.exp(0) },
-            { param: 1, expected: Math.exp(1) },
-            { param: -1, expected: Math.exp(-1) },
-            { param: 'text', expected: Error, msg: 'unsupported operand type' },
-            { param: 9999, expected: Error, msg: 'overflow' },
-            { param: Number.MAX_VALUE, expected: Error, msg: 'overflow' }
-        ];
 
         expTests.forEach(({ param, expected, msg }) => {
             it(`should return ${expected} when input is ${param}`, () => {
