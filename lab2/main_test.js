@@ -5,19 +5,19 @@ const fs = require('fs').promises;
 const { Application, MailSystem } = require('./main');
 
 // Setup and teardown for name_list.txt
-test.before(async () => await fs.writeFile('name_list.txt', 'Evangeline\nFinn\nGwendolyn'));
+test.before(async () => await fs.writeFile('name_list.txt', 'Anna\nBear\nGoodies'));
 test.after(async () => await fs.unlink('name_list.txt'));
 
 // Test MailSystem
 test('MailSystem.write() generates correct message', () => {
   const mailSystem = new MailSystem();
-  const message = mailSystem.write('Evangeline');
-  assert.strictEqual(message, 'Congrats, Evangeline!');
+  const message = mailSystem.write('Anna');
+  assert.strictEqual(message, 'Congrats, Anna!');
 });
 
 test('MailSystem.send() handles success and failure', () => {
   const mailSystem = new MailSystem();
-  const name = 'Finn';
+  const name = 'Bear';
   const context = 'Test message';
 
   // Mock Math.random for success
@@ -36,20 +36,20 @@ test('MailSystem.send() handles success and failure', () => {
 test('Application.getNames() reads and parses names', async () => {
   const app = new Application();
   const [people, selected] = await app.getNames();
-  assert.deepStrictEqual(people, ['Evangeline', 'Finn', 'Gwendolyn']);
+  assert.deepStrictEqual(people, ['Anna', 'Bear', 'Goodies']);
   assert.deepStrictEqual(selected, []);
 });
 
 test('Application.getRandomPerson() returns a random person', () => {
   const app = new Application();
-  app.people = ['Evangeline', 'Finn', 'Gwendolyn'];
+  app.people = ['Anna', 'Bear', 'Goodies'];
   const person = app.getRandomPerson();
   assert.ok(app.people.includes(person));
 });
 
 test('Application.selectNextPerson() selects and updates', () => {
   const app = new Application();
-  app.people = ['Evangeline', 'Finn', 'Gwendolyn'];
+  app.people = ['Anna', 'Bear', 'Goodies'];
 
   // Select first person
   const firstPerson = app.selectNextPerson();
@@ -63,19 +63,20 @@ test('Application.selectNextPerson() selects and updates', () => {
 
 test('Application.notifySelected() sends emails', () => {
   const app = new Application();
-  app.people = ['Evangeline', 'Finn'];
-  app.selected = ['Evangeline'];
+  app.people = ['Anna', 'Bear'];
+  app.selected = ['Anna'];
 
   // Mock mailSystem methods to track calls
   app.mailSystem.write = (name) => {
-    assert.strictEqual(name, 'Evangeline');
+    assert.strictEqual(name, 'Anna');
     return 'Mock message';
   };
   app.mailSystem.send = (name, context) => {
-    assert.strictEqual(name, 'Evangeline');
+    assert.strictEqual(name, 'Anna');
     assert.strictEqual(context, 'Mock message');
     return true; // Assume success
   };
 
   app.notifySelected();
 });
+
