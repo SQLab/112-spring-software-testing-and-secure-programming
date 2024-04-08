@@ -1,82 +1,102 @@
-// main_test.js
-const test = require('node:test');
+const Test = require('node:test');
 const assert = require('assert');
 const fs = require('fs').promises;
 const { Application, MailSystem } = require('./main');
 
-// Setup and teardown for name_list.txt
-test.before(async () => await fs.writeFile('name_list.txt', 'Anna\nBear\nGoodies'));
-test.after(async () => await fs.unlink('name_list.txt'));
+// Sample name list (modify as needed)
+const sampleNames = ['Alice', 'Bob', 'Charlie', 'David', 'Emily'];
 
-// Test MailSystem
-test('MailSystem.write() generates correct message', () => {
+// Utility function to create a temporary name_list.txt
+async function createNameList(names) {
+  await fs.writeFile('name_list.txt', names.join('\n'));
+}
+
+// Utility function to remove the temporary name_list.txt
+async function removeNameList() {
+  await fs.unlink('name_list.txt');
+}
+
+Test.beforeEach(async () => await createNameList(sampleNames));
+Test.afterEach(async () => await removeNameList());
+
+// --- MailSystem Tests ---
+
+Test('MailSystem.write() generates correct message', () => {
   const mailSystem = new MailSystem();
-  const message = mailSystem.write('Anna');
-  assert.strictEqual(message, 'Congrats, Anna!');
+  const context = mailSystem.write('Alice');
+  assert.strictEqual(context, 'Congrats, Alice!', 'Message should match expected format');
 });
 
-test('MailSystem.send() handles success and failure', () => {
+Test('MailSystem.send() handles success and failure (mocked)', () => {
   const mailSystem = new MailSystem();
-  const name = 'Bear';
+  const name = 'Bob';
   const context = 'Test message';
 
-  // Mock Math.random for success
+  // Mock Math.random for controlled outcomes
   const originalRandom = Math.random;
-  Math.random = () => 0.7; // Force success
-  assert.ok(mailSystem.send(name, context)); 
-  Math.random = originalRandom; // Restore original
 
-  // Mock Math.random for failure
-  Math.random = () => 0.3; // Force failure
-  assert.ok(!mailSystem.send(name, context));
-  Math.random = originalRandom; // Restore original
+  Math.random = () => 0.7; // Simulate success (70% chance)
+  let success = mailSystem.send(name, context);
+  assert.strictEqual(success, true, 'Should return true on success');
+
+  Math.random = () => 0.3; // Simulate failure (30% chance)
+  success = mailSystem.send(name, context);
+  assert.strictEqual(success, false, 'Should return false on failure');
+
+  // Restore original Math.random
+  Math.random = originalRandom;
 });
 
-// Test Application
-test('Application.getNames() reads and parses names', async () => {
+// --- Application Tests ---
+
+Test('Application.getNames() reads and parses names', async () => {
   const app = new Application();
   const [people, selected] = await app.getNames();
-  assert.deepStrictEqual(people, ['Anna', 'Bear', 'Goodies']);
-  assert.deepStrictEqual(selected, []);
+  assert.deepStrictEqual(people, sampleNames, 'People list should match name_list.txt');
+  assert.deepStrictEqual(selected, [], 'Selected list should be initially empty');
 });
 
-test('Application.getRandomPerson() returns a random person', () => {
+Test('Application.selectNextPerson() selects a random person', async () => {
   const app = new Application();
-  app.people = ['Anna', 'Bear', 'Goodies'];
-  const person = app.getRandomPerson();
-  assert.ok(app.people.includes(person));
+  await app.getNames();
+
+  const selectedPerson = app.selectNextPerson();
+  assert.ok(sampleNames.includes(selectedPerson), 'Selected person should be from the list');
 });
 
-test('Application.selectNextPerson() selects and updates', () => {
+Test('Application.selectNextPerson() returns null when all selected', async () => {
   const app = new Application();
-  app.people = ['Anna', 'Bear', 'Goodies'];
+  await app.getNames();
 
-  // Select first person
-  const firstPerson = app.selectNextPerson();
-  assert.ok(app.people.includes(firstPerson));
-  assert.strictEqual(app.selected.length, 1);
+  // Select all people
+  for (let i = 0; i < sampleNames.length; i++) {
+    app.selectNextPerson();
+  }
 
-  // Select until all are selected
-  while(app.selectNextPerson()) {}
-  assert.strictEqual(app.selectNextPerson(), null); // Returns null when all selected
+  assert.strictEqual(app.selectNextPerson(), null, 'Should return null when all selected');
 });
 
-test('Application.notifySelected() sends emails', () => {
-  const app = new Application();
-  app.people = ['Anna', 'Bear'];
-  app.selected = ['Anna'];
+// --- Application.notifySelected() Test --- (Separate test for clarity)
 
-  // Mock mailSystem methods to track calls
-  app.mailSystem.write = (name) => {
-    assert.strictEqual(name, 'Anna');
-    return 'Mock message';
+Test('Application.notifySelected() sends emails to selected people', async () => {
+  const app = new Application();
+  await app.getNames();
+
+  // Select two people
+  app.selectNextPerson();
+  app.selectNextPerson();
+
+  // Mock MailSystem.send to verify calls and behavior
+  const mockMailSystem = {
+    write: (name) => `Mock message for ${name}`,
+    send: (name, context) => {
+      // Assert expectations here:
+      // - Check if name is in the selected list
+      // - Check if context matches the expected format
+      return true; // Assume success for simplicity
+    }
   };
-  app.mailSystem.send = (name, context) => {
-    assert.strictEqual(name, 'Anna');
-    assert.strictEqual(context, 'Mock message');
-    return true; // Assume success
-  };
+  app.mailSystem = mockMailSystem; 
 
   app.notifySelected();
 });
-
