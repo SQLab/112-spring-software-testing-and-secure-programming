@@ -8,28 +8,28 @@ const puppeteer = require('puppeteer');
   // Navigate the page to a URL
   await page.goto('https://pptr.dev/');
 
-  // Type the search query into the search box
-  await page.type('#search_input_react', 'chipi chipi chapa chapa');
+  // Click search button
+  await page.click('[aria-label="Search"]');
 
-  // Click the search button
-  await page.click('#search_button_react');
+  // Type into search box
+  await page.type('#search-input input', 'chipi chipi chapa chapa');
 
-  // Wait for the search results to load
-  await page.waitForSelector('.DocSearch-Hit-source');
+  // Wait for search results to appear
+  await page.waitForSelector('.DocSearch-Hits');
 
-  // Get the first search result in the "Docs" section
-  const firstResult = await page.$('.DocSearch-Hit.DocSearch-Hit--default:nth-child(1) a.DocSearch-Hit-source');
+  // Get the `Docs` result section
+  const docsSection = await page.$('.DocSearch-Hits');
 
-  // Click on the first result
+  // Click on the first result in `Docs` section
+  const firstResult = await docsSection.$('a');
   await firstResult.click();
 
-  // Wait for the page to load and get the title
-  await page.waitForSelector('.postHeader h1');
-  const title = await page.evaluate(() => document.querySelector('.postHeader h1').innerText);
+  // Locate the title (assuming it's an h1 tag)
+  const titleElement = await page.waitForSelector('h1');
+  const title = await page.evaluate(el => el.textContent, titleElement);
 
   // Print the title
   console.log(title);
 
   // Close the browser
   await browser.close();
-})();
