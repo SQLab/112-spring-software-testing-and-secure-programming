@@ -1,58 +1,81 @@
-// 改寫後的測試腳本（main_DickTest_dick.js）
-const DickTest = require('node:test');
+// main_test.js
+const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs').promises;
 const { Application, MailSystem } = require('./main');
 
-DickTest.before(async () => await fs.writeFile('name_list.txt', 'Dick\nesis\nGoodes'));
-DickTest.after(async () => await fs.unlink('name_list.txt'));
+// Setup and teardown for name_list.txt
+test.before(async () => await fs.writeFile('name_list.txt', 'Evangeline\nFinn\nGwendolyn'));
+test.after(async () => await fs.unlink('name_list.txt'));
 
-DickTest('MailSystem write()', () => {
-    const MainTest = new MailSystem();
-    const context = MainTest.write('Dick');
-    assert.strictEqual(context, 'Congrats, Dick!', '');
+// Test MailSystem
+test('MailSystem.write() generates correct message', () => {
+  const mailSystem = new MailSystem();
+  const message = mailSystem.write('Evangeline');
+  assert.strictEqual(message, 'Congrats, Evangeline!');
 });
 
-DickTest('MailSystem send() success', () => {
-    const MainTest = new MailSystem();
-    const name = 'Dick';
-    const context = 'DickTest';
-    const stub = Math.random;
-    Math.random = () => 0.6;
-    const success = MainTest.send(name, context);
-    Math.random = stub;
-    assert.strictEqual(success, true, '測試成功值在0.5以上');
+test('MailSystem.send() handles success and failure', () => {
+  const mailSystem = new MailSystem();
+  const name = 'Finn';
+  const context = 'Test message';
+
+  // Mock Math.random for success
+  const originalRandom = Math.random;
+  Math.random = () => 0.7; // Force success
+  assert.ok(mailSystem.send(name, context)); 
+  Math.random = originalRandom; // Restore original
+
+  // Mock Math.random for failure
+  Math.random = () => 0.3; // Force failure
+  assert.ok(!mailSystem.send(name, context));
+  Math.random = originalRandom; // Restore original
 });
 
-DickTest('MailSystem send() failure', () => {
-    const MainTest = new MailSystem();
-    const name = 'Dick';
-    const context = 'DickTest';
-    const stub = Math.random;
-    Math.random = () => 0.4;
-    const success = MainTest.send(name, context);
-    Math.random = stub;
-    assert.strictEqual(success, false, '測試失敗值在0.5以下');
+// Test Application
+test('Application.getNames() reads and parses names', async () => {
+  const app = new Application();
+  const [people, selected] = await app.getNames();
+  assert.deepStrictEqual(people, ['Evangeline', 'Finn', 'Gwendolyn']);
+  assert.deepStrictEqual(selected, []);
 });
 
-DickTest('Application getNames()', async () => {
-    const app = new Application();
-    const [people, selected] = await app.getNames();
-    assert(people.length > 0, '陣列不為空');
-    assert.strictEqual(selected.length, 0, '陣列為空');
+test('Application.getRandomPerson() returns a random person', () => {
+  const app = new Application();
+  app.people = ['Evangeline', 'Finn', 'Gwendolyn'];
+  const person = app.getRandomPerson();
+  assert.ok(app.people.includes(person));
 });
 
-DickTest('Application selectNextPerson() and notifySelected()', async () => {
-    const app = new Application();
-    await app.getNames();
-    const person = app.selectNextPerson();
-    assert.ok(person, '選擇一個人');
-    app.notifySelected();
+test('Application.selectNextPerson() selects and updates', () => {
+  const app = new Application();
+  app.people = ['Evangeline', 'Finn', 'Gwendolyn'];
+
+  // Select first person
+  const firstPerson = app.selectNextPerson();
+  assert.ok(app.people.includes(firstPerson));
+  assert.strictEqual(app.selected.length, 1);
+
+  // Select until all are selected
+  while(app.selectNextPerson()) {}
+  assert.strictEqual(app.selectNextPerson(), null); // Returns null when all selected
 });
 
-DickTest('selectNextPerson() when all people are selected', async () => {
-    const app = new Application();
-    await app.getNames();
-    while (app.selectNextPerson() !== null) {}
-    assert.strictEqual(app.selectNextPerson(), null, '全選時回傳null');
+test('Application.notifySelected() sends emails', () => {
+  const app = new Application();
+  app.people = ['Evangeline', 'Finn'];
+  app.selected = ['Evangeline'];
+
+  // Mock mailSystem methods to track calls
+  app.mailSystem.write = (name) => {
+    assert.strictEqual(name, 'Evangeline');
+    return 'Mock message';
+  };
+  app.mailSystem.send = (name, context) => {
+    assert.strictEqual(name, 'Evangeline');
+    assert.strictEqual(context, 'Mock message');
+    return true; // Assume success
+  };
+
+  app.notifySelected();
 });
