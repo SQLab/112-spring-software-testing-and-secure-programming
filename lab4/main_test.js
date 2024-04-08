@@ -1,27 +1,31 @@
 const puppeteer = require('puppeteer');
 
-async function getTitle() {
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto('https://pptr.dev/');
+  try {
+    // Navigate to pptr.dev
+    await page.goto('https://pptr.dev/');
 
-  // Wait for the search box to be visible and then type the query
-  const searchBox = await page.waitForSelector('#docsearch-input');
-  await searchBox.type('chipi chipi chapa chapa');
+    // Focus on the search input and type the query
+    const searchInput = await page.$('input[placeholder="Search"]');
+    await searchInput.focus();
+    await page.keyboard.type('chipi chipi chapa chapa');
 
-  // Wait for the results to load and target the first result in the "Docs" section
-  await page.waitForSelector('#docsearch-item-5 > a');
-  const firstResult = await page.$('#docsearch-item-5 > a'); 
-  await firstResult.click();
+    // Wait for search results and click the first Docs result
+    await page.waitForSelector('.DocSearch-Hit-source');
+    const docResults = await page.$$('.DocSearch-Hit-source');
+    const firstDocResult = docResults.find(el => el.textContent.includes('Docs'));
+    await firstDocResult.click();
 
-  // Wait for the title of the new page to be visible and extract its text content
-  await page.waitForSelector('h1');
-  const title = await page.$eval('h1', (h1) => h1.textContent);
+    // Extract and print the title of the page
+    await page.waitForSelector('h1');
+    const title = await page.$eval('h1', h1 => h1.textContent.trim());
+    console.log(title);
 
-  console.log(title);
-
-  await browser.close();
-}
-
-getTitle();
+  } catch (error) {
+    console.error('Error during test:', error);
+  } finally {
+    await browser.close();
+  }
