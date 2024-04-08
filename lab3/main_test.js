@@ -1,6 +1,6 @@
 const { describe, it } = require('node:test');
 const assert = require('assert');
-const { Calculator } = require('./main'); // 确保这是导入 Calculator 类的唯一地方
+const { Calculator } = require('./main'); 
 
 describe('Calculator', () => {
   let calculator;
