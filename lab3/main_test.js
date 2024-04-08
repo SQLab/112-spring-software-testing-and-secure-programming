@@ -1,6 +1,5 @@
-// 引入必要的模組
+const Calculator = require('./main').Calculator; // 引入 Calculator
 const assert = require('assert');
-const { Calculator } = require('./main');
 
 // 創建計算機實例
 const calculator = new Calculator();
@@ -10,9 +9,8 @@ const math = Math;
 const error = Error;
 
 // 測試函式
-const test = (operation, testCases) => {
+function runTests(operation, testCases) {
     describe(`Calculator.${operation}() Test`, () => {
-        // 對於每個測試案例進行測試
         testCases.forEach(({ input, output, message }) => {
             it(`${input} 應該返回 ${output}`, () => {
                 // 如果預期的結果是 Error，則使用 assert.throws()
@@ -25,7 +23,6 @@ const test = (operation, testCases) => {
             });
         });
     });
-};
+}
 
-// 導出測試函式
-module.exports = test;
+module.exports = runTests;
