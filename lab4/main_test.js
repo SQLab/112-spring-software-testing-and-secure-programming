@@ -1,40 +1,39 @@
 const puppeteer = require('puppeteer');
 
-async function searchAndPrintTitle() {
-  // Launch the browser in headless mode
-  const browser = await puppeteer.launch({ headless: true });
+(async () => {
+  // Launch browser and open new page
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  try {
-    // Navigate to the website
-    await page.goto('https://pptr.dev/');
+  // Function to handle potential errors
+  const handleError = (error) => {
+    console.error('An error occurred:', error);
+    browser.close();
+  };
 
-    // Wait for search input and button elements to be available
-    await page.waitForSelector('#docsearch-input');
-    await page.waitForSelector('button.DocSearch.DocSearch-Button');
+  // Navigate to the website
+  page.goto('https://pptr.dev/')
+    .catch(handleError);
 
-    // Enter search query and simulate pressing Enter key
-    await page.type('#docsearch-input', 'chipi chipi chapa chapa');
-    await page.keyboard.press('Enter');
+  // Click the search button
+  page.waitForSelector('button.DocSearch.DocSearch-Button')
+    .then(() => page.click('button.DocSearch.DocSearch-Button'))
+    .catch(handleError);
 
-    // Wait for the first search result in the Docs section
-    await page.waitForSelector('#docsearch-item-5 > a');
+  // Type the search query
+  page.waitForSelector('#docsearch-input')
+    .then(() => page.type('#docsearch-input', 'chipi chipi chapa chapa'))
+    .catch(handleError);
 
-    // Click on the first search result
-    await page.click('#docsearch-item-5 > a');
+  // Wait for and click the first result in Docs section
+  page.waitForSelector('#docsearch-item-5')
+    .then(() => page.click('#docsearch-item-5'))
+    .catch(handleError);
 
-    // Wait for the title element (h1) to load
-    await page.waitForSelector('h1');
-
-    // Extract and print the title text
-    const title = await page.$eval('h1', el => el.textContent);
-    console.log(title);
-  } catch (error) {
-    console.error('Error during execution:', error);
-  } finally {
-    // Close the browser
-    await browser.close();
-  }
-}
-
-searchAndPrintTitle();
+  // Extract and print the title
+  page.waitForSelector('h1')
+    .then(() => page.evaluate(() => document.querySelector('h1').textContent))
+    .then(console.log)
+    .catch(handleError)
+    .finally(() => browser.close());
+})();
