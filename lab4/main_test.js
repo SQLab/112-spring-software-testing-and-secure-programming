@@ -1,38 +1,31 @@
 const puppeteer = require('puppeteer');
 
-async function getTitle() {
-  // Launch browser and create a new page
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  // Navigate to the website
   await page.goto('https://pptr.dev/');
 
-  // Click the search button
-  const searchButton = await page.$('button.DocSearch.DocSearch-Button');
-  await searchButton.click();
+  // Click the search button using its precise selector
+  await page.click('#__docusaurus > nav > div.navbar__inner > div.navbar__items.navbar__items--right > div.navbarSearchContainer_Bca1 > button');
 
-  // Type the search query
-  const searchInput = await page.$('#docsearch-input');
-  await searchInput.type('chipi chipi chapa chapa');
+  // Type the search query with a slight delay for better responsiveness
+  await page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 50 });
 
-  // Wait for the results and find the Docs section
-  const docsSection = await page.waitForSelector('#docsearch-item-5');
+  // Wait for the specific search result element to appear
+  await page.waitForSelector('#docsearch-item-5 > a');
 
-  // Click on the first result within the Docs section
-  const firstResult = await docsSection.$('a');
-  await firstResult.click();
+  // Extract the title text of the search result directly
+  const titleText = await page.$eval('#docsearch-item-5 > a', el => el.textContent.trim());
 
-  // Wait for the title element to load
-  await page.waitForSelector('h1');
+  // Check if the extracted title matches the expected value
+  if (titleText === "Experimental WebDriver BiDi support") {
+    console.log("[V] Pass: Title matches expected value.");
+  } else {
+    console.error("[!] Title mismatch:");
+    console.error(`    Expected: Experimental WebDriver BiDi support`);
+    console.error(`    Actual:   ${titleText}`);
+  }
 
-  // Extract and print the title
-  const titleElement = await page.$('h1');
-  const title = await page.evaluate(el => el.textContent, titleElement);
-  console.log(title);
-
-  // Close the browser
   await browser.close();
-}
-
-getTitle();
+})();
