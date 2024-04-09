@@ -1,34 +1,77 @@
+const { describe, it } = require('node:test');
+const { Calculator } = require('./main');
+const assert = require('assert');
 
-        expTests.forEach(({ param, expected, msg }) => {
-            it(`should return ${expected} when input is ${param}`, () => {
-                if (expected === Error) {
-                    assert.throws(() => calculator.exp(param), { message: msg });
-                } else {
-                    assert.strictEqual(calculator.exp(param), expected);
-                }
-            });
-        });
+const testCases = [
+  {
+    methodName: 'exp',
+    args: [10],
+    expected: Math.exp(10),
+    expectError: null
+  },
+  {
+    methodName: 'exp',
+    args: [1000],
+    expected: null,
+    expectError: 'overflow'
+  },
+  {
+    methodName: 'exp',
+    args: ['string'],
+    expected: null,
+    expectError: 'unsupported operand type'
+  },
+  {
+    methodName: 'exp',
+    args: [Infinity],
+    expected: null,
+    expectError: 'unsupported operand type'
+  },
+  {
+    methodName: 'log',
+    args: [10],
+    expected: Math.log(10),
+    expectError: null
+  },
+  {
+    methodName: 'log',
+    args: [0],
+    expected: null,
+    expectError: 'math domain error (1)'
+  },
+  {
+    methodName: 'log',
+    args: [-1],
+    expected: null,
+    expectError: 'math domain error (2)'
+  },
+  {
+    methodName: 'log',
+    args: ['string'],
+    expected: null,
+    expectError: 'unsupported operand type'
+  },
+  {
+    methodName: 'log',
+    args: [Infinity],
+    expected: null,
+    expectError: 'unsupported operand type'
+  }
+];
+
+describe('Calculator', () => {
+  const calculator = new Calculator();
+
+  testCases.forEach(({ methodName, args, expected, expectError }) => {
+    describe(`${methodName}(${args.join(', ')})`, () => {
+      it('should produce the expected result or throw the expected error', () => {
+        const method = calculator[methodName].bind(calculator, ...args);
+        if (expectError) {
+          assert.throws(method, { message: expectError });
+        } else {
+          assert.strictEqual(method(), expected);
+        }
+      });
     });
-
-    describe('log method with parameterized tests', () => {
-        const logTests = [
-            { param: 1, expected : Math.log(1)},
-            { param: 0.5, expected : Math.log(0.5)},
-            { param: -1, expected: Error, msg: 'math domain error (2)' },
-            { param: 0, expected: Error, msg: 'math domain error (1)' },
-            { param: 'text', expected: Error, msg: 'unsupported operand type' },
-            { param: Infinity, expected: Error, msg: 'unsupported operand type' },
-            { param: -Infinity, expected: Error, msg: 'unsupported operand type' }
-        ];
-
-        logTests.forEach(({ param, expected, msg }) => {
-            it(`should return ${expected} when input is ${param}`, () => {
-                if (expected === Error) {
-                    assert.throws(() => calculator.log(param), { message: msg });
-                } else {
-                    assert.strictEqual(calculator.log(param), expected);
-                }
-            });
-        });
-    });
+  });
 });
