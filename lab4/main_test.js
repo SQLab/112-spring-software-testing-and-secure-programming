@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer');
     await page.waitForSelector(searchResultSelector);
     await page.click(searchResultSelector);
     await page.waitForSelector('.DocSearch-Input'); 
-    await page.type('.DocSearch-Input', 'abcd abcd abcd abcd', {delay: 100});
+    await page.type('.DocSearch-Input', 'chipi chipi chapa chapa', {delay: 100});
     await page.waitForSelector('#docsearch-item-5');
     await page.click('#docsearch-item-5');
     const titleSelector = await page.waitForSelector('h1');
