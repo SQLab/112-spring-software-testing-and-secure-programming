@@ -8,6 +8,7 @@ const puppeteer = require('puppeteer');
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
 
+
     await page.setViewport({width:1080 , height:1024 });
     const searchResultSelector = '.DocSearch-Button';
     await page.waitForSelector(searchResultSelector);
