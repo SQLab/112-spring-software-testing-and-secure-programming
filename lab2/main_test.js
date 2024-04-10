@@ -8,7 +8,7 @@ const { Application, MailSystem } = require('./main');
 //  MailSystem()
 var fs = require('fs');
          fs.readFile("name_list.txt", "utf8", async function (err, data) {
-             await fs.writeFile("name_list.txt", "\nsad\ndas\nasd\ndsa\nads\n", async function (err) {
+             await fs.writeFile("name_list.txt", "\nsad\n1\n", async function (err) {
                  console.log('寫入完成!');
 
                  await fs.readFile("name_list.txt", "utf8", async function (err, data) {
