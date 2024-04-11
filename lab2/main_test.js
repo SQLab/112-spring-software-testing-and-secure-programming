@@ -22,6 +22,7 @@ var fs = require('fs');
                      await g.getNames();
                      await g.getNames();
                      await g.getNames();
+                     await g.getNames();
                      await g.selectNextPerson();
                      await g.selectNextPerson();
                      await g.selectNextPerson();
