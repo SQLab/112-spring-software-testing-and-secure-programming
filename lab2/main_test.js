@@ -21,7 +21,7 @@ var fs = require('fs');
                      const g = new Application();
                      await g.getNames();
                      await g.getNames();
-                     await g.getNames();
+//                     await g.getNames();
                      await g.getNames();
                      await g.selectNextPerson();
                      await g.selectNextPerson();
