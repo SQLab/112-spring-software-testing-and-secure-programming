@@ -2,48 +2,52 @@ const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
-describe("Test exp", () => {
-    const calculator =new Calculator
-    const exp = calculator.exp
-    const exptestcass =[
-        { param: "1", expectedError: Error },
-        { param: 1000, expectedError: Error },
-        { param: 2, expected: Math.exp(2) }
-    ]
-    exptestcass.forEach(({ param, expected,expectedError }) => {
-        if (expectedError){
-            it("expectedError", () => {
-                assert.throws(() => {
-                    exp(param);
-                }, expectedError);
-            })
-        }else{
-            it("expected", () => {
-                assert.strictEqual(exp(param),expected)
-            })
+function generateTestCaseExp(param, expectedResult, error = null) {
+    return { param, expectedResult, error };
+}
+
+
+function generateTestCaseLog(param, expectedResult, error = null) {
+    return { param, expectedResult, error };
+}
+
+
+describe('Calculator Exponential and Logarithmic Functions', () => {
+    const calculator = new Calculator();
+
+    it('should calculate exponential values correctly', () => {
+        const testCases = [
+            generateTestCaseExp(1, Math.exp(1)),
+            generateTestCaseExp(2, Math.exp(2)),
+            generateTestCaseExp(Number.MAX_VALUE, Error, 'overflow'),
+            generateTestCaseExp(null, Error, 'unsupported operand type'),
+            generateTestCaseExp('ABC', Error, 'unsupported operand type')
+        ];
+
+        for (const { param, expectedResult, error } of testCases) {
+            const assertion = expectedResult === Error ?
+                () => assert.throws(() => calculator.exp(param), { name: 'Error', message: error }) :
+                () => assert.strictEqual(calculator.exp(param), expectedResult);
+
+            assertion();
         }
     });
-});
-describe("Test log", () => {
-    const calculator =new Calculator
-    const log = calculator.log
-    const logtestcass =[
-        { param: "1", logectedError: Error },
-        { param: 0, logectedError: Error },
-        { param: -1, logectedError: Error },
-        { param: 2, logected: Math.log(2) }
-    ]
-    logtestcass.forEach(({ param, logected,logectedError }) => {
-        if (logectedError){
-            it("logectedError", () => {
-                assert.throws(() => {
-                    log(param);
-                }, logectedError);
-            })
-        }else{
-            it("logected", () => {
-                assert.strictEqual(log(param),logected)
-            })
+
+    it('should calculate logarithmic values correctly', () => {
+        const testCases = [
+            generateTestCaseLog(1, 0),
+            generateTestCaseLog(0, Error, 'math domain error (1)'),
+            generateTestCaseLog(-2, Error, 'math domain error (2)'),
+            generateTestCaseLog(null, Error, 'unsupported operand type'),
+            generateTestCaseLog('ABC', Error, 'unsupported operand type')
+        ];
+
+        for (const { param, expectedResult, error } of testCases) {
+            const assertion = expectedResult === Error ?
+                () => assert.throws(() => calculator.log(param), { name: 'Error', message: error }) :
+                () => assert.strictEqual(calculator.log(param), expectedResult);
+
+            assertion();
         }
     });
 });
