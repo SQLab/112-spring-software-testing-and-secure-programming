@@ -7,7 +7,7 @@ const puppeteer = require('puppeteer');
     // browser = await puppeteer.launch({ headless: false });
     
     // 測試 autograding，開啟無頭模式
-    const browser = await puppeteer.launch();
+    browser = await puppeteer.launch();
 
     const page = await browser.newPage();
     await page.goto('https://pptr.dev/');
