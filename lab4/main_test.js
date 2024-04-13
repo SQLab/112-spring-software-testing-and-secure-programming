@@ -4,7 +4,11 @@ const puppeteer = require('puppeteer');
   let browser;
   try {
     // 跟 Selenium 剛好顛倒，預設是無頭模式
-    browser = await puppeteer.launch({ headless: false });
+    // browser = await puppeteer.launch({ headless: false });
+    
+    // 測試 autograding，開啟無頭模式
+    const browser = await puppeteer.launch();
+
     const page = await browser.newPage();
     await page.goto('https://pptr.dev/');
     await new Promise(resolve => setTimeout(resolve, 1000)); // 等待1秒
