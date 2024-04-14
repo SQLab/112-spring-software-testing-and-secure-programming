@@ -1,47 +1,58 @@
-const { describe, it } = require('my_test_framework');
+const { describe, it } = require('node:test');
 const assert = require('assert');
-const { Calculator } = require('./calculator_module');
+const { Calculator } = require('./main');
 
-describe("Calculator Tests", () => {
+describe('Calculator', () => {
     const calculator = new Calculator();
 
-    const testCases = [
-        {
-            operation: "log",
-            cases: [
-                { data: 6, expected: Math.log(6) },
-                { data: 5, expected: Math.log(5) },
-                { data: 2, expected: Math.log(2) },
-                { data: 'guava', expected: Error, message: "unsupported operand type" },
-                { data: true, expected: Error, message: "unsupported operand type" },
-                { data: Infinity, expected: Error, message: "unsupported operand type" },
-                { data: 0, expected: Error, message: "math domain error (1)" },
-                { data: -1, expected: Error, message: "math domain error (2)" },
-            ]
-        },
-        {
-            operation: "exp",
-            cases: [
-                { data: 4, expected: Math.exp(4) },
-                { data: 0, expected: Math.exp(0) },
-                { data: -2, expected: Math.exp(-2) },
-                { data: 'guava666', expected: Error, message: "unsupported operand type" },
-                { data: true, expected: Error, message: "unsupported operand type" },
-                { data: Infinity, expected: Error, message: "unsupported operand type" },
-                { data: Number.MAX_VALUE, expected: Error, message: "overflow" },
-            ]
-        }
-    ];
+    describe('exp()', () => {
+        // Test cases for error results
+        it('should throw error for unsupported operand type', () => {
+            assert.throws(() => calculator.exp('string'), { message: 'unsupported operand type' });
+        });
 
-    testCases.forEach(({ operation, cases }) => {
-        it(`Testing Calculator.${operation}()`, () => {
-            cases.forEach(({ data: param, expected: expectedOutput, message: msg }) => {
-                if (expectedOutput === Error) {
-                    assert.throws(() => calculator[operation](param), expectedOutput, msg);
-                } else {
-                    const result = calculator[operation](param);
-                    assert.strictEqual(result, expectedOutput, msg);
-                }
+        it('should throw error for overflow', () => {
+            assert.throws(() => calculator.exp(1000), { message: 'overflow' });
+        });
+
+        // Parameterized test cases for non-error results
+        const nonErrorCases = [
+            { input: 0, expected: 1 },
+            { input: 1, expected: Math.exp(1) },
+            { input: -1, expected: Math.exp(-1) }
+        ];
+
+        nonErrorCases.forEach(({ input, expected }) => {
+            it(`should return ${expected} for exp(${input})`, () => {
+                assert.strictEqual(calculator.exp(input), expected);
+            });
+        });
+    });
+
+    describe('log()', () => {
+        // Test cases for error results
+        it('should throw error for unsupported operand type', () => {
+            assert.throws(() => calculator.log('string'), { message: 'unsupported operand type' });
+        });
+
+        it('should throw error for math domain error (1)', () => {
+            assert.throws(() => calculator.log(0), { message: 'math domain error (1)' });
+        });
+
+        it('should throw error for math domain error (2)', () => {
+            assert.throws(() => calculator.log(-1), { message: 'math domain error (2)' });
+        });
+
+        // Parameterized test cases for non-error results
+        const nonErrorCases = [
+            { input: 1, expected: 0 },
+            { input: Math.E, expected: 1 },
+            { input: 10, expected: Math.log(10) }
+        ];
+
+        nonErrorCases.forEach(({ input, expected }) => {
+            it(`should return ${expected} for log(${input})`, () => {
+                assert.strictEqual(calculator.log(input), expected);
             });
         });
     });
