@@ -1,36 +1,43 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-    // 啟動瀏覽器並開啟新分頁
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+  // Launch the browser and open a new blank page
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-    try {
-        // 前往指定網址
-        await page.goto('https://pptr.dev/');
+  // Navigate the page to a URL
+  await page.goto('https://pptr.dev/');
 
-        // 等待搜索框出現並輸入查詢字串
-        const searchInput = await page.waitForSelector('#docsearch-input');
-        await searchInput.type('chipi chipi chapa chapa');
+  try {
+    // 等待搜尋框出現，增加超時時間
+    await page.waitForSelector('#docsearch-input', { timeout: 60000 });
 
-        // 等待搜索按鈕出現並點擊
-        const searchButton = await page.waitForSelector('.DocSearch-Button');
-        await searchButton.click();
+    // 模糊搜尋，提高容錯率
+    await page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 100 }); 
 
-        // 等待 Docs 區塊的第一個結果出現並點擊
-        const firstResult = await page.waitForSelector('#docsearch-item-5 > a');
-        await firstResult.click();
+    // 等待搜尋結果
+    await page.waitForSelector('#docsearch-item-0');
 
-        // 等待頁面標題出現並取得文字內容
-        const titleElement = await page.waitForSelector('h1');
-        const titleText = await page.evaluate(el => el.textContent, titleElement);
+    // 取得 Docs 區塊
+    const docsSection = await page.$('.DocSearch-Dropdown-Container');
 
-        // 輸出頁面標題
-        console.log(titleText);
-    } catch (error) {
-        console.error('操作過程中發生錯誤:', error);
-    } finally {
-        // 關閉瀏覽器
-        await browser.close();
-    }
+    // 點擊 Docs 區塊中的第一個結果
+    const firstDocResult = await docsSection.$('a');
+    await firstDocResult.click();
+
+    // 等待標題元素出現
+    await page.waitForSelector('h1');
+
+    // 取得標題文字
+    const titleElement = await page.$('h1');
+    const titleText = await page.evaluate(el => el.textContent, titleElement);
+
+    // 列印標題
+    console.log(titleText);
+  } catch (error) {
+    console.error('搜尋過程中發生錯誤：', error);
+  } finally {
+    // 關閉瀏覽器
+    await browser.close();
+  }
 })();
