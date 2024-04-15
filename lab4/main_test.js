@@ -1,43 +1,38 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-  // Launch the browser and open a new blank page
+  // 啟動瀏覽器並開啟新分頁
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  // Navigate the page to a URL
+  // 前往指定網址
   await page.goto('https://pptr.dev/');
 
-  try {
-    // 等待搜尋框出現，增加超時時間
-    await page.waitForSelector('#docsearch-input', { timeout: 60000 });
+  // 找到搜尋按鈕並點擊
+  const searchButton = await page.$('.DocSearch-Button'); // 使用 class 選擇器
+  await searchButton.click();
 
-    // 模糊搜尋，提高容錯率
-    await page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 100 }); 
+  // 輸入搜尋關鍵字
+  const searchInput = await page.$('#docsearch-input'); // 使用 id 選擇器
+  await searchInput.type('chipi chipi chapa chapa');
 
-    // 等待搜尋結果
-    await page.waitForSelector('#docsearch-item-0');
+  // 等待搜尋結果出現
+  await page.waitForSelector('#docsearch-item-5 > a');
 
-    // 取得 Docs 區塊
-    const docsSection = await page.$('.DocSearch-Dropdown-Container');
+  // 點擊文件分類中第一個結果
+  const firstDocResult = await page.$('#docsearch-item-5 > a');
+  await firstDocResult.click();
 
-    // 點擊 Docs 區塊中的第一個結果
-    const firstDocResult = await docsSection.$('a');
-    await firstDocResult.click();
+  // 等待標題元素出現
+  await page.waitForSelector('h1');
 
-    // 等待標題元素出現
-    await page.waitForSelector('h1');
+  // 取得標題文字
+  const titleElement = await page.$('h1');
+  const titleText = await page.evaluate(el => el.textContent, titleElement);
 
-    // 取得標題文字
-    const titleElement = await page.$('h1');
-    const titleText = await page.evaluate(el => el.textContent, titleElement);
+  // 列印標題
+  console.log(titleText);
 
-    // 列印標題
-    console.log(titleText);
-  } catch (error) {
-    console.error('搜尋過程中發生錯誤：', error);
-  } finally {
-    // 關閉瀏覽器
-    await browser.close();
-  }
+  // 關閉瀏覽器
+  await browser.close();
 })();
