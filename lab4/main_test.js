@@ -1,39 +1,47 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-  // 啟動瀏覽器並開啟新分頁
-  const browser = await puppeteer.launch({ headless: false });
+  // 啟動無頭模式瀏覽器並建立新分頁
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   
-  // 前往指定的網址
-  await page.goto('https://pptr.dev/');
+  // 設定瀏覽器視窗大小
+  await page.setViewport({ width: 1280, height: 800 });
+  
+  try {
+    // 前往指定網址
+    await page.goto('https://pptr.dev/');
 
-  // 1. 點擊搜尋按鈕 (使用 XPath)
-  const searchButtonXPath = '//button[contains(@class, "DocSearch-Button")]';
-  await page.waitForXPath(searchButtonXPath);
-  const [searchButton] = await page.$x(searchButtonXPath);
-  await searchButton.click();
+    // 使用 XPath 選擇器點擊搜尋按鈕
+    const searchButtonXPath = '//*[@class="DocSearch-Button"]';
+    await page.waitForXPath(searchButtonXPath);
+    const searchButtonElement = await page.$x(searchButtonXPath);
+    await searchButtonElement[0].click();
 
-  // 2. 輸入搜尋文字
-  const searchInputSelector = '#docsearch-input'; 
-  await page.waitForSelector(searchInputSelector); 
-  await page.type(searchInputSelector, 'chipi chipi chapa chapa'); 
+    // 輸入搜尋文字並模擬按下 Enter 鍵
+    await page.type('#docsearch-input', 'chipi chipi chapa chapa');
+    await page.keyboard.press('Enter');
 
-  // 3. 等待搜尋結果並點擊 Docs 區段的第一個結果
-  const firstDocResultXPath = '//*[@id="docsearch-item-5"]/a';
-  await page.waitForXPath(firstDocResultXPath);
-  const [firstDocResult] = await page.$x(firstDocResultXPath);
-  await firstDocResult.click();
+    // 等待特定文字的搜尋結果出現
+    await page.waitForXPath("//*[contains(text(), 'API Reference')]");
 
-  // 4. 取得頁面標題 (使用 XPath)
-  const titleXPath = '//h1';
-  await page.waitForXPath(titleXPath);
-  const [titleElement] = await page.$x(titleXPath);
-  const titleText = await page.evaluate(el => el.textContent, titleElement);
+    // 點擊包含特定文字的搜尋結果
+    const resultXPath = "//*[contains(text(), 'API Reference')]";
+    const results = await page.$x(resultXPath);
+    await results[0].click();
 
-  // 5. 印出標題
-  console.log(titleText);
+    // 取得頁面標題並轉換為大寫
+    const titleSelector = 'h1';
+    await page.waitForSelector(titleSelector);
+    const titleText = await page.$eval(titleSelector, el => el.textContent.toUpperCase());
 
-  // 關閉瀏覽器
-  await browser.close();
+    // 顯示處理後的標題
+    console.log('頁面標題 (大寫):', titleText);
+
+  } catch (error) {
+    console.error('發生錯誤:', error);
+  } finally {
+    // 關閉瀏覽器
+    await browser.close();
+  }
 })();
