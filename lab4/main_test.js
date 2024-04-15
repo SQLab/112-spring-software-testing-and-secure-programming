@@ -1,23 +1,28 @@
-const playwright = require('playwright');
+const puppeteer = require('puppeteer');
 
 async function searchAndPrintTitle() {
-  // 選擇 Chromium 瀏覽器
-  const browser = await playwright.chromium.launch();
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   try {
     await page.goto('https://pptr.dev/');
 
-    // 輸入搜尋文字並按下 Enter 鍵
-    await page.fill('#docsearch-input', 'chipi chipi chapa chapa');
-    await page.press('#docsearch-input', 'Enter');
+    // 使用 XPath 選擇器點擊搜尋按鈕
+    const [searchButton] = await page.$x("//button[contains(., 'Search')]");
+    await searchButton.click();
 
-    // 點擊第一個 Docs 結果 (使用 CSS 選擇器)
-    await page.click('text=Docs >> a'); 
+    // 使用 CSS 選擇器輸入搜尋文字
+    await page.type('#docsearch-input', 'chipi chipi chapa chapa');
 
-    // 取得標題並列印
-    const title = await page.title();
-    console.log(title);
+    // 使用 CSS 選擇器並結合 nth-child 找到第一個 Docs 結果
+    const firstDocResult = await page.$('#docsearch-results a:nth-child(1)');
+    await firstDocResult.click();
+
+    // 使用 CSS 選擇器获取标题
+    const titleElement = await page.$('h1');
+    const titleText = await page.evaluate(el => el.textContent, titleElement);
+
+    console.log(titleText);
   } catch (error) {
     console.error('Error during search:', error);
   } finally {
