@@ -1,18 +1,43 @@
 const puppeteer = require('puppeteer');
 
-(async () => {
+async function searchAndPrintTitle() {
+  // Launch the browser and open a new blank page
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto('https://pptr.dev/')
-    .then(() => page.click('button.DocSearch.DocSearch-Button'))
-    .then(() => page.waitForSelector('#docsearch-input'))
-    .then(() => page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 100 }))
-    .then(() => page.waitForSelector('#docsearch-item-5'))
-    .then(() => page.click('#docsearch-item-5'))
-    .then(() => page.waitForSelector('h1'))
-    .then(() => page.evaluate(() => document.querySelector('h1').textContent))
-    .then(title => console.log(title))
-    .catch(error => console.error('An error occurred:', error))
-    .finally(() => browser.close());
-})();
+  try {
+    // Navigate to the website
+    await page.goto('https://pptr.dev/');
+
+    // Click the search button
+    const searchButtonSelector = '.DocSearch-Button';
+    await page.waitForSelector(searchButtonSelector);
+    await page.click(searchButtonSelector);
+
+    // Type the search query
+    const searchInputSelector = '#docsearch-input';
+    await page.waitForSelector(searchInputSelector);
+    await page.type(searchInputSelector, 'chipi chipi chapa chapa');
+
+    // Wait for the search result and click the first result in the Docs section
+    const firstDocResultSelector = '#docsearch-item-5 > a';
+    await page.waitForSelector(firstDocResultSelector);
+    await page.click(firstDocResultSelector);
+
+    // Get the title of the page
+    const titleSelector = 'h1';
+    await page.waitForSelector(titleSelector);
+    const titleElement = await page.$(titleSelector);
+    const titleText = await page.evaluate(el => el.textContent, titleElement);
+
+    // Print the title
+    console.log(titleText);
+  } catch (error) {
+    console.error('Error during search:', error);
+  } finally {
+    // Close the browser
+    await browser.close();
+  }
+}
+
+searchAndPrintTitle();
