@@ -1,33 +1,45 @@
-const puppeteer = require('puppeteer');
+#!/bin/bash
 
-async function searchAndPrintTitle() {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+# Check for unwanted files
+for file in *; do
+  if [[ $file != "node_modules" && $file != "main_test.js" && $file != "package-lock.json" && $file != "package.json" && $file != "README.md" && $file != "validate.sh" ]]; then
+    echo "[!] Unwanted file detected: $file."
+    exit 1
+  fi
+done
 
-  try {
-    await page.goto('https://pptr.dev/');
+node=$(which node)
+test_path="${BASH_SOURCE[0]}"
+solution_path="$(realpath .)"
+tmp_dir=$(mktemp -d -t lab4-XXXXXXXXXX)
+answer="Experimental WebDriver BiDi support"
 
-    // 使用 XPath 選擇器點擊搜尋按鈕
-    const [searchButton] = await page.$x("//button[contains(., 'Search')]");
-    await searchButton.click();
+cd $tmp_dir
 
-    // 使用 CSS 選擇器輸入搜尋文字
-    await page.type('#docsearch-input', 'chipi chipi chapa chapa');
+rm -rf *
+cp $solution_path/*.js .
+cp $solution_path/*.json .
 
-    // 使用 CSS 選擇器並結合 nth-child 找到第一個 Docs 結果
-    const firstDocResult = await page.$('#docsearch-results a:nth-child(1)');
-    await firstDocResult.click();
+# Install dependencies
+npm ci
 
-    // 使用 CSS 選擇器获取标题
-    const titleElement = await page.$('h1');
-    const titleText = await page.evaluate(el => el.textContent, titleElement);
+result=$($"node" main_test.js) ; ret=$?
+if [ $ret -ne 0 ] ; then
+  echo "[!] testing fails"
+  exit 1
+else
+  title=$(echo "$result" | head -1)
+  if [[ $title != $answer ]]; then
+    echo "[!] Expected: $answer"
+    echo "[!] Actual:   $title"
+    exit 1
+  else
+    echo "[V] Pass"
+  fi
+fi
 
-    console.log(titleText);
-  } catch (error) {
-    console.error('Error during search:', error);
-  } finally {
-    await browser.close();
-  }
-}
+rm -rf $tmp_dir
 
-searchAndPrintTitle();
+exit 0
+
+# vim: set fenc=utf8 ff=unix et sw=2 ts=2 sts=2:
