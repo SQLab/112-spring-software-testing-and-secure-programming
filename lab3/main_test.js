@@ -1,53 +1,60 @@
 const { describe, it } = require('node:test');
 const assert = require('assert');
-const { Calculator } = require('./main'); 
+const { Calculator } = require('./main');
 
 describe('Calculator', () => {
-  let calculator;
+    const calculator = new Calculator();
 
-  beforeEach(() => {
-    calculator = new Calculator();
-  });
+    describe('exp function', () => {
+        it('calculates the exponential of a number', async () => {
+            assert.strictEqual(calculator.exp(1), Math.exp(1));
+        });
 
-  describe('exp method', () => {
-    it('should correctly calculate the exponential of a number', async () => {
-      assert.strictEqual(calculator.exp(1), Math.exp(1));
+        it('throws error on non-finite input', async () => {
+            assert.throws(() => calculator.exp('a'), {
+                name: 'Error',
+                message: 'unsupported operand type'
+            });
+            assert.throws(() => calculator.exp(Infinity), {
+                name: 'Error',
+                message: 'unsupported operand type'
+            });
+        });
+
+        it('handles overflow', async () => {
+            assert.throws(() => calculator.exp(1000), {
+                name: 'Error',
+                message: 'overflow'
+            });
+        });
     });
 
-    it('should throw an "overflow" error for large numbers', async () => {
-      assert.throws(() => {
-        calculator.exp(1000);
-      }, new Error('overflow'));
-    });
+    describe('log function', () => {
+        it('calculates the logarithm of a number', async () => {
+            assert.strictEqual(calculator.log(Math.E), Math.log(Math.E));
+        });
 
-    it('should throw "unsupported operand type" for non-numeric inputs', async () => {
-      assert.throws(() => {
-        calculator.exp('a');
-      }, new Error('unsupported operand type'));
-    });
-  });
+        it('throws error on non-finite input', async () => {
+            assert.throws(() => calculator.log('a'), {
+                name: 'Error',
+                message: 'unsupported operand type'
+            });
+            assert.throws(() => calculator.log(-1), {
+                name: 'Error',
+                message: 'math domain error (1)'
+            });
+        });
 
-  describe('log method', () => {
-    it('should correctly calculate the natural logarithm of a number', async () => {
-      assert.strictEqual(calculator.log(Math.E), 1);
+        it('handles domain errors', async () => {
+            assert.throws(() => calculator.log(0), {
+                name: 'Error',
+                message: 'math domain error (1)'
+            });
+            assert.throws(() => calculator.log(null), {
+                name: 'Error',
+                message: 'unsupported operand type'
+            });
+        });
     });
-
-    it('should throw a "math domain error (1)" for negative numbers', async () => {
-      assert.throws(() => {
-        calculator.log(-1);
-      }, new Error('math domain error (1)'));
-    });
-
-    it('should throw a "math domain error (2)" for zero', async () => {
-      assert.throws(() => {
-        calculator.log(0);
-      }, new Error('math domain error (2)'));
-    });
-
-    it('should throw "unsupported operand type" for non-numeric inputs', async () => {
-      assert.throws(() => {
-        calculator.log('a');
-      }, new Error('unsupported operand type'));
-    });
-  });
 });
+
