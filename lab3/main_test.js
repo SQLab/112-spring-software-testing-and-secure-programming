@@ -1,23 +1,49 @@
-const { describe, it } = require('node:test');
 const assert = require('assert');
-const { Calculator } = require('./main');
+const Calculator = require('./main').Calculator;
 
-describe('Calculator', () => {
-    const calculator = new Calculator();
 
-    it('should calculate the exponential function correctly', () => {
-        assert.strictEqual(calculator.exp(0), 1);
-        assert.strictEqual(calculator.exp(1), Math.exp(1));
-        assert.strictEqual(calculator.exp(2), Math.exp(2));
-        
+
+describe('Calculator', function () {
+
+    describe('exp', function () {
+        it('should calculate correctly for 0, 1, and -1', function () {
+            var calculator = new Calculator();     
+            assert.strictEqual(calculator.exp(0), 1);
+            assert.strictEqual(calculator.exp(1), Math.exp(1));
+            assert.strictEqual(calculator.exp(-1), 1 / Math.exp(1));
+        });
+
+        it('should throw an error for NaN, Infinity, and -Infinity', function () {
+            var calculator = new Calculator();
+            assert.throws(function () { calculator.exp(NaN) }, Error);
+            assert.throws(function () { calculator.exp(Infinity) }, Error);
+            assert.throws(function () { calculator.exp(-Infinity) }, Error);
+        });
+
+        it('should throw an error for overflow', function () {
+            var calculator = new Calculator();
+            assert.throws(function () { calculator.exp(9999) }, Error);
+        });
     });
 
-    it('should calculate the natural logarithm correctly', () => {
-        assert.strictEqual(calculator.log(1), 0);
-        assert.strictEqual(calculator.log(Math.E), 1);
-        assert.strictEqual(calculator.log(10), Math.log(10));
-       
-    });
+    describe('log', function () {
+        it('should calculate correctly for 1 and Math.E', function () {
+            var calculator = new Calculator();
+            assert.strictEqual(calculator.log(1), 0);
+            assert.strictEqual(calculator.log(Math.E), 1);
+        });
 
-   
+        it('should throw an error for NaN, Infinity, and -Infinity', function () {
+            var calculator = new Calculator();
+            assert.throws(function () { calculator.log(NaN) }, Error);
+            assert.throws(function () { calculator.log(Infinity) }, Error);
+            assert.throws(function () { calculator.log(-Infinity) }, Error);
+        });
+
+        it('should throw an error for 0 and -1', function () {
+            var calculator = new Calculator();
+            assert.throws(function () { calculator.log(0) }, Error);
+            assert.throws(function () { calculator.log(-1) }, Error);
+        });
+    });
 });
