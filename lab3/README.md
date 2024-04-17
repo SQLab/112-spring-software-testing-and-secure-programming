@@ -7,9 +7,7 @@ In this lab, you will write unit tests for functions implemented in `main.js`. Y
 ## Preparation (Important!!!)
 
 1. Sync fork your branch (e.g., `SQLab:311XXXXXX`)
-2. `git checkout 311XXXXXX`
-3. `git pull`
-4. `git checkout -b lab3` (**NOT** your student ID !!!)
+2. `git checkout -b lab3` (**NOT** your student ID !!!)
 
 ## Requirement
 
