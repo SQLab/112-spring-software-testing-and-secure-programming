@@ -1,41 +1,49 @@
 const assert = require('assert');
-const Calculator = require('./main').Calculator;
+const { Calculator } = require('./main');
 
 // TODO: write your tests here
-describe("Calculator", function () {
-    describe("exp", function () {
-        const cal = new Calculator();
 
-        it("should throw an error for unsupported operand type", function () {
-            assert.throws(function () { cal.exp('a') }, Error, 'unsupported operand type');
+describe('Calculator', () => {
+
+    describe('exp', () => {
+        it('should calculate correctly for 0, 1, and -1', () => {
+            const calculator = new Calculator();     
+            assert.strictEqual(calculator.exp(0), 1);
+            assert.strictEqual(calculator.exp(1), Math.exp(1));
+            assert.strictEqual(calculator.exp(-1), 1 / Math.exp(1));
         });
 
-        it("should throw an error for overflow", function () {
-            assert.throws(function () { cal.exp(1000) }, Error, 'overflow');
+        it('should throw an error for NaN, Infinity, and -Infinity', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.exp(NaN), Error);
+            assert.throws(() => calculator.exp(Infinity), Error);
+            assert.throws(() => calculator.exp(-Infinity), Error);
         });
 
-        it("should return 1 for input 0", function () {
-            assert.strictEqual(cal.exp(0), 1);
+        it('should throw an error for overflow', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.exp(9999), Error);
         });
     });
 
-    describe("log", function () {
-        const cal = new Calculator();
-
-        it("should throw an error for unsupported operand type", function () {
-            assert.throws(function () { cal.log('a') }, Error, 'unsupported operand type');
+    describe('log', () => {
+        it('should calculate correctly for 1 and Math.E', () => {
+            const calculator = new Calculator();
+            assert.strictEqual(calculator.log(1), 0);
+            assert.strictEqual(calculator.log(Math.E), 1);
         });
 
-        it("should throw an error for math domain error (1)", function () {
-            assert.throws(function () { cal.log(0) }, Error, 'math domain error (1)');
+        it('should throw an error for NaN, Infinity, and -Infinity', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.log(NaN), Error);
+            assert.throws(() => calculator.log(Infinity), Error);
+            assert.throws(() => calculator.log(-Infinity), Error);
         });
 
-        it("should throw an error for math domain error (2)", function () {
-            assert.throws(function () { cal.log(-1) }, Error, 'math domain error (2)');
-        });
-
-        it("should return 0 for input 1", function () {
-            assert.strictEqual(cal.log(1), 0);
+        it('should throw an error for 0 and -1', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.log(0), Error);
+            assert.throws(() => calculator.log(-1), Error);
         });
     });
 });
