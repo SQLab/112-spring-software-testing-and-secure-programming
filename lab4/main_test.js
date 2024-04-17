@@ -1,10 +1,7 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-    const browser = await puppeteer.launch({
-        headless: false, // Set to false to see the browser action
-        slowMo: 100,
-    });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     // Navigate to the URL
