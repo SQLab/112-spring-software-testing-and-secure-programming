@@ -1,12 +1,7 @@
-# Lab5
-
-## Introduction
-
-In this lab, you will write a function antoasan to bypass detection of ASan in `antiasan.c` and answer questions of slide in `Answer.md`.
-
 ## Preparation (Important!!!)
 
 1. Sync fork your branch (e.g., `SQLab:311XXXXXX`)
+
 2. `git checkout -b lab5` (**NOT** your student ID !!!)
 
 ## Requirement
@@ -18,6 +13,19 @@ In this lab, you will write a function antoasan to bypass detection of ASan in `
 You can run `validate.sh` in your local to test if you satisfy the requirements.
 
 Please note that you must not alter files other than `antiasan.c` and `Answer.md`. You will get 0 points if
+=======
+2. `git checkout -b lab4` (**NOT** your student ID !!!)
+
+## Requirement
+
+1. (100%) Goto https://pptr.dev/, type `chipi chipi chapa chapa` into the search box, click on **1st** result in the **Docs** section, and print the title.
+
+For the detailed steps and hints, please check the slide of this lab.
+
+You can run `validate.sh` in your local to test if you satisfy the requirements.
+
+Please note that you must not alter files other than `main_test.js`. You will get 0 points if
+
 
 1. you modify other files to achieve requirements.
 2. you can't pass all CI on your PR.
