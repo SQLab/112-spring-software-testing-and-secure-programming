@@ -11,8 +11,8 @@ done
 node=$(which node)
 test_path="${BASH_SOURCE[0]}"
 solution_path="$(realpath .)"
-# tmp_dir=$(mktemp -d -t lab3-XXXXXXXXXX)
-tmp_dir=$(mktemp -d -t lab3-510558013)
+tmp_dir=$(mktemp -d -t lab3-XXXXXXXXXX)
+#tmp_dir=$(mktemp -d -t lab3-510558013)
 cd $tmp_dir
 
 rm -rf *
