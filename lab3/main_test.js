@@ -1,5 +1,5 @@
 const assert = require('assert');
-const Calculator = require('./main').Calculator;
+const { Calculator } = require('./main');
 
 
 describe("Calculator", function () {
