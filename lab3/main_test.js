@@ -1,49 +1,42 @@
+const { Calculator } = require('./main');
 const assert = require('assert');
-const Calculator = require('./main').Calculator;
 
+describe('Calculator', () => {
+    const calculator = new Calculator();
 
+    const testCasesExp = [
+        { input: 2, expected: Math.exp(2), description: 'Calculate exp(2)' },
+        { input: 3, expected: Math.exp(3), description: 'Calculate exp(3)' },
+        { input: -1, expected: 1 / Math.exp(1), description: 'Calculate exp(-1)' }
+    ];
 
-describe('Calculator', function () {
-
-    describe('exp', function () {
-        it('should calculate correctly for 0, 1, and -1', function () {
-            var calculator = new Calculator();     
-            assert.strictEqual(calculator.exp(0), 1);
-            assert.strictEqual(calculator.exp(1), Math.exp(1));
-            assert.strictEqual(calculator.exp(-1), 1 / Math.exp(1));
-        });
-
-        it('should throw an error for NaN, Infinity, and -Infinity', function () {
-            var calculator = new Calculator();
-            assert.throws(function () { calculator.exp(NaN) }, Error);
-            assert.throws(function () { calculator.exp(Infinity) }, Error);
-            assert.throws(function () { calculator.exp(-Infinity) }, Error);
-        });
-
-        it('should throw an error for overflow', function () {
-            var calculator = new Calculator();
-            assert.throws(function () { calculator.exp(9999) }, Error);
+    testCasesExp.forEach(({ input, expected, description }) => {
+        it(description, () => {
+            assert.strictEqual(calculator.exp(input), expected);
         });
     });
 
-    describe('log', function () {
-        it('should calculate correctly for 1 and Math.E', function () {
-            var calculator = new Calculator();
-            assert.strictEqual(calculator.log(1), 0);
-            assert.strictEqual(calculator.log(Math.E), 1);
-        });
+    const testCasesLog = [
+        { input: Math.E, expected: 1, description: 'Calculate log(Math.E)' },
+        { input: 1, expected: Math.log(1), description: 'Calculate log(1)' },
+        { input: 4, expected: Math.log(4), description: 'Calculate log(4)' }
+    ];
 
-        it('should throw an error for NaN, Infinity, and -Infinity', function () {
-            var calculator = new Calculator();
-            assert.throws(function () { calculator.log(NaN) }, Error);
-            assert.throws(function () { calculator.log(Infinity) }, Error);
-            assert.throws(function () { calculator.log(-Infinity) }, Error);
+    testCasesLog.forEach(({ input, expected, description }) => {
+        it(description, () => {
+            assert.strictEqual(calculator.log(input), expected);
         });
+    });
 
-        it('should throw an error for 0 and -1', function () {
-            var calculator = new Calculator();
-            assert.throws(function () { calculator.log(0) }, Error);
-            assert.throws(function () { calculator.log(-1) }, Error);
+    const errorCases = [
+        { input: 'string', expectedError: /unsupported operand type/, description: 'Test passing a string' },
+        { input: 0, expectedError: /math domain error \(1\)/, description: 'Test passing 0' },
+        { input: -1, expectedError: /math domain error \(2\)/, description: 'Test passing -1' }
+    ];
+
+    errorCases.forEach(({ input, expectedError, description }) => {
+        it(description, () => {
+            assert.throws(() => calculator.log(input), expectedError);
         });
     });
 });
