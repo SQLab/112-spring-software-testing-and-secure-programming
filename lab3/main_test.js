@@ -1,7 +1,7 @@
 const assert = require('assert');
 const Calculator = require('./main').Calculator;
 
-// TODO: write your tests here
+
 describe("Calculator", function () {
     describe("exp", function () {
         const cal = new Calculator();
