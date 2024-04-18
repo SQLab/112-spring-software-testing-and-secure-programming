@@ -9,8 +9,7 @@ const puppeteer = require('puppeteer');
     await page.goto('https://pptr.dev/');
 
     // 輸入搜尋文字
-    await page.type('#search-box input[type="search"]', 'chipi chipi chapa chapa');
-
+    await page.type('.DocSearch-Input', 'chipi chipi chapa chapa');
     // 使用 XPath 定位搜尋按鈕並點擊
     const searchButton = await page.$x('//*[@id="search-box"]/button');
     await searchButton[0].click();
