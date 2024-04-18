@@ -8,20 +8,31 @@ const puppeteer = require('puppeteer');
     // 前往指定網址
     await page.goto('https://pptr.dev/');
 
-    // 1. 點擊搜尋按鈕 (簡化: 使用 CSS 選擇器直接點擊)
-    await page.click('.DocSearch-Button');
+    try {
+        // 1. 點擊搜尋按鈕
+        const searchSelector = '.DocSearch-Button';
+        await page.waitForSelector(searchSelector); // 等待按鈕出現，避免錯誤
+        await page.click(searchSelector);
 
-    // 2. 輸入搜尋文字 (簡化: 使用 CSS 選擇器直接輸入)
-    await page.type('.DocSearch-Input', 'chipi chipi chapa chapa', { delay: 50 }); // 稍微延遲輸入
+        // 2. 在搜尋框中輸入 'chipi chipi chapa chapa'
+        const inputSelector = '.DocSearch-Input';
+        await page.waitForSelector(inputSelector); // 等待輸入框出現，避免錯誤
+        await page.type(inputSelector, 'chipi chipi chapa chapa', { delay: 100 }); // 輸入文字，調整延遲以適應網路速度
 
-    // 3. 等待並點擊第一個搜尋結果 (簡化: 使用更精確的選擇器)
-    await page.waitForSelector('.DocSearch-Hit-source'); // 等待結果出現
-    await page.click('.DocSearch-Hit-source'); // 點擊第一個結果的來源 (通常是標題)
+        // 3. 等待並點擊第一個搜尋結果
+        const itemSelector = '#docsearch-item-0'; // 使用更穩定的選擇器
+        await page.waitForSelector(itemSelector);
+        await page.click(itemSelector);
 
-    // 4. 取得並印出標題 (簡化: 使用 h1 標籤選擇器)
-    const title = await page.$eval('h1', el => el.textContent);
-    console.log(title);
-
-    // 5. 關閉瀏覽器
-    await browser.close();
+        // 4. 獲取並列印標題
+        const titleSelector = 'h1';
+        await page.waitForSelector(titleSelector);
+        const title = await page.$eval(titleSelector, el => el.textContent);
+        console.log(title);
+    } catch (error) {
+        console.error('Error during test execution:', error);
+    } finally {
+        // 關閉瀏覽器
+        await browser.close();
+    }
 })();
