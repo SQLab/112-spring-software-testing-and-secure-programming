@@ -5,29 +5,26 @@ const puppeteer = require('puppeteer');
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // 前往指定的網址
+    // 前往指定網址
     await page.goto('https://pptr.dev/');
 
-    // 輸入搜尋文字
-    await page.type('.DocSearch-Input', 'chipi chipi chapa chapa');
-    // 使用 XPath 定位搜尋按鈕並點擊
-    const searchButton = await page.$x('//*[@id="search-box"]/button');
-    await searchButton[0].click();
+    // 1. 點擊搜尋按鈕 (簡化: 直接聚焦搜尋框)
+    const inputSelector = '.DocSearch-Input';
+    await page.waitForSelector(inputSelector);
+    await page.focus(inputSelector); // 直接聚焦，跳過點擊按鈕
 
-    // 等待搜尋結果出現
-    await page.waitForSelector('.DocSearch-Hit-source');
+    // 2. 輸入搜尋詞彙
+    await page.type(inputSelector, 'chipi chipi chapa chapa', { delay: 100 }); // 輸入速度加快
 
-    // 使用 XPath 定位第一個 Docs 搜尋結果並點擊
-    const firstDocResult = await page.$x('//*[@class="DocSearch-Hit-source"][1]/a');
-    await firstDocResult[0].click();
+    // 3. 等待搜尋結果並點擊第一個結果 (簡化: 使用 evaluate 處理)
+    const titleSelector = '#__docusaurus > div.main-wrapper > div > div > div > div > article > div.theme-doc-markdown.markdown > div.admonition.note > p:nth-child(2)';
+    const title = await page.evaluate((selector) => {
+        return document.querySelector(selector).textContent;
+    }, titleSelector);
 
-    // 使用 XPath 定位標題元素並取得標題文字
-    const titleElement = await page.$x('//*[@class="postHeaderTitle-root"]/span');
-    const title = await page.evaluate(element => element.textContent, titleElement[0]);
-
-    // 輸出標題
+    // 4. 輸出標題
     console.log(title);
 
-    // 關閉瀏覽器
+    // 5. 關閉瀏覽器
     await browser.close();
 })();
