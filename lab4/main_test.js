@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer');
 
 (async () => {
   // 啟動瀏覽器並開啟新分頁
-  const browser = await puppeteer.launch();
+  let browser
+  browser = await puppeteer.launch();
   const page = await browser.newPage();
   
   // 前往指定的網址
