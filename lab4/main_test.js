@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer');
 
 (async () => {
     // Launch browser and open a new page
-    const browser = await puppeteer.launch();
+    let browser
+    browser = await puppeteer.launch();
     const page = await browser.newPage();
     
     // Navigate to the target URL
