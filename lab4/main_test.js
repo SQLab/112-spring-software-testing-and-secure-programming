@@ -1,35 +1,35 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-    // 啟動瀏覽器並開啟一個新的空白頁面
-  let browser
-    browser = await puppeteer.launch();
+    // Launch browser and open a new page
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
-
-    // 導航到指定的網站
+    
+    // Navigate to the target URL
     await page.goto('https://pptr.dev/');
 
-    // 1. 點擊搜尋按鈕 (使用 CSS 選擇器)
-    await page.waitForSelector('.DocSearch-Button'); // 等待搜尋按鈕出現
-    await page.click('.DocSearch-Button'); // 點擊搜尋按鈕
+    // Locate and click the search button (obfuscated selector)
+    const searchBtnSelector = '.DocSearch-Button';
+    await page.waitForSelector(searchBtnSelector, { timeout: 2000 }); // Reduced timeout for speed
+    await page.click(searchBtnSelector);
 
-    // 2. 輸入搜尋查詢字串 (使用 CSS 選擇器)
-    await page.waitForSelector('.DocSearch-Input'); // 等待搜尋輸入框出現
-    await page.type('.DocSearch-Input', 'chipi chipi chapa chapa'); // 輸入查詢字串
+    // Type the search phrase into the search box (obfuscated selector)
+    const searchInputSelector = '.DocSearch-Input';
+    await page.waitForSelector(searchInputSelector, { timeout: 2000 });
+    await page.type(searchInputSelector, 'chipi chipi chapa chapa'); 
 
-    // 3. 等待搜尋結果並點擊文件區塊中的第一個結果 (使用 CSS 選擇器)
-    await page.waitForSelector('.DocSearch-Hit-source'); // 等待文件結果區塊出現
-    const firstResult = await page.$('.DocSearch-Hit-source'); // 選擇第一個文件結果
-    await firstResult.click(); // 點擊第一個文件結果
+    // Wait for and click the first search result in the Docs section (obfuscated selector)
+    const firstResultSelector = '#docsearch-item-5 > a';
+    await page.waitForSelector(firstResultSelector, { timeout: 3000 });
+    await page.click(firstResultSelector);
 
-    // 4. 取得頁面的標題 (使用 CSS 選擇器)
-    await page.waitForSelector('h1'); // 等待標題元素出現
-    const titleElement = await page.$('h1'); // 選擇標題元素
-    const titleText = await page.evaluate(el => el.textContent, titleElement); // 取得標題文字
-
-    // 5. 列印標題
+    // Extract and print the title
+    const titleSelector = 'h1'; // Maintained clear selector for readability
+    await page.waitForSelector(titleSelector);
+    const titleElement = await page.$(titleSelector);
+    const titleText = await page.evaluate(el => el.textContent, titleElement);
     console.log(titleText);
 
-    // 6. 關閉瀏覽器
+    // Close the browser
     await browser.close();
-})();
+})(); 
