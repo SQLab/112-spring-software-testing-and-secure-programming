@@ -1,53 +1,41 @@
 const puppeteer = require('puppeteer');
 
-async function searchAndPrintTitle() {
+(async () => {
   // 啟動瀏覽器並開啟新分頁
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  try {
-    // 前往指定的網址
-    await page.goto('https://pptr.dev/');
+  // 前往指定的網址
+  await page.goto('https://pptr.dev/');
 
-    // 搜尋關鍵字
-    await searchForTerm(page, 'chipi chipi chapa chapa');
+  // 找到搜尋框並輸入 "chipi chipi chapa chapa"
+  const searchBox = await page.$('#search'); // 使用 CSS 選擇器找到搜尋框
+  await searchBox.type('chipi chipi chapa chapa');
 
-    // 取得並列印標題
-    const title = await getPageTitle(page);
-    console.log(title);
-  } catch (error) {
-    console.error('執行過程中發生錯誤：', error);
-  } finally {
-    // 關閉瀏覽器
-    await browser.close();
-  }
-}
-
-async function searchForTerm(page, term) {
   // 點擊搜尋按鈕
-  const searchButtonSelector = '.DocSearch-Button';
-  await page.waitForSelector(searchButtonSelector);
-  await page.click(searchButtonSelector);
+  const searchButton = await page.$('.DocSearch-Button'); // 使用 CSS 選擇器找到搜尋按鈕
+  await searchButton.click();
 
-  // 輸入搜尋文字
-  const searchInputSelector = '#docsearch-input';
-  await page.waitForSelector(searchInputSelector);
-  await page.type(searchInputSelector, term);
+  // 等待搜尋結果出現
+  await page.waitForSelector('.DocSearch-Hit-source');
 
-  // 點擊 Docs 區段的第一個結果
-  const firstDocResultSelector = '#docsearch-item-5 > a';
-  await page.waitForSelector(firstDocResultSelector);
-  await page.click(firstDocResultSelector);
-}
+  // 取得 "Docs" 結果區塊
+  const docsSection = await page.$('.DocSearch-Hit-source');
 
-async function getPageTitle(page) {
-  // 等待標題元素出現
-  const titleSelector = 'h1';
-  await page.waitForSelector(titleSelector);
+  // 點擊 "Docs" 區塊中的第一個結果
+  const firstResult = await docsSection.$('a');
+  await firstResult.click();
 
-  // 取得標題文字
-  const titleElement = await page.$(titleSelector);
-  return await page.evaluate(el => el.textContent, titleElement);
-}
+  // 等待頁面載入完成
+  await page.waitForSelector('h1');
 
-searchAndPrintTitle();
+  // 取得標題
+  const titleElement = await page.$('h1'); // 使用 CSS 選擇器找到標題元素
+  const title = await page.evaluate(el => el.textContent, titleElement);
+
+  // 輸出標題
+  console.log(title);
+
+  // 關閉瀏覽器
+  await browser.close();
+})();
