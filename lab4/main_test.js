@@ -1,41 +1,43 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-    // 啟動瀏覽器並開啟新分頁
+    // 啟動瀏覽器並開啟一個新的空白頁面
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // 前往指定網址
+    // 導航到指定的網站
     await page.goto('https://pptr.dev/');
 
-    // 1. 點擊搜尋按鈕
-    // 使用 XPath 選擇器定位搜尋按鈕，更具彈性
-    const searchButtonXPath = '//*[@class="DocSearch-Button"]';
-    await page.waitForXPath(searchButtonXPath);
-    const searchButton = await page.$x(searchButtonXPath);
-    await searchButton[0].click();
+    // 點擊搜尋按鈕
+    const searchButtonSelector = '.DocSearch-Button'; // 選擇搜尋按鈕
+    await page.waitForSelector(searchButtonSelector); // 等待搜尋按鈕出現
+    await page.click(searchButtonSelector); // 點擊搜尋按鈕
 
-    // 2. 輸入搜尋詞彙 'chipi chipi chapa chapa'
-    // 使用 CSS 選擇器定位搜尋框
-    const inputSelector = '.DocSearch-Input';
-    await page.waitForSelector(inputSelector);
-    await page.type(inputSelector, 'chipi chipi chapa chapa', { delay: 100 });
+    // 輸入搜尋查詢字串
+    const searchInputSelector = '.DocSearch-Input'; // 選擇搜尋輸入框
+    await page.waitForSelector(searchInputSelector); // 等待搜尋輸入框出現
+    await page.type(searchInputSelector, 'chipi chipi chapa chapa'); // 輸入查詢字串
 
-    // 3. 等待搜尋結果並點擊第一個結果
-    // 使用 CSS 選擇器定位搜尋結果列表中的第一個項目
-    const firstResultSelector = '.DocSearch-Hit-source';
-    await page.waitForSelector(firstResultSelector);
-    const firstResult = await page.$(firstResultSelector);
-    await firstResult.click();
+    // 等待搜尋結果出現
+    await page.waitForSelector('.DocSearch-Hit-source');
 
-    // 4. 定位標題並列印
-    // 使用 CSS 選擇器定位 h1 標題
-    const titleSelector = 'h1';
-    await page.waitForSelector(titleSelector);
-    const titleElement = await page.$(titleSelector);
-    const title = await page.evaluate(el => el.textContent, titleElement);
-    console.log(title);
+    // 取得文件區塊中的第一個結果
+    const firstDocResultSelector = '.DocSearch-Hit-source'; // 選擇第一個文件結果
+    const firstResultElement = await page.$(firstDocResultSelector);
 
-    // 5. 關閉瀏覽器
+    // 點擊第一個文件結果
+    await firstResultElement.click();
+
+    // 等待標題元素出現
+    await page.waitForSelector('h1');
+
+    // 取得頁面的標題
+    const titleElement = await page.$('h1'); // 選擇標題元素
+    const titleText = await page.evaluate(el => el.textContent, titleElement); // 取得標題文字
+
+    // 列印標題
+    console.log(titleText);
+
+    // 關閉瀏覽器
     await browser.close();
 })();
