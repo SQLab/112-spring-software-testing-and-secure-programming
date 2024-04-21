@@ -3,6 +3,7 @@ const assert = require('assert');
 const { Calculator } = require('./main');
 
 // TODO: write your tests here
+
 const calculator =new  Calculator();
 console.log(calculator.exp(87));
 console.log(calculator.log(48763));
@@ -48,3 +49,4 @@ try{
 }catch (e){
     console.log("NULL TEST");
 }
+
