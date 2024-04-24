@@ -35,7 +35,6 @@ const puppeteer = require('puppeteer');
             return titleElement.textContent;
         });
         console.log(title);
-        await browser.close();
     }catch(error){
         console.error('An error occurred:', error);
     }finally{
