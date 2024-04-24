@@ -27,8 +27,7 @@ ID: 510558006
 │       havoc : 0/0, 0/0                              │ stability : 100.00%    │
 │        trim : 100.00%/37, 0.00%                     ├────────────────────────┘
 ────────────────────────────────────────────────────┘          [cpu000: 76%]
-```
-
+=======
 ### Run Crash Result
 ```
 tingegg@tingegg-VirtualBox:~/510558006_112-spring-software-testing-and-secure-programming/lab6/fuzz$ ../src/bmpcomp out/crashes/id\:000000\,sig\:06\,src\:000000\,op\:flip1\,pos\:20 
@@ -43,4 +42,5 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /home/tingegg/510558006_112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
 ==30050==ABORTING
+=======
 ```
