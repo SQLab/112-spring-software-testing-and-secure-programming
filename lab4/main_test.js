@@ -10,12 +10,14 @@ const puppeteer = require('puppeteer');
 
     // Hints:
     // Click search button   
+    // Click search button
     // Type into search box
     // Wait for search result
     // Get the `Docs` result section
     // Click on first result in `Docs` section
     // Locate the title
     // Print the title
+
     await page.click('button[class="DocSearch DocSearch-Button"]');
 
     await page.waitForSelector('input[class="DocSearch-Input"]');
