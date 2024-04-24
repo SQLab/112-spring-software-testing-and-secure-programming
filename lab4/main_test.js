@@ -4,29 +4,31 @@ const puppeteer = require('puppeteer');
     // 啟動瀏覽器並打開一個新的空白頁面
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    try{
+
+    try {
         // 導航至指定網址
         await page.goto('https://pptr.dev/');
         await new Promise(resolve => setTimeout(resolve, 1000));
+	// Hints:
+    	// Click search button
+    	// Type into search box
+    	// Wait for search result
+    	// Get the `Docs` result section
+    	// Click on first result in `Docs` section
+    	// Locate the title
+    	// Print the title
 
         // 點擊搜尋按鈕
         await page.click('button.DocSearch.DocSearch-Button');
         await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // 在搜尋框中輸入文字
         await page.waitForSelector('#docsearch-input');
         await page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 1000 });
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await page.waitForSelector('#docsearch-item-5');
 
         // 等待搜尋結果
-        await page.waitForSelector('#docsearch-item-5');
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // 點擊「Docs」部分的第一個結果
         await page.click('#docsearch-item-5');
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // 定位標題
+        // 定位h1
         await page.waitForSelector('h1');
 
         // 獲取標題元素的文字內容
@@ -35,30 +37,10 @@ const puppeteer = require('puppeteer');
             return titleElement.textContent;
         });
         console.log(title);
-    }catch(error){
+    } catch (error) {
         console.error('An error occurred:', error);
-    }finally{
+    } finally {
         // 關閉瀏覽器
-        await browser.close();}
+        await browser.close();
+    }
 })();
-
-    // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    // Navigate the page to a URL
-    await page.goto('https://pptr.dev/');
-
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
-
-    // Close the browser
-    await browser.close();
-})();
-
