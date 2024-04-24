@@ -7,24 +7,24 @@ const puppeteer = require('puppeteer');
     try{
         // 導航至指定網址
         await page.goto('https://pptr.dev/');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        
 
         // 點擊搜尋按鈕
         await page.click('button.DocSearch.DocSearch-Button');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+       
 
         // 在搜尋框中輸入文字
         await page.waitForSelector('#docsearch-input');
         await page.type('#docsearch-input', 'chipi chipi chapa chapa', { delay: 1000 });
-        await new Promise(resolve => setTimeout(resolve, 1000));
+       
 
         // 等待搜尋結果
         await page.waitForSelector('#docsearch-item-5');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        
 
         // 點擊「Docs」部分的第一個結果
         await page.click('#docsearch-item-5');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+       
 
         // 定位標題
         await page.waitForSelector('h1');
