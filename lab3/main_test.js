@@ -4,7 +4,7 @@ const { Calculator } = require('./main');
 
 describe("Calculator Test", () => {
     const calculator = new Calculator();
-
+    
     const logTestSuites = [
         {
             operation: "log",
