@@ -110,7 +110,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
 ==55803==ABORTING
 
-```
 
 ### Stack out-of-bounds
 #### Source code
@@ -196,7 +195,7 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
 ==56439==ABORTING
-```
+
 
 ### Global out-of-bounds
 #### Source code
@@ -278,7 +277,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
 ==57029==ABORTING
 
-```
 
 ### Use-after-free
 #### Source code
@@ -377,10 +375,9 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
 ==57231==ABORTING
 
-```
-
 ### Use-after-return
 #### Source code
+
 ```C
 #include <stdio.h>
 
@@ -452,7 +449,7 @@ AddressSanitizer:DEADLYSIGNAL
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV /home/kali/Desktop/fuzz/TEST/Use-after-return.c:10 in main
 ==57805==ABORTING
-```
+
 
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
@@ -482,3 +479,4 @@ int main(void)
 ```
 ### Why
 否，因為這次的Out-of-bound都沒有更改到Redzone，以a[8]來說Redzone範圍為a[8]~a[15]，只要沒蓋到這段都不會被ASAN偵測出來
+
