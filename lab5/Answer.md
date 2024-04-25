@@ -10,6 +10,7 @@ valgrind --tool=$tool $program
 xport LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
 ```
 
+
 ## Test Valgrind and ASan
 ### Result
 |                      | Valgrind | Asan |
@@ -109,7 +110,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
 ==55803==ABORTING
-
 ```
 
 ### Stack out-of-bounds
@@ -277,7 +277,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
 ==57029==ABORTING
-
 ```
 
 ### Use-after-free
@@ -376,7 +375,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
 ==57231==ABORTING
-
 ```
 
 ### Use-after-return
