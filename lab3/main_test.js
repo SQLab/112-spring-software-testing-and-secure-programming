@@ -4,7 +4,7 @@ const { Calculator } = require('./main');
 
 describe('Calculator', function() {
     describe('exp()', function() {
-        
+        // 參數化測試案例
         const testCases = [
             { input: 2, expected: Math.exp(2) },
             { input: 1, expected: Math.exp(1) },
@@ -17,7 +17,7 @@ describe('Calculator', function() {
             });
         });
 
-        
+        // 測試錯誤情況
         const errorCases = [Infinity, -Infinity, NaN, 1000];
         errorCases.forEach((errorCase) => {
             it(`should throw error for input ${errorCase}`, function() {
@@ -28,7 +28,7 @@ describe('Calculator', function() {
     });
 
     describe('log()', function() {
-        
+        // 參數化測試案例
         const testCases = [
             { input: 2, expected: Math.log(2) },
             { input: 1, expected: Math.log(1) },
@@ -41,7 +41,7 @@ describe('Calculator', function() {
             });
         });
 
-      
+        // 測試錯誤情況
         const errorCases = [Infinity, -Infinity, NaN, -1, 0];
         errorCases.forEach((errorCase) => {
             it(`should throw error for input ${errorCase}`, function() {
