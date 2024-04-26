@@ -1,22 +1,64 @@
-const puppeteer = require('puppeteer');
+const { describe, it } = require('node:test');
+const assert = require('assert');
+const { Calculator } = require('./main');
 
-(async () => {
-    // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+describe("Calculator Test", () => {
+    const calculator = new Calculator();
+    
+    const logTestSuites = [
+        {
+            operation: "log",
+            cases: [
+                { data: 6, expected: Math.log(6) },
+                { data: 5, expected: Math.log(5) },
+                { data: 2, expected: Math.log(2) },
+                { data: 'guava', expected: Error, message: "unsupported operand type" },
+                { data: true, expected: Error, message: "unsupported operand type" },
+                { data: Infinity, expected: Error, message: "unsupported operand type" },
+                { data: 0, expected: Error, message: "math domain error (1)" },
+                { data: -1, expected: Error, message: "math domain error (2)" },
+            ]
+        }
+    ];
 
-    // Navigate the page to a URL
-    await page.goto('https://pptr.dev/');
+    logTestSuites.forEach(({ operation, cases }) => {
+        it(`Calculator.${operation}() Test`, () => {
+            cases.forEach(({ data: param, expected: expectedOutput, message: msg }) => {
+                if (expectedOutput === Error) {
+                    assert.throws(() => calculator[operation](param), expectedOutput, msg);
+                } else {
+                    const result = calculator[operation](param);
+                    assert.strictEqual(result, expectedOutput, msg);
+                }
+            });
+        });
+    });
 
-    // Hints:
-    // Click search button
-    // Type into search box
-    // Wait for search result
-    // Get the `Docs` result section
-    // Click on first result in `Docs` section
-    // Locate the title
-    // Print the title
+    const expTestSuites = [
+        {
+            operation: "exp",
+            cases: [
+                { data: 4, expected: Math.exp(4) },
+                { data: 0, expected: Math.exp(0) },
+                { data: -2, expected: Math.exp(-2) },
+                { data: 'guava666', expected: Error, message: "unsupported operand type" },
+                { data: true, expected: Error, message: "unsupported operand type" },
+                { data: Infinity, expected: Error, message: "unsupported operand type" },
+                { data: Number.MAX_VALUE, expected: Error, message: "overflow" },
+            ]
+        }
+    ];
 
-    // Close the browser
-    await browser.close();
-})();
+    expTestSuites.forEach(({ operation, cases }) => {
+        it(`Calculator.${operation}() Test`, () => {
+            cases.forEach(({ data: param, expected: expectedOutput, message: msg }) => {
+                if (expectedOutput === Error) {
+                    assert.throws(() => calculator[operation](param), expectedOutput, msg);
+                } else {
+                    const result = calculator[operation](param);
+                    assert.strictEqual(result, expectedOutput, msg);
+                }
+            });
+        });
+    });
+});
