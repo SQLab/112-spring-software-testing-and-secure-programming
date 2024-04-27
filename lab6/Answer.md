@@ -38,4 +38,3 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
 ==8457==ABORTING
-
