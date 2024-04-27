@@ -33,22 +33,18 @@ ID: 512558015
 
 ### Run Crash Result
 ```
-00,op:flip1,pos:20
+$ ../src/bmpcomp out/crashes/id:000000,sig:06,src:000000,op:flip1,pos:20
+
 size of Herder 54
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
-==12069==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f5ee6079d5e bp 0x000000000036 sp 0x7ffc36a921b0 T0)
-==12069==The signal is caused by a READ memory access.
-==12069==Hint: address points to the zero page.
-    #0 0x7f5ee6079d5e in __GI__IO_fwrite libio/iofwrite.c:37
-    #1 0x7f5ee646aa83 in __interceptor_fwrite ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:1228
-    #2 0x564255e58eda in main /home/nems/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:42
-    #3 0x7f5ee6023a8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #4 0x7f5ee6023b48 in __libc_start_main_impl ../csu/libc-start.c:360
-    #5 0x564255e59a34 in _start (/home/nems/112-spring-software-testing-and-secure-programming/lab6/src/bmpcomp+0x2a34) (BuildId: c339d6b18316a3ccfa85641fe85ba72599908c1b)
+==13924==ERROR: AddressSanitizer: stack-overflow on address 0x7ffe13ed4658 (pc 0x55cbf533d0be bp 0x7ffe146d2ad0 sp 0x7ffe13ed3660 T0)
+    #0 0x55cbf533d0be in main /home/nems/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46
+    #1 0x7f7a5a823a8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7f7a5a823b48 in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x55cbf533da34 in _start (/home/nems/112-spring-software-testing-and-secure-programming/lab6/src/bmpcomp+0x2a34) (BuildId: c339d6b18316a3ccfa85641fe85ba72599908c1b)
 
-AddressSanitizer can not provide additional info.
-SUMMARY: AddressSanitizer: SEGV libio/iofwrite.c:37 in __GI__IO_fwrite
-==12069==ABORTING
+SUMMARY: AddressSanitizer: stack-overflow /home/nems/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
+==13924==ABORTING
 
 ```
