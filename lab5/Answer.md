@@ -209,10 +209,10 @@ int global[5];
 
 int main() {
     // Global out-of-bounds
-    global[5] = 42; // Writing past the global array bounds
+    global[6] = 4; 
 
-    return 0;
 }
+
 #### Valgrind Report
 ==3545== Memcheck, a memory error detector
 ==3545== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
