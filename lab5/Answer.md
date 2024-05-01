@@ -7,11 +7,11 @@ ID: 511558015
 ### Result
 |                      | Valgrind | Asan |
 | -------------------- | -------- | ---- |
-| Heap out-of-bounds   |          |      |
-| Stack out-of-bounds  |          |      |
-| Global out-of-bounds |          |      |
-| Use-after-free       |          |      |
-| Use-after-return     |          |      |
+| Heap out-of-bounds   |    v     |  v   |
+| Stack out-of-bounds  |    v     |  x   |
+| Global out-of-bounds |    v     |  x   |
+| Use-after-free       |    v     |  v   |
+| Use-after-return     |    v     |  v   |
 
 version
 valgrind-3.18.1
