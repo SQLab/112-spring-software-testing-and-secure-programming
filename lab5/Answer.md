@@ -9,7 +9,7 @@ ID:512558002
 | -------------------- | -------- | ---- |
 | Heap out-of-bounds   |    V     |   V  |
 | Stack out-of-bounds  |    V     |   V  |
-| Global out-of-bounds |    V     |   X  |
+| Global out-of-bounds |    V     |   V  |
 | Use-after-free       |    V     |   V  |
 | Use-after-return     |    V     |   V  |
 
@@ -204,32 +204,67 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ### Global out-of-bounds
 #### Source code
 #include <stdio.h>
-int global[5];
+#include <stdlib.h>
 
-int main() {
-    // Global out-of-bounds
-    global[6] = 4; 
+int globalArray[10]; 
 
+void writeGlobalArray() {
+    int *ptr = NULL;
+    *ptr = 5; 
 }
 
-#### Valgrind Report
-==3545== Memcheck, a memory error detector
-==3545== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==3545== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==3545== Command: ./test3
-==3545== 
-==3545== 
-==3545== HEAP SUMMARY:
-==3545==     in use at exit: 0 bytes in 0 blocks
-==3545==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==3545== 
-==3545== All heap blocks were freed -- no leaks are possible
-==3545== 
-==3545== For lists of detected and suppressed errors, rerun with: -s
-==3545== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+int main() {
+    writeGlobalArray();
+    printf("Out of bounds value: %d\n", globalArray[15]); // 在全局数组中越界读取
+    return 0;
+}
 
+
+#### Valgrind Report
+==7513== Memcheck, a memory error detector
+==7513== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==7513== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==7513== Command: ./test3
+==7513== 
+==7513== Invalid write of size 4
+==7513==    at 0x10915D: writeGlobalArray (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    by 0x109177: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+==7513== 
+==7513== 
+==7513== Process terminating with default action of signal 11 (SIGSEGV)
+==7513==  Access not within mapped region at address 0x0
+==7513==    at 0x10915D: writeGlobalArray (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    by 0x109177: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==  If you believe this happened as a result of a stack
+==7513==  overflow in your program's main thread (unlikely but
+==7513==  possible), you can try to increase the size of the
+==7513==  main thread stack using the --main-stacksize= flag.
+==7513==  The main thread stack size used in this run was 8388608.
+==7513== 
+==7513== HEAP SUMMARY:
+==7513==     in use at exit: 0 bytes in 0 blocks
+==7513==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==7513== 
+==7513== All heap blocks were freed -- no leaks are possible
+==7513== 
+==7513== For lists of detected and suppressed errors, rerun with: -s
+==7513== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ### ASan Report
-X
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==7505==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5570d04f2258 bp 0x7ffdd50754c0 sp 0x7ffdd50754b0 T0)
+==7505==The signal is caused by a WRITE memory access.
+==7505==Hint: address points to the zero page.
+    #0 0x5570d04f2257 in writeGlobalArray (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257)
+    #1 0x5570d04f2272 in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1272)
+    #2 0x7fa462d57082 in __libc_start_main ../csu/libc-start.c:308
+    #3 0x5570d04f214d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x114d)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257) in writeGlobalArray
+==7505==ABORTING
+
 ### Use-after-free
 #### Source code
 #include <stdlib.h>
