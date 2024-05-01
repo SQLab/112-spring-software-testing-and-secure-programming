@@ -1,7 +1,9 @@
 # Answer
 
+
 Name: 杜佩珊
 ID:512558002
+
 
 ## Test Valgrind and ASan
 ### Result
@@ -432,3 +434,10 @@ int main() {
 
 ### Why
 將a陣列的最後一個元素寫入了b陣列的第一個元素， 讓a+ 32 位元組剛好位於 b 陣列的邊界，因為沒有超過redzone，所以ASAN不會報告任何錯誤
+=======
+| Heap out-of-bounds   |          |      |
+| Stack out-of-bounds  |          |      |
+| Global out-of-bounds |          |      |
+| Use-after-free       |          |      |
+| Use-after-return     |          |      |
+
