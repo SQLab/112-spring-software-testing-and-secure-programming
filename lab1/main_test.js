@@ -17,6 +17,7 @@ test("Test Student's setName", () => {
     throw new Error("Test not implemented");
 });
 
-test("Test Student's getName", () => {    // TODO
+test("Test Student's getName", () => {
+    // TODO
     throw new Error("Test not implemented");
 });
