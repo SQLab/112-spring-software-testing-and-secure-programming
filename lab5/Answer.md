@@ -8,8 +8,8 @@ ID: 511558015
 |                      | Valgrind | Asan |
 | -------------------- | -------- | ---- |
 | Heap out-of-bounds   |    v     |  v   |
-| Stack out-of-bounds  |    v     |  x   |
-| Global out-of-bounds |    v     |  x   |
+| Stack out-of-bounds  |    x     |  v   |
+| Global out-of-bounds |    x     |  v   |
 | Use-after-free       |    v     |  v   |
 | Use-after-return     |    v     |  v   |
 
