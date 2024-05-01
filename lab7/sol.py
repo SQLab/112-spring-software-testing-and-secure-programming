@@ -1,4 +1,3 @@
-#update
 import angr,sys
 proj = angr.Project('./login')
 init_state = proj.factory.entry_state()
