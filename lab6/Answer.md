@@ -1,3 +1,4 @@
+
 Name: 杜佩珊
 ID: 512558002
 
@@ -9,4 +10,5 @@ ID: 512558002
 size of Herder 54 AddressSanitizer:DEADLYSIGNAL
 ==8457==ERROR: AddressSanitizer: stack-overflow on address 0x7ffe12be8728 (pc 0x55797566701d bp 0x7ffe133e6b80 sp 0x7ffe12be7730 T0) #0 0x55797566701c in main /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 #1 0x7faabc36d082 in __libc_start_main ../csu/libc-start.c:308 #2 0x557975667acd in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab6/src/bmpcomp+0x2acd)
 
-SUMMARY: AddressSanitizer: stack-overflow /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main ==8457==ABORTING
+SUMMARY: AddressSanitizer: stack-overflow /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main ==8457==### Run Crash Result
+
