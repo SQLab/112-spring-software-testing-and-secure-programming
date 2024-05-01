@@ -7,4 +7,3 @@ void antiasan(unsigned long addr) {
     volatile char *shadow_mem = (volatile char *)shadow_addr;
     *shadow_mem = 0;
 }
-
