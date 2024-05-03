@@ -1,8 +1,6 @@
 # Answer
-
 Name: 陶國華
 ID: 511558016
-
 ## Test Valgrind and ASan
 ```
 ┌──(kali㉿kali)-[~/lab5]
@@ -69,7 +67,6 @@ valgrind --leak-check=full --show-leak-kinds=all ./abc
 ### ASan Report
 ```
 gcc -fsanitize=address -o abcc abc.c 
-
 ./abcc   
 =================================================================
 ==50791==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x503000000060 at pc 0x5573b0df91da bp 0x7fff8e4128a0 sp 0x7fff8e412898                               
@@ -469,7 +466,6 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==59710==ABORTING
 
 ```
-
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
 ```
