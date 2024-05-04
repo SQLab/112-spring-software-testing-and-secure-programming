@@ -41,4 +41,3 @@ AddressSanitizer:DEADLYSIGNAL
 SUMMARY: AddressSanitizer: stack-overflow /root/AFL/lab6/src/hw0302.c:46 in main
 ==25063==ABORTING
 
-
