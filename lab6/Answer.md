@@ -1,7 +1,8 @@
-Name: 林以旻  
+Name: 林以旻
 ID: 511558007
-  
+
 ### Fuzz Monitor
+```
   american fuzzy lop 2.57b (bmpcomp)
 
 ┌─ process timing ─────────────────────────────────────┬─ overall results ─────┐
@@ -26,9 +27,10 @@ ID: 511558007
 │       havoc : 0/663, 0/0                            │ stability : 100.00%    │
 │        trim : 99.99%/61, 0.00%                      ├────────────────────────┘
  ─────────────────────────────────────────────────────┘          [cpu001:196%]
-
+```
 
 ### Run Crash Result
+```
 size of Herder 54
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
@@ -40,4 +42,4 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /root/AFL/lab6/src/hw0302.c:46 in main
 ==25063==ABORTING
-
+```
