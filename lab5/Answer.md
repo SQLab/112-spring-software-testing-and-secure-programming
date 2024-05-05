@@ -10,62 +10,102 @@ gcc version 10.2.1 20210110 (Debian 10.2.1-6)
 ### Result
 |                      | Valgrind | Asan |
 | -------------------- | -------- | ---- |
-| Heap out-of-bounds   |      V   |  V   |
-| Stack out-of-bounds  |      X   |  V   |
-| Global out-of-bounds |      X   |  V   |
-| Use-after-free       |      V   |  V   |
-| Use-after-return     |      V   |  V   |
+| Heap out-of-bounds   |     Yes   |   Yes  |
+| Stack out-of-bounds  |     No    |   Yes  |
+| Global out-of-bounds |     No    |   Yes  |
+| Use-after-free       |     Yes   |   Yes  |
+| Use-after-return     |     No    |   Yes  |
 
 ### Heap out-of-bounds
 #### Source code
+```
+#include <stdio.h>
 #include <stdlib.h>
+
 int main() {
-    int *ptr = (int *)malloc(5 * sizeof(int));
-    ptr[5] = 10; 
-    free(ptr);
+    int *ptr = (int *)malloc(5 * sizeof(int)); // Allocating memory for 5 integers
+    if (ptr == NULL) {
+        printf("Memory allocation failed. Exiting...\n");
+        return 1;
+    }
+
+    // Writing to memory beyond allocated space
+    for (int i = 0; i < 10; i++) {
+        ptr[i] = i; // Writing to memory beyond the allocated 5 integers
+    }
+
+    // Reading from memory beyond allocated space
+    for (int i = 0; i < 10; i++) {
+        printf("Value at index %d: %d\n", i, ptr[i]); // Reading from memory beyond the allocated 5 integers
+    }
+
+    free(ptr); // Freeing allocated memory
+
     return 0;
+}
+```
 #### Valgrind Report
-==5701== Memcheck, a memory error detector
-==5701== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==5701== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==5701== Command: ./Heap_out-of-bounds
-==5701== 
-==5701== Invalid write of size 4
-==5701==    at 0x109156: main (Heap_out-of-bounds.c:5)
-==5701==  Address 0x4a4b054 is 0 bytes after a block of size 20 alloc'd
-==5701==    at 0x4840808: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==5701==    by 0x109152: main (Heap_out-of-bounds.c:4)
-==5701== 
-==5701== 
-==5701== HEAP SUMMARY:
-==5701==     in use at exit: 0 bytes in 0 blocks
-==5701==   total heap usage: 1 allocs, 1 frees, 20 bytes allocated
-==5701== 
-==5701== All heap blocks were freed -- no leaks are possible
-==5701== 
-==5701== For lists of detected and suppressed errors, rerun with: -s
-==5701== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+==10012== Memcheck, a memory error detector
+==10012== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==10012== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==10012== Command: ./heap-out-of-bound
+==10012== 
+==10012== error calling PR_SET_PTRACER, vgdb might block
+==10012== Invalid write of size 4
+==10012==    at 0x1091FD: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/heap-out-of-bound)
+==10012==  Address 0x4a48054 is 0 bytes after a block of size 20 alloc'd
+==10012==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10012==    by 0x1091BE: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/heap-out-of-bound)
+==10012== 
+Value at index 0: 0
+Value at index 1: 1
+Value at index 2: 2
+Value at index 3: 3
+Value at index 4: 4
+==10012== Invalid read of size 4
+==10012==    at 0x109226: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/heap-out-of-bound)
+==10012==  Address 0x4a48054 is 0 bytes after a block of size 20 alloc'd
+==10012==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==10012==    by 0x1091BE: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/heap-out-of-bound)
+==10012== 
+Value at index 5: 5
+Value at index 6: 6
+Value at index 7: 7
+Value at index 8: 8
+Value at index 9: 9
+==10012== 
+==10012== HEAP SUMMARY:
+==10012==     in use at exit: 0 bytes in 0 blocks
+==10012==   total heap usage: 2 allocs, 2 frees, 1,044 bytes allocated
+==10012== 
+==10012== All heap blocks were freed -- no leaks are possible
+==10012== 
+==10012== For lists of detected and suppressed errors, rerun with: -s
+==10012== ERROR SUMMARY: 10 errors from 2 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
-==5758==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x603000000054 at pc 0x5577de82c1c7 bp 0x7ffd37d7b170 sp 0x7ffd37d7b168 
-WRITE of size 4 at 0x603000000054 thread T0                                  
-    #0 0x5577de82c1c6 in main /root/Desktop/lab5/Heap_out-of-bounds.c:5
-    #1 0x7f67843356c9 in __libc_start_call_main ../sysdeps/x86/libc-start.c:58
-    #2 0x7f6784335784 in __libc_start_main_impl ../sysdeps/nptl/libc_start_call_main.h:360
-    #3 0x5577de82c0b0 in _start (/root/Desktop/lab5/Heap_out-of-bounds_asan+0x10b0)
+```
+=================================================================
+==11722==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x603000000024 at pc 0x7f092a2a82dd bp 0x7fffd27dc180 sp 0x7fffd27dc170
+WRITE of size 4 at 0x603000000024 thread T0
+    #0 0x7f092a2a82dc in main heap-out-of-bound.c:13
+    #1 0x7f0929664082 in __libc_start_main ../csu/libc-start.c:308
+    #2 0x7f092a2a81ad in _start (/mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/heap-out-of-bound-asan+0x11ad)
 
-0x603000000054 is located 0 bytes to the right of 20-byte region [0x603000000040,0x603000000054)                                                          
-allocated by thread T0 here:                                                 
-    #0 0x7f6784599e8f in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
-    #1 0x5577de82c182 in main /root/Desktop/lab5/Heap_out-of-bounds.c:4
+0x603000000024 is located 0 bytes to the right of 20-byte region [0x603000000010,0x603000000024)
+allocated by thread T0 here:
+    #0 0x7f0929943808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x7f092a2a827c in main heap-out-of-bound.c:5
 
-SUMMARY: AddressSanitizer: heap-buffer-overflow /root/Desktop/lab5/Heap_out-of-bounds.c:5 in main
+SUMMARY: AddressSanitizer: heap-buffer-overflow heap-out-of-bound.c:13 in main
 Shadow bytes around the buggy address:
   0x0c067fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c067fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c067fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c067fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c067fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-=>0x0c067fff8000: fa fa 00 00 00 fa fa fa 00 00[04]fa fa fa fa fa
+=>0x0c067fff8000: fa fa 00 00[04]fa fa fa fa fa fa fa fa fa fa fa
   0x0c067fff8010: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
   0x0c067fff8020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
   0x0c067fff8030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
@@ -91,58 +131,68 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
   Shadow gap:              cc
-==5758==ABORTING
+==11722==ABORTING
+```
+
 ### Stack out-of-bounds
 #### Source code
+```
 #include <stdio.h>
+
 int main() {
-    int arr[5];
-    arr[5] = 10; 
+    int array[5] = {1, 2, 3, 4, 5};
+    int array_2 = array[6];
     return 0;
 }
+```
 #### Valgrind Report
-==5778== Memcheck, a memory error detector
-==5778== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==5778== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==5778== Command: ./Stack_out-of-bounds
-==5778== 
-==5778== 
-==5778== HEAP SUMMARY:
-==5778==     in use at exit: 0 bytes in 0 blocks
-==5778==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==5778== 
-==5778== All heap blocks were freed -- no leaks are possible
-==5778== 
-==5778== For lists of detected and suppressed errors, rerun with: -s
-==5778== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+==22736== Memcheck, a memory error detector
+==22736== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==22736== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==22736== Command: ./stack-out-of-bound
+==22736== 
+==22736== error calling PR_SET_PTRACER, vgdb might block
+==22736== 
+==22736== HEAP SUMMARY:
+==22736==     in use at exit: 0 bytes in 0 blocks
+==22736==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==22736== 
+==22736== All heap blocks were freed -- no leaks are possible
+==22736== 
+==22736== For lists of detected and suppressed errors, rerun with: -s
+==22736== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
-==5786==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fff0af375e4 at pc 0x562beac86234 bp 0x7fff0af375a0 sp 0x7fff0af37598
-WRITE of size 4 at 0x7fff0af375e4 thread T0                                  
-    #0 0x562beac86233 in main /root/Desktop/lab5/Stack_out-of-bounds.c:5
-    #1 0x7f28b834f6c9 in __libc_start_call_main ../sysdeps/x86/libc-start.c:58
-    #2 0x7f28b834f784 in __libc_start_main_impl ../sysdeps/nptl/libc_start_call_main.h:360
-    #3 0x562beac860a0 in _start (/root/Desktop/lab5/Stack_out-of-bounds_asan+0x10a0)
+```
+=================================================================
+==12616==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fffe870db14 at pc 0x7f5dc0479453 bp 0x7fffe870dad0 sp 0x7fffe870dac0
+READ of size 4 at 0x7fffe870db14 thread T0
+    #0 0x7f5dc0479452 in vulnerable_function stack-out-of-bound.c:5
+    #1 0x7f5dc0479497 in main stack-out-of-bound.c:10
+    #2 0x7f5dbf834082 in __libc_start_main ../csu/libc-start.c:308
+    #3 0x7f5dc047918d in _start (/mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/stack-out-of-bound-asan+0x118d)
 
-    Address 0x7fff0af375e4 is located in stack of thread T0 at offset 52 in frame
-    #0 0x562beac86174 in main /root/Desktop/lab5/Stack_out-of-bounds.c:3
+Address 0x7fffe870db14 is located in stack of thread T0 at offset 52 in frame
+    #0 0x7f5dc0479258 in vulnerable_function stack-out-of-bound.c:3
 
   This frame has 1 object(s):
-    [32, 52) 'arr' (line 4) <== Memory access at offset 52 overflows this variable                                                                        
+    [32, 52) 'array' (line 4) <== Memory access at offset 52 overflows this variable
 HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
       (longjmp and C++ exceptions *are* supported)
-SUMMARY: AddressSanitizer: stack-buffer-overflow /root/Desktop/lab5/Stack_out-of-bounds.c:5 in main
+SUMMARY: AddressSanitizer: stack-buffer-overflow stack-out-of-bound.c:5 in vulnerable_function
 Shadow bytes around the buggy address:
-  0x1000615dee60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615dee70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615dee80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615dee90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615deea0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-=>0x1000615deeb0: 00 00 00 00 00 00 f1 f1 f1 f1 00 00[04]f3 f3 f3
-  0x1000615deec0: f3 f3 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615deed0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615deee0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615deef0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x1000615def00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b10: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b50: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+=>0x10007d0d9b60: 00 00[04]f3 f3 f3 f3 f3 00 00 00 00 00 00 00 00
+  0x10007d0d9b70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9b90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9ba0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10007d0d9bb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 Shadow byte legend (one shadow byte represents 8 application bytes):
   Addressable:           00
   Partially addressable: 01 02 03 04 05 06 07 
@@ -163,52 +213,69 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
   Shadow gap:              cc
-==5786==ABORTING
+==12616==ABORTING
+```
+
 ### Global out-of-bounds
 #### Source code
+```
 #include <stdio.h>
-int global[5];
+
+int array[5] = {1, 2, 3, 4, 5}; // Global array of size 5
+
+void access_array(int index) {
+    printf("Value at index %d: %d\n", index, array[index]); // Accessing the global array
+}
+
 int main() {
-    global[5] = 10; 
+    int index = 5; // Accessing index 5 which is out of bounds
+    access_array(index);
     return 0;
 }
+```
 #### Valgrind Report
-==5802== Memcheck, a memory error detector
-==5802== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==5802== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==5802== Command: ./Global_out-of-bounds
-==5802== 
-==5802== 
-==5802== HEAP SUMMARY:
-==5802==     in use at exit: 0 bytes in 0 blocks
-==5802==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==5802== 
-==5802== All heap blocks were freed -- no leaks are possible
-==5802== 
-==5802== For lists of detected and suppressed errors, rerun with: -s
-==5802== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
+==12945== Memcheck, a memory error detector
+==12945== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==12945== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==12945== Command: ./global-out-of-bound
+==12945== 
+==12945== error calling PR_SET_PTRACER, vgdb might block
+Value at index 5: 0
+==12945== 
+==12945== HEAP SUMMARY:
+==12945==     in use at exit: 0 bytes in 0 blocks
+==12945==   total heap usage: 1 allocs, 1 frees, 1,024 bytes allocated
+==12945== 
+==12945== All heap blocks were freed -- no leaks are possible
+==12945== 
+==12945== For lists of detected and suppressed errors, rerun with: -s
+==12945== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
-==5811==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55d944b8e0f4 at pc 0x55d944b8b1b4 bp 0x7ffca91a06a0 sp 0x7ffca91a0698 
-WRITE of size 4 at 0x55d944b8e0f4 thread T0                                  
-    #0 0x55d944b8b1b3 in main /root/Desktop/lab5/Global_out-of-bounds.c:6
-    #1 0x7f191367a6c9 in __libc_start_call_main ../sysdeps/x86/libc-start.c:58
-    #2 0x7f191367a784 in __libc_start_main_impl ../sysdeps/nptl/libc_start_call_main.h:360
-    #3 0x55d944b8b0b0 in _start (/root/Desktop/lab5/Global_out-of-bounds_asan+0x10b0)
+```
+=================================================================
+==13229==ERROR: AddressSanitizer: global-buffer-overflow on address 0x7f94b8851034 at pc 0x7f94b884e24d bp 0x7ffff4ddc020 sp 0x7ffff4ddc010
+READ of size 4 at 0x7f94b8851034 thread T0
+    #0 0x7f94b884e24c in access_array global-out-of-bound.c:6
+    #1 0x7f94b884e25e in main global-out-of-bound.c:11
+    #2 0x7f94b7c04082 in __libc_start_main ../csu/libc-start.c:308
+    #3 0x7f94b884e12d in _start (/mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/global-out-of-bound-asan+0x112d)
 
-0x55d944b8e0f4 is located 0 bytes to the right of global variable 'global' defined in 'Global_out-of-bounds.c:3:5' (0x55d944b8e0e0) of size 20            
-SUMMARY: AddressSanitizer: global-buffer-overflow /root/Desktop/lab5/Global_out-of-bounds.c:6 in main
+0x7f94b8851034 is located 0 bytes to the right of global variable 'array' defined in './global-out-of-bound.c:3:5' (0x7f94b8851020) of size 20
+SUMMARY: AddressSanitizer: global-buffer-overflow global-out-of-bound.c:6 in access_array
 Shadow bytes around the buggy address:
-  0x0abba8969bc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969bd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969be0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969bf0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969c00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-=>0x0abba8969c10: f9 f9 f9 f9 f9 f9 f9 f9 00 00 00 00 00 00[04]f9
-  0x0abba8969c20: f9 f9 f9 f9 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969c30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969c40: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969c50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  0x0abba8969c60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff3171021b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff3171021c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff3171021d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff3171021e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff3171021f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x0ff317102200: 00 00 00 00 00 00[04]f9 f9 f9 f9 f9 00 00 00 00
+  0x0ff317102210: f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+  0x0ff317102220: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff317102230: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff317102240: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0ff317102250: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 Shadow byte legend (one shadow byte represents 8 application bytes):
   Addressable:           00
   Partially addressable: 01 02 03 04 05 06 07 
@@ -229,58 +296,85 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
   Shadow gap:              cc
-==5811==ABORTING
+==13229==ABORTING
+```
+
 ### Use-after-free
 #### Source code
+```
+#include <stdio.h>
 #include <stdlib.h>
+
 int main() {
+    // Allocating memory
     int *ptr = (int *)malloc(sizeof(int));
+    if (ptr == NULL) {
+        printf("Memory allocation failed. Exiting...\n");
+        return 1;
+    }
+
+    // Assigning a value to the allocated memory
+    *ptr = 42;
+    printf("Value before freeing: %d\n", *ptr);
+
+    // Freeing the allocated memory
     free(ptr);
-    *ptr = 10; 
+    printf("Memory freed.\n");
+
+    // Attempting to use the freed memory
+    printf("Value after freeing: %d\n", *ptr); // Use-after-free vulnerability
+
     return 0;
 }
+```
 #### Valgrind Report
-==5825== Memcheck, a memory error detector
-==5825== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==5825== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==5825== Command: ./Use-after-free
-==5825== 
-==5825== Invalid write of size 4
-==5825==    at 0x10915B: main (Use-after-free.c:6)
-==5825==  Address 0x4a4b040 is 0 bytes inside a block of size 4 free'd
-==5825==    at 0x48431EF: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==5825==    by 0x10915A: main (Use-after-free.c:5)
-==5825==  Block was alloc'd at
-==5825==    at 0x4840808: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==5825==    by 0x10914F: main (Use-after-free.c:4)
-==5825== 
-==5825== 
-==5825== HEAP SUMMARY:
-==5825==     in use at exit: 0 bytes in 0 blocks
-==5825==   total heap usage: 1 allocs, 1 frees, 4 bytes allocated
-==5825== 
-==5825== All heap blocks were freed -- no leaks are possible
-==5825== 
-==5825== For lists of detected and suppressed errors, rerun with: -s
-==5825== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+==13472== Memcheck, a memory error detector
+==13472== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==13472== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==13472== Command: ./use-after-free
+==13472== 
+==13472== error calling PR_SET_PTRACER, vgdb might block
+Value before freeing: 42
+Memory freed.
+==13472== Invalid read of size 4
+==13472==    at 0x10921C: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/use-after-free)
+==13472==  Address 0x4a48040 is 0 bytes inside a block of size 4 free'd
+==13472==    at 0x483CA3F: free (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==13472==    by 0x10920B: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/use-after-free)
+==13472==  Block was alloc'd at
+==13472==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==13472==    by 0x1091BE: main (in /mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/use-after-free)
+==13472== 
+Value after freeing: 42
+==13472== 
+==13472== HEAP SUMMARY:
+==13472==     in use at exit: 0 bytes in 0 blocks
+==13472==   total heap usage: 2 allocs, 2 frees, 1,028 bytes allocated
+==13472== 
+==13472== All heap blocks were freed -- no leaks are possible
+==13472== 
+==13472== For lists of detected and suppressed errors, rerun with: -s
+==13472== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0
+```
 ### ASan Report
-==5833==ERROR: AddressSanitizer: heap-use-after-free on address 0x602000000010 at pc 0x56474ad9c1bf bp 0x7ffc9fa195f0 sp 0x7ffc9fa195e8 
-WRITE of size 4 at 0x602000000010 thread T0                                  
-    #0 0x56474ad9c1be in main /root/Desktop/lab5/Use-after-free.c:6
-    #1 0x7f162b3496c9 in __libc_start_call_main ../sysdeps/x86/libc-start.c:58
-    #2 0x7f162b349784 in __libc_start_main_impl ../sysdeps/nptl/libc_start_call_main.h:360
-    #3 0x56474ad9c0b0 in _start (/root/Desktop/lab5/Use-after-free_asan+0x10b0)
+```
+==13631==ERROR: AddressSanitizer: heap-use-after-free on address 0x602000000010 at pc 0x7fe0da5c733a bp 0x7fffc4f71ac0 sp 0x7fffc4f71ab0
+READ of size 4 at 0x602000000010 thread T0
+    #0 0x7fe0da5c7339 in main use-after-free.c:21
+    #1 0x7fe0d9984082 in __libc_start_main ../csu/libc-start.c:308
+    #2 0x7fe0da5c71ad in _start (/mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/use-after-free-asan+0x11ad)
 
-0x602000000010 is located 0 bytes inside of 4-byte region [0x602000000010,0x602000000014)                                                                 
-freed by thread T0 here:                                                     
-    #0 0x7f162b5adb6f in __interceptor_free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:123
-    #1 0x56474ad9c18a in main /root/Desktop/lab5/Use-after-free.c:5
+0x602000000010 is located 0 bytes inside of 4-byte region [0x602000000010,0x602000000014)
+freed by thread T0 here:
+    #0 0x7fe0d9c6340f in __interceptor_free ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:122
+    #1 0x7fe0da5c72cc in main use-after-free.c:17
 
 previously allocated by thread T0 here:
-    #0 0x7f162b5ade8f in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
-    #1 0x56474ad9c17f in main /root/Desktop/lab5/Use-after-free.c:4
+    #0 0x7fe0d9c63808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
+    #1 0x7fe0da5c7277 in main use-after-free.c:6
 
-SUMMARY: AddressSanitizer: heap-use-after-free /root/Desktop/lab5/Use-after-free.c:6 in main
+SUMMARY: AddressSanitizer: heap-use-after-free use-after-free.c:21 in main
 Shadow bytes around the buggy address:
   0x0c047fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -313,79 +407,78 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Left alloca redzone:     ca
   Right alloca redzone:    cb
   Shadow gap:              cc
-==5833==ABORTING
+==13631==ABORTING
+```
+
 ### Use-after-return
 #### Source code
+```
 #include <stdio.h>
 
-int *getPointer() {
-    int x = 42; 
-    return &x; 
+int *get_pointer() {
+    int value = 42;
+    return &value; // Returning a pointer to a local variable
 }
 
 int main() {
-    int *ptr = getPointer(); 
-    printf("Value: %d\n", *ptr);
-        return 0;
+    int *ptr = get_pointer();
+    printf("Value: %d\n", *ptr); // Using the returned pointer
+
+    *ptr = 42;
+    // Accessing the pointer after its lifetime has ended
+    printf("Value after return: %d\n", *ptr); // Use-after-return vulnerability
+
+    return 0;
 }
+```
 #### Valgrind Report
-==7091== Memcheck, a memory error detector
-==7091== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==7091== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==7091== Command: ./Use-after-return
-==7091== 
-==7091== Invalid read of size 4
-==7091==    at 0x109149: main (Use-after-return.c:10)
-==7091==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-==7091== 
-==7091== 
-==7091== Process terminating with default action of signal 11 (SIGSEGV)
-==7091==  Access not within mapped region at address 0x0
-==7091==    at 0x109149: main (Use-after-return.c:10)
-==7091==  If you believe this happened as a result of a stack
-==7091==  overflow in your program's main thread (unlikely but
-==7091==  possible), you can try to increase the size of the
-==7091==  main thread stack using the --main-stacksize= flag.
-==7091==  The main thread stack size used in this run was 8388608.
-==7091== 
-==7091== HEAP SUMMARY:
-==7091==     in use at exit: 0 bytes in 0 blocks
-==7091==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==7091== 
-==7091== All heap blocks were freed -- no leaks are possible
-==7091== 
-==7091== For lists of detected and suppressed errors, rerun with: -s
-==7091== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-zsh: segmentation fault  valgrind ./Use-after-return
+```
+==23727== Memcheck, a memory error detector
+==23727== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==23727== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==23727== Command: ./use-after-return
+==23727== 
+==23727== error calling PR_SET_PTRACER, vgdb might block
+==23727==ASan runtime does not come first in initial library list; you should either link runtime to your application or manually preload it with LD_PRELOAD.
+==23727== 
+==23727== HEAP SUMMARY:
+==23727==     in use at exit: 0 bytes in 0 blocks
+==23727==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==23727== 
+==23727== All heap blocks were freed -- no leaks are possible
+==23727== 
+==23727== For lists of detected and suppressed errors, rerun with: -s
+==23727== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
-==7099==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5636e0fbb1b8 bp 0x000000000001 sp 0x7ffe89c3a330 T0)                        
-==7099==The signal is caused by a READ memory access.                        
-==7099==Hint: address points to the zero page.
-    #0 0x5636e0fbb1b8 in main /root/Desktop/lab5/Use-after-return.c:10
-    #1 0x7f7aaadaf6c9 in __libc_start_call_main ../sysdeps/x86/libc-start.c:58
-    #2 0x7f7aaadaf784 in __libc_start_main_impl ../sysdeps/nptl/libc_start_call_main.h:360
-    #3 0x5636e0fbb0c0 in _start (/root/Desktop/lab5/Use-after-return_asan+0x10c0)
+```
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==14298==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f5adbdcb221 bp 0x000000000000 sp 0x7fffd66958a0 T0)
+==14298==The signal is caused by a READ memory access.
+==14298==Hint: address points to the zero page.
+    #0 0x7f5adbdcb220 in main use-after-return.c:10
+    #1 0x7f5adb174082 in __libc_start_main ../csu/libc-start.c:308
+    #2 0x7f5adbdcb12d in _start (/mnt/c/Users/joshua/OneDrive/文件/在職專班/軟體測試與程式安全/112-spring-software-testing-and-secure-programming/lab5/use-after-return-asan+0x112d)
 
 AddressSanitizer can not provide additional info.
-SUMMARY: AddressSanitizer: SEGV /root/Desktop/lab5/Use-after-return.c:10 in main
-==7099==ABORTING
+SUMMARY: AddressSanitizer: SEGV use-after-return.c:10 in main
+==14298==ABORTING
+```
+
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
+```
 #include <stdio.h>
-int main(void)
-{
-  int a[8];
-  int b[8];
 
-  a[16] = 100;
-
-  printf("a[16]: %d\n", a[16]);  
-  printf("b[0]: %d\n", b[0]);    
-
-  b[16] = 100;
-  printf("b[16]: %d\n", b[16]);   
-
-  return 0;
+void main(int argc, char **argv) {
+    int a[8] = { 0,1,2,3,4,5,6,7 };
+    int b[8] = { 8,9,10,11,12,13,14,15 };
+    printf("a[0]: %d\n", a[0]);
+    a[16] = 9;
+    printf("a[16]: %d\n", a[16]);
+    return;
 }
+```
 ### Why
-Because a[8], out-of-bound has not changed to Redzone (range is [8]-[15]), ASan will not detect it.
+No, because ASan only checks Shadow, not backwards.
