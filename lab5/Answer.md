@@ -1,10 +1,7 @@
+
 # Answer
-
-
 Name: 陳志名
 ID:511558014
-
-
 ## Test Valgrind and ASan
 ### Result
 |                      | Valgrind | Asan |
@@ -14,14 +11,10 @@ ID:511558014
 | Global out-of-bounds |    V     |   V  |
 | Use-after-free       |    V     |   V  |
 | Use-after-return     |    V     |   V  |
-
 ### Heap out-of-bounds
 #### Source code
-
 #include <stdio.h>
 #include <stdlib.h>
-
-
 int main() {
     int *array = malloc(8 * sizeof(int));
     int x = array[8];
@@ -30,7 +23,6 @@ int main() {
     
     return 0;
 }
-
 #### Valgrind Report
 ==2122== Memcheck, a memory error detector
 ==2122== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -359,14 +351,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==3566==ABORTING
-
 ### Use-after-return
 #### Source code
-
 #include <stdio.h>
 #include <stdlib.h>
-
-
 int *array;
 
 int* uar() {
@@ -421,23 +409,15 @@ int main() {
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab) in main
 ==8624==ABORTING
-
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
-
 #include <stdio.h>
 #include <stdlib.h>
-
-
 int main(){
     int a[8];
     int b[8];
     a[16] = 0xff;
     return 0;
 }
-
 ### Why
-
 將 a 陣列的最後一個元素放到 b 陣列的第一個位置上，而且 a 的後面再加 32 位元組剛好到達 b 的開始位置。因為這樣沒有超出內存保護區，所以ASAN不會檢測到任何問題。
-
-
