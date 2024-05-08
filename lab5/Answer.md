@@ -17,18 +17,20 @@ ID:511558014
 
 ### Heap out-of-bounds
 #### Source code
+```
+#include <stdio.h>
 #include <stdlib.h>
-int main() {
-    int* ptr = malloc(sizeof(int));
-    *ptr = 42;
-    
-    // Heap out-of-bounds
-    int* outOfBounds = ptr + 2;
-    *outOfBounds = 21; // Writing past the allocated memory
 
-    free(ptr);
+
+int main() {
+    int *array = malloc(8 * sizeof(int));
+    int x = array[8];
+    array[8] = 0xff;
+    free(array);
+    
     return 0;
 }
+```
 #### Valgrind Report
 ==3424== Memcheck, a memory error detector
 ==3424== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -36,10 +38,10 @@ int main() {
 ==3424== Command: ./test
 ==3424== 
 ==3424== Invalid write of size 4
-==3424==    at 0x10919D: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test)
+==3424==    at 0x10919D: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test)
 ==3424==  Address 0x4a50048 is 4 bytes after a block of size 4 alloc'd
 ==3424==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==3424==    by 0x10917E: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test)
+==3424==    by 0x10917E: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test)
 ==3424== 
 ==3424== 
 ==3424== HEAP SUMMARY:
@@ -54,17 +56,17 @@ int main() {
 =================================================================
 ==3521==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000018 at pc 0x56349427b267 bp 0x7fffa20e82f0 sp 0x7fffa20e82e0
 WRITE of size 4 at 0x602000000018 thread T0
-    #0 0x56349427b266 in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x1266)
+    #0 0x56349427b266 in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x1266)
     #1 0x7f92a7a95082 in __libc_start_main ../csu/libc-start.c:308
-    #2 0x56349427b10d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x110d)
+    #2 0x56349427b10d in _start (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x110d)
 
 0x602000000018 is located 4 bytes to the right of 4-byte region [0x602000000010,0x602000000014)
 allocated by thread T0 here:
     #0 0x7f92a7d70808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x56349427b1de in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x11de)
+    #1 0x56349427b1de in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x11de)
     #2 0x7f92a7a95082 in __libc_start_main ../csu/libc-start.c:308
 
-SUMMARY: AddressSanitizer: heap-buffer-overflow (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x1266) in main
+SUMMARY: AddressSanitizer: heap-buffer-overflow (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test+0x1266) in main
 Shadow bytes around the buggy address:
   0x0c047fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -120,29 +122,29 @@ int main() {
 ==3530== Conditional jump or move depends on uninitialised value(s)
 ==3530==    at 0x48D2958: __vfprintf_internal (vfprintf-internal.c:1687)
 ==3530==    by 0x48BCD3E: printf (printf.c:33)
-==3530==    by 0x1091A0: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
+==3530==    by 0x1091A0: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
 ==3530== 
 ==3530== Use of uninitialised value of size 8
 ==3530==    at 0x48B669B: _itoa_word (_itoa.c:179)
 ==3530==    by 0x48D2574: __vfprintf_internal (vfprintf-internal.c:1687)
 ==3530==    by 0x48BCD3E: printf (printf.c:33)
-==3530==    by 0x1091A0: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
+==3530==    by 0x1091A0: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
 ==3530== 
 ==3530== Conditional jump or move depends on uninitialised value(s)
 ==3530==    at 0x48B66AD: _itoa_word (_itoa.c:179)
 ==3530==    by 0x48D2574: __vfprintf_internal (vfprintf-internal.c:1687)
 ==3530==    by 0x48BCD3E: printf (printf.c:33)
-==3530==    by 0x1091A0: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
+==3530==    by 0x1091A0: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
 ==3530== 
 ==3530== Conditional jump or move depends on uninitialised value(s)
 ==3530==    at 0x48D3228: __vfprintf_internal (vfprintf-internal.c:1687)
 ==3530==    by 0x48BCD3E: printf (printf.c:33)
-==3530==    by 0x1091A0: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
+==3530==    by 0x1091A0: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
 ==3530== 
 ==3530== Conditional jump or move depends on uninitialised value(s)
 ==3530==    at 0x48D26EE: __vfprintf_internal (vfprintf-internal.c:1687)
 ==3530==    by 0x48BCD3E: printf (printf.c:33)
-==3530==    by 0x1091A0: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
+==3530==    by 0x1091A0: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2)
 ==3530== 
 Value: 0
 ==3530== 
@@ -159,18 +161,18 @@ Value: 0
 =================================================================
 ==3538==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffc60179894 at pc 0x559c0a96631c bp 0x7ffc60179850 sp 0x7ffc60179840
 WRITE of size 4 at 0x7ffc60179894 thread T0
-    #0 0x559c0a96631b in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x131b)
+    #0 0x559c0a96631b in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x131b)
     #1 0x7ff2a0eae082 in __libc_start_main ../csu/libc-start.c:308
-    #2 0x559c0a96618d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x118d)
+    #2 0x559c0a96618d in _start (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x118d)
 
 Address 0x7ffc60179894 is located in stack of thread T0 at offset 52 in frame
-    #0 0x559c0a966258 in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x1258)
+    #0 0x559c0a966258 in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x1258)
 
   This frame has 1 object(s):
     [32, 52) 'arr' (line 4) <== Memory access at offset 52 overflows this variable
 HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
       (longjmp and C++ exceptions *are* supported)
-SUMMARY: AddressSanitizer: stack-buffer-overflow (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x131b) in main
+SUMMARY: AddressSanitizer: stack-buffer-overflow (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test2+0x131b) in main
 Shadow bytes around the buggy address:
   0x10000c0272c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x10000c0272d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -229,15 +231,15 @@ int main() {
 ==7513== Command: ./test3
 ==7513== 
 ==7513== Invalid write of size 4
-==7513==    at 0x10915D: writeGlobalArray (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
-==7513==    by 0x109177: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    at 0x10915D: writeGlobalArray (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    by 0x109177: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
 ==7513==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
 ==7513== 
 ==7513== 
 ==7513== Process terminating with default action of signal 11 (SIGSEGV)
 ==7513==  Access not within mapped region at address 0x0
-==7513==    at 0x10915D: writeGlobalArray (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
-==7513==    by 0x109177: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    at 0x10915D: writeGlobalArray (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
+==7513==    by 0x109177: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3)
 ==7513==  If you believe this happened as a result of a stack
 ==7513==  overflow in your program's main thread (unlikely but
 ==7513==  possible), you can try to increase the size of the
@@ -258,13 +260,13 @@ AddressSanitizer:DEADLYSIGNAL
 ==7505==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5570d04f2258 bp 0x7ffdd50754c0 sp 0x7ffdd50754b0 T0)
 ==7505==The signal is caused by a WRITE memory access.
 ==7505==Hint: address points to the zero page.
-    #0 0x5570d04f2257 in writeGlobalArray (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257)
-    #1 0x5570d04f2272 in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1272)
+    #0 0x5570d04f2257 in writeGlobalArray (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257)
+    #1 0x5570d04f2272 in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1272)
     #2 0x7fa462d57082 in __libc_start_main ../csu/libc-start.c:308
-    #3 0x5570d04f214d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x114d)
+    #3 0x5570d04f214d in _start (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x114d)
 
 AddressSanitizer can not provide additional info.
-SUMMARY: AddressSanitizer: SEGV (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257) in writeGlobalArray
+SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test3+0x1257) in writeGlobalArray
 ==7505==ABORTING
 
 ### Use-after-free
@@ -288,13 +290,13 @@ int main() {
 ==3559== Command: ./test4
 ==3559== 
 ==3559== Invalid write of size 4
-==3559==    at 0x10919D: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
+==3559==    at 0x10919D: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
 ==3559==  Address 0x4a50040 is 0 bytes inside a block of size 4 free'd
 ==3559==    at 0x483CA3F: free (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==3559==    by 0x109198: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
+==3559==    by 0x109198: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
 ==3559==  Block was alloc'd at
 ==3559==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==3559==    by 0x10917E: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
+==3559==    by 0x10917E: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4)
 ==3559== 
 ==3559== 
 ==3559== HEAP SUMMARY:
@@ -309,22 +311,22 @@ int main() {
 ### ASan Report
 ==3566==ERROR: AddressSanitizer: heap-use-after-free on address 0x602000000010 at pc 0x55ecc4fac267 bp 0x7fffc1b288b0 sp 0x7fffc1b288a0
 WRITE of size 4 at 0x602000000010 thread T0
-    #0 0x55ecc4fac266 in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x1266)
+    #0 0x55ecc4fac266 in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x1266)
     #1 0x7fc91e292082 in __libc_start_main ../csu/libc-start.c:308
-    #2 0x55ecc4fac10d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x110d)
+    #2 0x55ecc4fac10d in _start (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x110d)
 
 0x602000000010 is located 0 bytes inside of 4-byte region [0x602000000010,0x602000000014)
 freed by thread T0 here:
     #0 0x7fc91e56d40f in __interceptor_free ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:122
-    #1 0x55ecc4fac22f in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x122f)
+    #1 0x55ecc4fac22f in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x122f)
     #2 0x7fc91e292082 in __libc_start_main ../csu/libc-start.c:308
 
 previously allocated by thread T0 here:
     #0 0x7fc91e56d808 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cc:144
-    #1 0x55ecc4fac1de in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x11de)
+    #1 0x55ecc4fac1de in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x11de)
     #2 0x7fc91e292082 in __libc_start_main ../csu/libc-start.c:308
 
-SUMMARY: AddressSanitizer: heap-use-after-free (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x1266) in main
+SUMMARY: AddressSanitizer: heap-use-after-free (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test4+0x1266) in main
 Shadow bytes around the buggy address:
   0x0c047fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
   0x0c047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -383,13 +385,13 @@ int main() {
 ==3572== Command: ./test5
 ==3572== 
 ==3572== Invalid read of size 4
-==3572==    at 0x1091C4: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5)
+==3572==    at 0x1091C4: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5)
 ==3572==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
 ==3572== 
 ==3572== 
 ==3572== Process terminating with default action of signal 11 (SIGSEGV)
 ==3572==  Access not within mapped region at address 0x0
-==3572==    at 0x1091C4: main (in /home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5)
+==3572==    at 0x1091C4: main (in /home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5)
 ==3572==  If you believe this happened as a result of a stack
 ==3572==  overflow in your program's main thread (unlikely but
 ==3572==  possible), you can try to increase the size of the
@@ -409,12 +411,12 @@ int main() {
 ==3634==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55d9554643ac bp 0x7fffe1168d40 sp 0x7fffe1168d30 T0)
 ==3634==The signal is caused by a READ memory access.
 ==3634==Hint: address points to the zero page.
-    #0 0x55d9554643ab in main (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab)
+    #0 0x55d9554643ab in main (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab)
     #1 0x7f0aab51b082 in __libc_start_main ../csu/libc-start.c:308
-    #2 0x55d95546418d in _start (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x118d)
+    #2 0x55d95546418d in _start (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x118d)
 
 AddressSanitizer can not provide additional info.
-SUMMARY: AddressSanitizer: SEGV (/home/user/桌面/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab) in main
+SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab) in main
 ==3634==ABORTING
 
 ## ASan Out-of-bound Write bypass Redzone
