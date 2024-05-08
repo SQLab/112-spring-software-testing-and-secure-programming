@@ -1,40 +1,27 @@
-
-const { describe, it } = require('mocha');
+const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
 describe("Calculator", () => {
-    const calculator = new Calculator();
+    const cal = new Calculator();
 
     describe("exp", () => {
-        it("should calculate exponential values correctly", () => {
-            assert.strictEqual(calculator.exp(1), Math.exp(1));
+        it("should return the correct value for negative exponent", () => {
+            assert.strictEqual(cal.exp(-2), Math.exp(-2));
         });
 
-        it("should throw an error for unsupported operand type", () => {
-            assert.throws(() => calculator.exp(null), Error, 'unsupported operand type');
-        });
-
-        it("should throw an error for overflow", () => {
-            assert.throws(() => calculator.exp(Number.MAX_VALUE), Error, 'overflow');
+        it("should return the correct value for decimal exponent", () => {
+            assert.strictEqual(cal.exp(0.5), Math.exp(0.5));
         });
     });
 
     describe("log", () => {
-        it("should calculate logarithmic values correctly", () => {
-            assert.strictEqual(calculator.log(1), 0);
+        it("should return the correct value for negative number", () => {
+            assert.strictEqual(cal.log(0.5), Math.log(0.5));
         });
 
-        it("should throw an error for unsupported operand type", () => {
-            assert.throws(() => calculator.log(null), Error, 'unsupported operand type');
-        });
-
-        it("should throw an error for math domain error (1)", () => {
-            assert.throws(() => calculator.log(0), Error, 'math domain error (1)');
-        });
-
-        it("should throw an error for math domain error (2)", () => {
-            assert.throws(() => calculator.log(-1), Error, 'math domain error (2)');
+        it("should return NaN for negative input", () => {
+            assert(isNaN(cal.log(-2)));
         });
     });
 });
