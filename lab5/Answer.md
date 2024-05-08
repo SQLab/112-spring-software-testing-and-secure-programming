@@ -17,7 +17,7 @@ ID:511558014
 
 ### Heap out-of-bounds
 #### Source code
-```
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,7 +30,7 @@ int main() {
     
     return 0;
 }
-```
+
 #### Valgrind Report
 ==3424== Memcheck, a memory error detector
 ==3424== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -102,17 +102,19 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==3521==ABORTING
 ### Stack out-of-bounds
 #### Source code
+
 #include <stdio.h>
+#include <stdlib.h>
 
-int main() {
-    int arr[5];
 
-    // Stack out-of-bounds
-    arr[5] = 42; // Writing past the array bounds
+int main(){
+    int array[8];
+    int value = array[8];
+    array[8] = 0xff;
 
-    printf("Value: %d\n", arr[0]);
     return 0;
 }
+
 #### Valgrind Report
 ==3530== Memcheck, a memory error detector
 ==3530== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -207,22 +209,19 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ==3538==ABORTING
 ### Global out-of-bounds
 #### Source code
+
 #include <stdio.h>
 #include <stdlib.h>
 
-int globalArray[10]; 
 
-void writeGlobalArray() {
-    int *ptr = NULL;
-    *ptr = 5; 
-}
+int array[8];
 
-int main() {
-    writeGlobalArray();
-    printf("Out of bounds value: %d\n", globalArray[15]); // 在全局数组中越界读取
+int main(){
+    int value = array[8];
+    array[8] = 0xff;
+
     return 0;
 }
-
 
 #### Valgrind Report
 ==7513== Memcheck, a memory error detector
@@ -271,18 +270,18 @@ SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-test
 
 ### Use-after-free
 #### Source code
+
+#include <stdio.h>
 #include <stdlib.h>
+
+
 int main() {
-    int* ptr = malloc(sizeof(int));
-    *ptr = 42;
-
-    free(ptr);
-
-    // Use-after-free
-    *ptr = 21; // Accessing freed memory
-
+    int *array = malloc(8 * sizeof(int));
+    free(array);
+    array[0] = 0xff;
     return 0;
 }
+
 #### Valgrind Report
 ==3559== Memcheck, a memory error detector
 ==3559== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -363,21 +362,25 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 
 ### Use-after-return
 #### Source code
-#include <stdlib.h>
+
 #include <stdio.h>
-int* func() {
-    int x = 42;
-    return &x; // Returning a pointer to a local variable
+#include <stdlib.h>
+
+
+int *array;
+
+int* uar() {
+    int tmp[8];
+    array = tmp;
+    return array;
 }
 
 int main() {
-    int* ptr = func();
-
-    // Use-after-return
-    printf("Value: %d\n", *ptr); // Accessing memory after it was freed
-
+    int *array = uar();
+    array[0] = 0xff;
     return 0;
 }
+
 #### Valgrind Report
 ==3572== Memcheck, a memory error detector
 ==3572== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
@@ -421,17 +424,16 @@ SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-test
 
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
+
 #include <stdio.h>
-int main() {
-  char a[8];
-  char b[8];
+#include <stdlib.h>
 
-  // 將 a[7] 指向 b[0]
-  a[7] = b[0];
 
-  // 將 a[7] 的值增加 32 byte
-  a[7] += 32;
-  return 0;
+int main(){
+    int a[8];
+    int b[8];
+    a[16] = 0xff;
+    return 0;
 }
 
 ### Why
