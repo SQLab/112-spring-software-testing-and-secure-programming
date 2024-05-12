@@ -11,7 +11,7 @@ int encrypt(int a1, int a2) {
 }
 
 int main(void) {
-        char secret[0x20] = "HETOBRCUVWOBFEBB";
+        char secret[0x20] = "VXRRJEURXDASBFHM";
         char pwd[0x20] = {0};
 
         printf("Enter the password: ");
