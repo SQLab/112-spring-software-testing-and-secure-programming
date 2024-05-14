@@ -20,7 +20,7 @@ gcc version 10.2.1 20210110 (Debian 10.2.1-6)
 
 ### Heap out-of-bounds
 #### Source code
-
+```
 #include <stdlib.h>
 
 int main() {
@@ -29,7 +29,9 @@ int main() {
     free(ptr);
     return 0;
 }
+```
 #### Valgrind Report
+```
 ==2122== Memcheck, a memory error detector
 ==2122== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 ==2122== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
@@ -50,8 +52,9 @@ int main() {
 ==2122== 
 ==2122== For lists of detected and suppressed errors, rerun with: -s
 ==2122== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-
+```
 ### ASan Report
+```
 =================================================================
 ==5758==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x603000000054 at pc 0x5577de82c1c7 bp 0x7ffd37d7b170 sp 0x7ffd37d7b168 
 WRITE of size 4 at 0x603000000054 thread T0                                  
@@ -100,9 +103,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Shadow gap:              cc
 ==5758==ABORTING
 
-
+```
 ### Stack out-of-bounds
 #### Source code
+```
 #include <stdio.h>
 
 int main() {
@@ -110,7 +114,9 @@ int main() {
     arr[5] = 10; 
     return 0;
 }
+```
 #### Valgrind Report
+```
 ==4281== Memcheck, a memory error detector
 ==4281== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 ==4281== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
@@ -125,7 +131,9 @@ int main() {
 ==4281== 
 ==4281== For lists of detected and suppressed errors, rerun with: -s
 ==4281== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
+```
 =================================================================
 ==5786==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fff0af375e4 at pc 0x562beac86234 bp 0x7fff0af375a0 sp 0x7fff0af37598
 WRITE of size 4 at 0x7fff0af375e4 thread T0                                  
@@ -175,9 +183,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==5786==ABORTING
-
+```
 ### Global out-of-bounds
 #### Source code
+```
 #include <stdio.h>
 
 int global[5];
@@ -186,7 +195,9 @@ int main() {
     global[5] = 10; 
     return 0;
 }
+```
 #### Valgrind Report
+```
 ==6024== Memcheck, a memory error detector
 ==6024== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 ==6024== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
@@ -201,8 +212,9 @@ int main() {
 ==6024== 
 ==6024== For lists of detected and suppressed errors, rerun with: -s
 ==6024== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-
+```
 ### ASan Report
+```
 =================================================================
 ==5811==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55d944b8e0f4 at pc 0x55d944b8b1b4 bp 0x7ffca91a06a0 sp 0x7ffca91a0698 
 WRITE of size 4 at 0x55d944b8e0f4 thread T0                                  
@@ -247,9 +259,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Shadow gap:              cc
 ==5811==ABORTING
 
-
+```
 ### Use-after-free
 #### Source code
+```
 #include <stdlib.h>
 
 int main() {
@@ -258,7 +271,9 @@ int main() {
     *ptr = 10; 
     return 0;
 }
+```
 #### Valgrind Report
+```
 ==7021== Memcheck, a memory error detector
 ==7021== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 ==7021== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
@@ -282,8 +297,9 @@ int main() {
 ==7021== 
 ==7021== For lists of detected and suppressed errors, rerun with: -s
 ==7021== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
-
+```
 ### ASan Report
+```
 =================================================================
 ==5833==ERROR: AddressSanitizer: heap-use-after-free on address 0x602000000010 at pc 0x56474ad9c1bf bp 0x7ffc9fa195f0 sp 0x7ffc9fa195e8 
 WRITE of size 4 at 0x602000000010 thread T0                                  
@@ -336,9 +352,10 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Shadow gap:              cc
 ==5833==ABORTING
 
-
+```
 ### Use-after-return
 #### Source code
+```
 #include <stdio.h>
 
 int *getPointer() {
@@ -352,7 +369,9 @@ int main() {
 
     return 0;
 }
+```
 #### Valgrind Report
+```
 ==8022== Memcheck, a memory error detector
 ==8022== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
 ==8022== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
@@ -382,8 +401,9 @@ int main() {
 ==8022== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 zsh: segmentation fault  valgrind ./Use-after-return
 
-
+```
 ### ASan Report
+```
 =================================================================
 ==7099==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x5636e0fbb1b8 bp 0x000000000001 sp 0x7ffe89c3a330 T0)                        
 ==7099==The signal is caused by a READ memory access.                        
@@ -396,9 +416,10 @@ zsh: segmentation fault  valgrind ./Use-after-return
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV /root/Desktop/lab5/Use-after-return.c:10 in main
 ==7099==ABORTING
-
+```
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
+```
 #include <stdio.h>
 int main(void)
 {
@@ -416,7 +437,7 @@ int main(void)
 
   return 0;
 }
-
+```
 ### Why
 
 將 a 陣列的最後一個元素放到 b 陣列的第一個位置上，而且 a 的後面再加 32 位元組剛好到達 b 的開始位置。因為這樣沒有超出內存保護區，所以ASAN不會檢測到任何問題。
