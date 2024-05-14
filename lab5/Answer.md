@@ -455,7 +455,6 @@ SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-test
 ```
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
-#include <stdio.h>
 ```
 #include <stdio.h> 
 #include <stdlib.h> 
