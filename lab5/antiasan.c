@@ -1,3 +1,5 @@
+#include <stddef.h>
+#include <stdint.h>   
 void antiasan(unsigned long addr)
 {
 
