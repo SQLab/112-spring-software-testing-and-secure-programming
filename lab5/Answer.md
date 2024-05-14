@@ -18,12 +18,22 @@ ID:511558014
 ```
 #include <stdio.h>
 #include <stdlib.h>
+
+void heap_out_of_bounds() {
+    int *ptr = (int *)malloc(3 * sizeof(int));
+    if (ptr == NULL) {
+        printf("Memory allocation failed\n");
+        return;
+    }
+
+    ptr[3] = 10; // Heap out-of-bounds write
+
+    free(ptr);
+}
+
 int main() {
-    int *array = malloc(8 * sizeof(int));
-    int x = array[8];
-    array[8] = 0xff;
-    free(array);
-    
+    heap_out_of_bounds();
+
     return 0;
 }
 ```
@@ -50,6 +60,7 @@ int main() {
 ==2122== For lists of detected and suppressed errors, rerun with: -s
 ==2122== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ### ASan Report
+```
 =================================================================
 ==3521==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000018 at pc 0x56349427b267 bp 0x7fffa20e82f0 sp 0x7fffa20e82e0
 WRITE of size 4 at 0x602000000018 thread T0
@@ -97,22 +108,23 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==3521==ABORTING
+```
 ### Stack out-of-bounds
 #### Source code
-
+```
 #include <stdio.h>
-#include <stdlib.h>
 
+int main() { int arr[8];
 
-int main(){
-    int array[8];
-    int value = array[8];
-    array[8] = 0xff;
+// Stack out-of-bounds
+arr[8] = 57; 
 
-    return 0;
+printf("Value: %d\n", arr[0]);
+return 0;
 }
-
+```
 #### Valgrind Report
+```
 ==4124== Memcheck, a memory error detector
 ==4124== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==4124== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
@@ -156,7 +168,9 @@ Value: 0
 ==4124== Use --track-origins=yes to see where uninitialised values come from
 ==4124== For lists of detected and suppressed errors, rerun with: -s
 ==4124== ERROR SUMMARY: 5 errors from 5 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
+```
 =================================================================
 ==3538==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffc60179894 at pc 0x559c0a96631c bp 0x7ffc60179850 sp 0x7ffc60179840
 WRITE of size 4 at 0x7ffc60179894 thread T0
@@ -204,23 +218,43 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==3538==ABORTING
+```
 ### Global out-of-bounds
 #### Source code
-
+```
 #include <stdio.h>
 #include <stdlib.h>
 
+int *my_array;
 
-int array[8];
+void init_array() {
+    my_array = (int*)malloc(5 * sizeof(int));
+    if (my_array == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    for (int i = 0; i < 5; i++) {
+        my_array[i] = i + 1;
+    }
+}
 
-int main(){
-    int value = array[8];
-    array[8] = 0xff;
+void access_array(int index) {
+    printf("Accessing element at index: %d\n", index);
+    printf("Value at index %d: %d\n", index, my_array[index]);
+}
+
+int main() {
+    init_array();
+
+    access_array(6);
+    
+    free(my_array);
 
     return 0;
 }
-
+```
 #### Valgrind Report
+```
 ==8124== Memcheck, a memory error detector
 ==8124== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==8124== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
@@ -250,6 +284,7 @@ int main(){
 ==8124== 
 ==8124== For lists of detected and suppressed errors, rerun with: -s
 ==8124== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
 ### ASan Report
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
@@ -362,19 +397,15 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
 ### Use-after-return
 #### Source code
 ```
-#include <stdio.h>
-#include <stdlib.h>
-int *array;
-
-int* uar() {
-    int tmp[8];
-    array = tmp;
-    return array;
+int *return_pointer() {
+    int value = 42;
+    return &value;
 }
 
 int main() {
-    int *array = uar();
-    array[0] = 0xff;
+    int *ptr = return_pointer();
+    printf("Value: %d\n", *ptr);
+    printf("Value after return: %d\n", *ptr); 
     return 0;
 }
 ```
@@ -421,15 +452,19 @@ int main() {
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV (/home/user/0430/github/112-spring-software-testing-and-secure-programming/lab5/testcode/test5+0x13ab) in main
 ==8624==ABORTING
+```
 ## ASan Out-of-bound Write bypass Redzone
 ### Source code
 #include <stdio.h>
-#include <stdlib.h>
-int main(){
-    int a[8];
-    int b[8];
-    a[16] = 0xff;
-    return 0;
+```
+#include <stdio.h> 
+#include <stdlib.h> 
+int main()
+{ 
+int a[8]; 
+int b[8]; 
+a[16] = 0xff; 
+return 0; 
 }
 ```
 ### Why
