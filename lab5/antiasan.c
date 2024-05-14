@@ -1,8 +1,6 @@
 // TODO:
 void antiasan(unsigned long addr) {
-    char *tmp = malloc(sizeof(char));
-    if (tmp) {
-        *tmp = 0;
-        free(tmp);
-    }
+    unsigned long byte_addr = (addr >> 9) + 0x7fff8000;
+    char *sbyte = (char *)byte_addr;
+    *sbyte = 0;
 }
