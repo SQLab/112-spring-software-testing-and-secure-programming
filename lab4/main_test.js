@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
     await page.click('#docsearch-item-5');
     await page.waitForSelector('h1');
     await wait(100);
-    const title = await page.$eval('h1', element => element.textContent.trim());
+    const title = await page.evaluate(() => document.querySelector('h1').textContent);
     console.log(title);
     await browser.close();
 })();
