@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
     await wait(100);
     await page.type('#docsearch-input', 'chipi chipi chapa chapa');
     await wait(100);
-    await page.waitForSelector('#docsearch-item-5');
+    await page.waitForSelector('#docsearch-item-5 a');
     await wait(1000);
     await page.click('#docsearch-item-5');
     await page.waitForSelector('h1');
