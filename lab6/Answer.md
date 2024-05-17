@@ -2,6 +2,7 @@ Name: 楊庚憲
 ID: 512558014
 
 ### Fuzz Monitor
+
 american fuzzy lop 2.57b (bmpcomp)
 
 ┌─ process timing ─────────────────────────────────────┬─ overall results ─────┐
@@ -27,6 +28,7 @@ american fuzzy lop 2.57b (bmpcomp)
 │        trim : 100.00%/35, 0.00%                     ├────────────────────────┘
 └─────────────────────────────────────────────────────┘          [cpu001: 70%]
 
+
 ### Run Crash Result
 size of Herder 54
 AddressSanitizer:DEADLYSIGNAL
@@ -39,3 +41,4 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /home/kali/Desktop/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
 ==3729574==ABORTING
+
