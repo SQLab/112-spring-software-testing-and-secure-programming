@@ -2,7 +2,7 @@ Name: 楊庚憲
 ID: 512558014
 
 ### Fuzz Monitor
-                       american fuzzy lop 2.57b (bmpcomp)
+american fuzzy lop 2.57b (bmpcomp)
 
 ┌─ process timing ─────────────────────────────────────┬─ overall results ─────┐
 │        run time : 0 days, 0 hrs, 33 min, 38 sec      │  cycles done : 0      │
