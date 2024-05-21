@@ -1,3 +1,4 @@
+
 Name: 蘇宥穆    
 ID: 512559029
 
@@ -37,4 +38,4 @@ AddressSanitizer:DEADLYSIGNAL
     #1 0x7fdec0687123 in __libc_start_main ../csu/libc-start.c:377
     #2 0x5584be645bc3 in _start (/mnt/c/Users/yumu su/Desktop/112-spring-software-testing-and-secure-programming/lab6/src/bmpcomp+0x2bc3)
 SUMMARY: AddressSanitizer: stack-overflow /mnt/c/Users/yumu su/Desktop/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
-==25967==ABORTING
+==25967==ABORTING=======
