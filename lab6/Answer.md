@@ -1,10 +1,8 @@
-Name: 
-ID: 
+Name: 劉珈佑
+ID: 511558020
 
 ### Fuzz Monitor
 ```
-![image](https://github.com/toey8612/112-spring-software-testing-and-secure-programming/assets/37663339/10627090-66b9-49f5-8c03-887a5d43cbdc)
-
  american fuzzy lop 2.57b (bmpcomp)
 
 ┌─ process timing ─────────────────────────────────────┬─ overall results ─────┐
@@ -34,7 +32,6 @@ ID:
 
 ### Run Crash Result
 ```
-![image](https://github.com/toey8612/112-spring-software-testing-and-secure-programming/assets/37663339/5e59bd9f-faa3-4384-bfe6-e13a0c8a12f8)
 +++ Testing aborted by user +++
 [+] We're done here. Have a nice day!
 
