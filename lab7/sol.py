@@ -1,36 +1,19 @@
-import angr
-import claripy
+import angr, sys
 
-# 定義成功和失敗訊息的條件
-def is_successful(state):
-    stdout_output = state.posix.dumps(1)
-    return b"Login successful" in stdout_output
+def success_condition(state):
+    return  b"Login successful" in state.posix.dumps(sys.stdout.fileno())
 
-def is_failed(state):
-    stdout_output = state.posix.dumps(1)
-    return b"Login failed" in stdout_output
+def fail_condition(state):
+    return b"Login failed" in state.posix.dumps(sys.stdout.fileno())
 
-# 加載要分析的程式
-project = angr.Project("./login", auto_load_libs=False)
+proj = angr.Project('./login')
 
-# 設定初始狀態
-initial_state = project.factory.entry_state()
+init_state = proj.factory.entry_state()
 
-# 設定符號化的標準輸入，長度為16
-password = claripy.BVS("password", 8 * 16)
-initial_state.posix.stdin.write(password)
-initial_state.posix.stdin.seek(0)
+simulation = proj.factory.simgr(init_state)
 
-# 創建模擬管理器
-simulation_manager = project.factory.simulation_manager(initial_state)
+simulation.explore(find = success_condition, avoid = fail_condition)
 
-# 探索，找到成功的輸出並避開失敗的輸出
-simulation_manager.explore(find=is_successful, avoid=is_failed)
+solution = simulation.found[0]
 
-# 確認是否找到解決方案
-if simulation_manager.found:
-    solution_state = simulation_manager.found[0]
-    solution = solution_state.solver.eval(password, cast_to=bytes).decode('utf-8')
-    print(f"找到的密碼是: {solution}")
-else:
-    print("沒有找到有效的密碼")
+print(solution.posix.dumps(sys.stdin.fileno()))
