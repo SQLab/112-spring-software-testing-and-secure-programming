@@ -27,10 +27,13 @@ ID: 511559027
 │       havoc : 0/0, 0/0                              │ stability : 100.00%    │
 │        trim : 100.00%/37, n/a                       ├────────────────────────┘
 └─────────────────────────────────────────────────────┘          [cpu010:  9%]
+=======
+
 ```
 
 ### Run Crash Result
 ```
+
 size of Herder 54
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
@@ -42,4 +45,7 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /home/pipi/112-spring-software-testing-and-secure-programming/lab6/src/hw0302.c:46 in main
 ==401==ABORTING
+=======
+
+
 ```
