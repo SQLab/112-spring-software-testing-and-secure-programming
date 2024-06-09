@@ -25,7 +25,7 @@ def main():
         solution_state = simulation_manager.found[0]
         # 取得標準輸入的內容，即為密碼
         password = solution_state.posix.dumps(sys.stdin.fileno())
-        # 將密碼解碼為字串並輸出
+        # 將密碼解碼為字串輸出
         print(password.decode())
     else:
         # 如果沒有找到成功狀態，輸出未找到密碼的提示
