@@ -9,6 +9,7 @@ const puppeteer = require('puppeteer');
     // Navigate the page to a URL
     await page.goto('https://pptr.dev/');
 
+
     // Click search button
     await page.click('button.DocSearch.DocSearch-Button');
 
@@ -35,3 +36,17 @@ const puppeteer = require('puppeteer');
     // Close the browser
     await browser.close();
 })();
+
+    // Hints:
+    // Click search button
+    // Type into search box
+    // Wait for search result
+    // Get the `Docs` result section
+    // Click on first result in `Docs` section
+    // Locate the title
+    // Print the title
+
+    // Close the browser
+    await browser.close();
+})();
+
