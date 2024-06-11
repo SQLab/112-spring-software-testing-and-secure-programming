@@ -1,3 +1,4 @@
+
 Name: 楊杰峰
 ID: 510558017
 
@@ -28,10 +29,18 @@ ID: 510558017
 │        trim : 12.50%/7, 0.00%                       ├────────────────────────┘
 │─────────────────────────────────────────────────────┘          [cpu000: 31%]
 
+Name: 
+ID: 
+
+### Fuzz Monitor
+```
+
+
 ```
 
 ### Run Crash Result
 ```
+
 jf@jf-VirtualBox:~/510558017/510558017/lab6/fuzz$ ../src/bmpcomp out/crashes/id\:000000\,sig\:06\,src\:000001\,op\:flip1\,pos\:20 
 size of Header 54
 AddressSanitizer:DEADLYSIGNAL
@@ -43,5 +52,6 @@ AddressSanitizer:DEADLYSIGNAL
 
 SUMMARY: AddressSanitizer: stack-overflow /home/jf/510558017/510558017/lab6/src/hw0302.c:46 in main
 ==7016==ABORTING
+
 
 ```
