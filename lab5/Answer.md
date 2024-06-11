@@ -417,5 +417,3 @@ int main() {
 ```
 ### Why
 ASan 能夠偵測到剛好超出 redzone 的越界寫操作，因為它會在每個分配的內存區域前後添加 redzones，並在訪問這些區域時檢測到越界操作。
-Answer.md
-目前顯示的是「Answer.md」。 
