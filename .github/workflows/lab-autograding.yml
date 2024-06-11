@@ -12,13 +12,17 @@ jobs:
                 os: [ubuntu-22.04]
             fail-fast: false
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout repository
+              uses: actions/checkout@v4
               with:
                   ref: "${{ github.event.pull_request.merge_commit_sha }}"
                   fetch-depth: 1
-            - uses: actions/setup-node@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
               with:
-                  node-version: latest
+                  node-version: '20'
+
             - name: Extract lab number and Check no changes other than specific files
               uses: actions/github-script@v5
               id: lab
@@ -40,16 +44,17 @@ jobs:
                         return { number: 0 };
                       }
                       const labNumber = labNumberMatch[1];
-                      console.log(`Lab number: ${labNumber}`)
+                      console.log(`Lab number: ${labNumber}`);
 
                       const files = await github.rest.pulls.listFiles({ owner, repo, pull_number: issue_number });
                       const changedFiles = files.data.map((file) => file.filename);
                       const allowedFileRegex = /^lab\d+\/main_test.js$/;
                       const specialChangedFiles = ["lab5/Answer.md", "lab5/antiasan.c", "lab6/Answer.md", "lab7/sol.py"];
-                      if (!changedFiles.every((file) => (allowedFileRegex.test(file) || specialChangedFiles.includes(file)))) {
+                      if (!changedFiles.every((file) => allowedFileRegex.test(file) || specialChangedFiles.includes(file))) {
                         core.setFailed('The PR contains changes to files other than the allowed files.');
                       }
                       return labNumber;
+
             - name: Grading
               run: |
                   cd lab${{ steps.lab.outputs.result }}
