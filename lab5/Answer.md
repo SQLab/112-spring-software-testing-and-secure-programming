@@ -1,21 +1,35 @@
 # Answer
 
+
 Name: 楊杰峰
 ID: 510558017
+
+Name: 
+ID: 
+
 
 ## Test Valgrind and ASan
 ### Result
 |                      | Valgrind | Asan |
 | -------------------- | -------- | ---- |
+
 | Heap out-of-bounds   | Yes      | Yes  |
 | Stack out-of-bounds  | Yes      | Yes  |
 | Global out-of-bounds | Yes      | Yes  |
 | Use-after-free       | Yes      | Yes  |
 | Use-after-return     | Yes      | Yes  |
 
+| Heap out-of-bounds   |          |      |
+| Stack out-of-bounds  |          |      |
+| Global out-of-bounds |          |      |
+| Use-after-free       |          |      |
+| Use-after-return     |          |      |
+
+
 ### Heap out-of-bounds
 #### Source code
 ```
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,6 +44,7 @@ int main() {
     heap_out_of_bounds();
     return 0;
 }
+
 
 ```
 #### Valgrind Report
@@ -52,7 +67,6 @@ int main() {
 ```
 ### ASan Report
 ```
-=================================================================
 ==10519==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x603000000024 at pc 0x56433e0122a2 bp 0x7ffcb47c35e0 sp 0x7ffcb47c35d0
 WRITE of size 4 at 0x603000000024 thread T0
     #0 0x56433e0122a1 in heap_out_of_bounds (/home/jf/510558017/510558017/lab5/heap_out_of_bounds+0x12a1)
@@ -101,6 +115,12 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==10519==ABORTING
+
+```
+### ASan Report
+```
+
+
 ```
 
 ### Stack out-of-bounds
@@ -118,6 +138,7 @@ int main() {
     stack_out_of_bounds();
     return 0;
 }
+
 
 ```
 #### Valgrind Report
@@ -140,7 +161,6 @@ valgrind: ./stack_out_of_bounds: No such file or directory==10523== Memcheck, a 
 ```
 ### ASan Report
 ```
-=================================================================
 ==10522==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffe0476bb84 at pc 0x563a4ff0a31c bp 0x7ffe0476bb40 sp 0x7ffe0476bb30
 WRITE of size 4 at 0x7ffe0476bb84 thread T0
     #0 0x563a4ff0a31b in stack_out_of_bounds (/home/jf/510558017/510558017/lab5/stack_out_of_bounds+0x131b)
@@ -189,6 +209,12 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==10522==ABORTING
+
+
+```
+### ASan Report
+```
+
 ```
 
 ### Global out-of-bounds
@@ -207,6 +233,7 @@ int main() {
     global_out_of_bounds();
     return 0;
 }
+
 
 ```
 #### Valgrind Report
@@ -230,7 +257,6 @@ int main() {
 ### ASan Report
 ```
 AddressSanitizer:DEADLYSIGNAL
-=================================================================
 ==4271==ERROR: AddressSanitizer: SEGV on unknown address 0x55f0360a2010 (pc 0x55f03609e223 bp 0x7ffccdefbd80 sp 0x7ffccdefbd80 T0)
 ==4271==The signal is caused by a WRITE memory access.
     #0 0x55f03609e222 in global_out_of_bounds (/home/jf/510558017/510558017/lab5/global_out_of_bounds+0x1222)
@@ -241,6 +267,12 @@ AddressSanitizer:DEADLYSIGNAL
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV (/home/jf/510558017/510558017/lab5/global_out_of_bounds+0x1222) in global_out_of_bounds
 ==4271==ABORTING
+
+
+```
+### ASan Report
+```
+
 ```
 
 ### Use-after-free
@@ -260,6 +292,7 @@ int main() {
     use_after_free();
     return 0;
 }
+
 
 ```
 #### Valgrind Report
@@ -337,6 +370,12 @@ Shadow byte legend (one shadow byte represents 8 application bytes):
   Right alloca redzone:    cb
   Shadow gap:              cc
 ==11127==ABORTING: No such file or directory
+
+
+```
+### ASan Report
+```
+
 ```
 
 ### Use-after-return
@@ -358,6 +397,7 @@ int main() {
     use_after_return();
     return 0;
 }
+
 
 ```
 #### Valgrind Report
@@ -381,7 +421,6 @@ int main() {
 ### ASan Report
 ```
 AddressSanitizer:DEADLYSIGNAL
-=================================================================
 ==11129==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55c39c7c93ac bp 0x7fffe81607a0 sp 0x7fffe8160790 T0)
 ==11129==The signal is caused by a READ memory access.
 ==11129==Hint: address points to the zero page.
@@ -393,6 +432,12 @@ AddressSanitizer:DEADLYSIGNAL
 AddressSanitizer can not provide additional info.
 SUMMARY: AddressSanitizer: SEGV (/home/jf/510558017/510558017/lab5/use_after_return+0x13ab) in use_after_return
 ==11129==ABORTING
+
+
+```
+### ASan Report
+```
+
 ```
 
 ## ASan Out-of-bound Write bypass Redzone
@@ -417,3 +462,8 @@ int main() {
 ```
 ### Why
 ASan 能夠偵測到剛好超出 redzone 的越界寫操作，因為它會在每個分配的內存區域前後添加 redzones，並在訪問這些區域時檢測到越界操作。
+
+
+```
+### Why
+
