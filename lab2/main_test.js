@@ -1,9 +1,9 @@
 const test = require('node:test');
 const assert = require('assert');
+const fs = require('fs');
 const { Application, MailSystem } = require('./main');
 
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
+// Mock fs.readFile
 test.mock.method(fs, 'readFile', (file, options, callback) => {
     callback(null, 'Guan\nChen\nGala');
 });
@@ -44,11 +44,13 @@ test("Application selectNextPerson", async () => {
     const application = new Application();
     await application.getNames();
     application.selected = ["Guan"];
-    let count = 0;
+    let count = 1;
     test.mock.method(application, 'getRandomPerson', () => {
         const name_list = application.people;
-        if (count <= name_list.length) {
+        if (count < name_list.length) {
             return name_list[count++];
+        } else {
+            return null;
         }
     });
     assert.strictEqual(application.selectNextPerson(), "Chen");
