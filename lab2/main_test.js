@@ -1,64 +1,80 @@
-const { expect } = require('chai');
+const test = require('node:test');
+const assert = require('assert');
+const fs = require('fs');
+const { Application, MailSystem } = require('./main');
 const sinon = require('sinon');
-const fs = require('fs').promises;
-const { MailSystem, Application } = require('./main_test');
 
-describe('MailSystem', () => {
-    it('should write the correct mail content', () => {
-        const mailSystem = new MailSystem();
-        const name = 'Alice';
-        const content = mailSystem.write(name);
-        expect(content).to.equal('Congrats, Alice!');
-    });
-
-    it('should send mail with random success or failure', () => {
-        const mailSystem = new MailSystem();
-        const name = 'Alice';
-        const context = mailSystem.write(name);
-
-        sinon.stub(Math, 'random').returns(0.6); // 假設成功
-        let result = mailSystem.send(name, context);
-        expect(result).to.be.true;
-
-        Math.random.restore();
-
-        sinon.stub(Math, 'random').returns(0.4); // 假設失敗
-        result = mailSystem.send(name, context);
-        expect(result).to.be.false;
-
-        Math.random.restore();
-    });
+// Mock fs.readFile
+sinon.stub(fs, 'readFile').callsFake((file, options, callback) => {
+    callback(null, 'Guan\nChen\nGala\n');
 });
 
-describe('Application', () => {
-    beforeEach(async () => {
-        sinon.stub(fs, 'readFile').resolves('Alice\nBob\nCharlie');
-        this.app = new Application();
-        await this.app.getNames();
+test("MailSystem write", () => {
+    const mailSystem = new MailSystem();
+    assert.strictEqual(mailSystem.write("Guan"), "Congrats, Guan!");
+});
+
+test("MailSystem send", () => {
+    const mailSystem = new MailSystem();
+    const originalMathRandom = Math.random;
+
+    Math.random = () => 0.6;
+    const context = mailSystem.write("Guan");
+    assert.strictEqual(mailSystem.send("Guan", context), true);
+
+    Math.random = () => 0.4;
+    assert.strictEqual(mailSystem.send("Chen", context), false);
+
+    Math.random = originalMathRandom;
+});
+
+test("Application getNames", async () => {
+    const application = new Application();
+    const [people, selected] = await application.getNames();
+    // Remove any empty strings from the array
+    assert.deepStrictEqual(people.filter(name => name), ["Guan", "Chen", "Gala"]);
+    assert.deepStrictEqual(selected, []);
+});
+
+test("Application getRandomPerson", () => {
+    const application = new Application();
+    application.people = ["Guan", "Chen", "Gala"];
+    Math.random = () => 0;
+    assert.deepStrictEqual(application.getRandomPerson(), "Guan");
+    Math.random = () => 0.6;
+    assert.deepStrictEqual(application.getRandomPerson(), "Chen");
+    Math.random = () => 0.9;
+    assert.deepStrictEqual(application.getRandomPerson(), "Gala");
+});
+
+test("Application selectNextPerson", async () => {
+    const application = new Application();
+    await application.getNames();
+    application.selected = ["Guan"];
+    let count = 1;
+    const getRandomPersonStub = sinon.stub(application, 'getRandomPerson').callsFake(() => {
+        const name_list = application.people;
+        if (count < name_list.length) {
+            return name_list[count++];
+        } else {
+            return null;
+        }
     });
 
-    afterEach(() => {
-        fs.readFile.restore();
-    });
+    assert.strictEqual(application.selectNextPerson(), "Chen");
+    assert.strictEqual(application.selectNextPerson(), "Gala");
+    assert.strictEqual(application.selectNextPerson(), null);
 
-    it('should initialize with people and selected lists', async () => {
-        expect(this.app.people).to.deep.equal(['Alice', 'Bob', 'Charlie']);
-        expect(this.app.selected).to.deep.equal([]);
-    });
+    getRandomPersonStub.restore();
+});
 
-    it('should select a random person', () => {
-        const person = this.app.selectNextPerson();
-        expect(this.app.people).to.include(person);
-        expect(this.app.selected).to.include(person);
-    });
-
-    it('should notify all selected people', () => {
-        const mailSystemSpy = sinon.spy(this.app.mailSystem, 'send');
-
-        this.app.selectNextPerson();
-        this.app.selectNextPerson();
-        this.app.notifySelected();
-
-        expect(mailSystemSpy.calledTwice).to.be.true;
-    });
+test("Application notifySelected", () => {
+    const application = new Application();
+    application.people = ["Guan", "Chen", "Gala"];
+    application.selected = ["Guan", "Chen", "Gala"];
+    sinon.spy(application.mailSystem, 'write');
+    sinon.spy(application.mailSystem, 'send');
+    application.notifySelected();
+    assert.strictEqual(application.mailSystem.write.callCount, application.people.length);
+    assert.strictEqual(application.mailSystem.send.callCount, application.people.length);
 });
