@@ -2,9 +2,7 @@ import angr
 import sys
 
 proj = angr.Project('./login')
-
 init_state = proj.factory.entry_state()
-
 simulation = proj.factory.simgr(init_state)
 
 def success_condition(state):
@@ -15,9 +13,6 @@ def fail_condition(state):
 
 simulation.explore(find=success_condition, avoid=fail_condition)
 
-if simulation.found:
-    solution = simulation.found[0]
-    password = solution.posix.dumps(sys.stdin.fileno()).strip()
-    print(password.decode())
-else:
-    print("Password not found.")
+solution = simulation.found[0]
+
+print(solution.posix.dumps(sys.stdin.fileno()))
