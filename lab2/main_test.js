@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const fs = require('fs');
+const fs = require('fs').promises;
 const { MailSystem, Application } = require('./main_test');
 
 describe('MailSystem', () => {
@@ -16,13 +16,13 @@ describe('MailSystem', () => {
         const name = 'Alice';
         const context = mailSystem.write(name);
 
-        sinon.stub(Math, 'random').returns(0.6); 
+        sinon.stub(Math, 'random').returns(0.6); // 假設成功
         let result = mailSystem.send(name, context);
         expect(result).to.be.true;
 
         Math.random.restore();
 
-        sinon.stub(Math, 'random').returns(0.4); 
+        sinon.stub(Math, 'random').returns(0.4); // 假設失敗
         result = mailSystem.send(name, context);
         expect(result).to.be.false;
 
@@ -31,8 +31,10 @@ describe('MailSystem', () => {
 });
 
 describe('Application', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         sinon.stub(fs, 'readFile').resolves('Alice\nBob\nCharlie');
+        this.app = new Application();
+        await this.app.getNames();
     });
 
     afterEach(() => {
@@ -40,28 +42,22 @@ describe('Application', () => {
     });
 
     it('should initialize with people and selected lists', async () => {
-        const app = new Application();
-        await app.getNames();
-        expect(app.people).to.deep.equal(['Alice', 'Bob', 'Charlie']);
-        expect(app.selected).to.deep.equal([]);
+        expect(this.app.people).to.deep.equal(['Alice', 'Bob', 'Charlie']);
+        expect(this.app.selected).to.deep.equal([]);
     });
 
-    it('should select a random person', async () => {
-        const app = new Application();
-        await app.getNames();
-        const person = app.selectNextPerson();
-        expect(app.people).to.include(person);
-        expect(app.selected).to.include(person);
+    it('should select a random person', () => {
+        const person = this.app.selectNextPerson();
+        expect(this.app.people).to.include(person);
+        expect(this.app.selected).to.include(person);
     });
 
-    it('should notify all selected people', async () => {
-        const app = new Application();
-        await app.getNames();
-        const mailSystemSpy = sinon.spy(app.mailSystem, 'send');
+    it('should notify all selected people', () => {
+        const mailSystemSpy = sinon.spy(this.app.mailSystem, 'send');
 
-        app.selectNextPerson();
-        app.selectNextPerson();
-        app.notifySelected();
+        this.app.selectNextPerson();
+        this.app.selectNextPerson();
+        this.app.notifySelected();
 
         expect(mailSystemSpy.calledTwice).to.be.true;
     });
