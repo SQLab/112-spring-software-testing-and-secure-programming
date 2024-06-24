@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('assert');
+
 const fs = require('fs');
 const util = require('util');
 const writeFile = util.promisify(fs.writeFile);
@@ -156,3 +157,9 @@ test("Test Application's notifySelected", async () => {
     assert.deepStrictEqual(call.error, undefined);
     fs.unlinkSync(fn_);
 });
+
+const { Application, MailSystem } = require('./main');
+
+// TODO: write your tests here
+// Remember to use Stub, Mock, and Spy when necessary
+
