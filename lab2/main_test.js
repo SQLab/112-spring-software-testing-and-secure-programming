@@ -7,9 +7,18 @@ const writeFile = util.promisify(fs.writeFile);
 const { Application, MailSystem } = require('./main');
 const path = require('node:path');
 
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
-// Remember to use Stub, Mock, and Spy when necessary
+// Mock fs.unlinkSync
+const originalUnlinkSync = fs.unlinkSync;
+fs.unlinkSync = (path) => {
+    console.log(`Mocked unlinkSync called with path: ${path}`);
+};
+
+// Mock fs.readFileSync
+const originalReadFileSync = fs.readFileSync;
+fs.readFileSync = (path, encoding) => {
+    console.log(`Mocked readFileSync called with path: ${path} and encoding: ${encoding}`);
+    return "JJ\nEE\nRR\nYY";
+};
 
 test("Test MailSystem's write", () => {
     const ms = new MailSystem();
@@ -19,7 +28,8 @@ test("Test MailSystem's write", () => {
 
 test("Test MailSystem's send", () => {
     const ms = new MailSystem();
-    const orgrdm = Math.random;
+    const originalMathRandom = Math.random;
+
     Math.random = () => 0.4;
     let context = ms.send("Jerry", "Test Message");
     assert.strictEqual(context, false);
@@ -28,7 +38,7 @@ test("Test MailSystem's send", () => {
     context = ms.send("Jerry", "Test Message");
     assert.strictEqual(context, true);
 
-    Math.random = orgrdm;
+    Math.random = originalMathRandom;
 });
 
 test("Test Application's getNames", async () => {
@@ -38,12 +48,11 @@ test("Test Application's getNames", async () => {
 
     const app = new Application();
 
-    let ctx = new Array([],[]);
-    ctx = await app.getNames();
+    let ctx = await app.getNames();
     assert.deepStrictEqual(ctx[0], ["JJ", "EE", "RR", "YY"]);
     assert.deepStrictEqual(ctx[1], []);
 
-    fs.unlinkSync(fn_);
+    originalUnlinkSync(fn_);
 });
 
 test("Test Application's getRandomPerson", async () => {
@@ -53,8 +62,7 @@ test("Test Application's getRandomPerson", async () => {
 
     const app = new Application();
 
-    let ctx = new Array([],[]);
-    ctx = await app.getNames();
+    let ctx = await app.getNames();
     assert.deepStrictEqual(ctx[0], ["JJ", "EE"]);
     assert.deepStrictEqual(ctx[1], []);
 
@@ -64,7 +72,7 @@ test("Test Application's getRandomPerson", async () => {
     rdmPeople = await app.getRandomPerson();
     assert.ok(app.people.includes(rdmPeople));
 
-    fs.unlinkSync(fn_);
+    originalUnlinkSync(fn_);
 });
 
 test("Test Application's selectNextPerson", async () => {
@@ -73,8 +81,7 @@ test("Test Application's selectNextPerson", async () => {
     await writeFile(fn_, data_, "utf-8");
 
     const app = new Application();
-    let ctx = new Array([],[]);
-    ctx = await app.getNames();
+    let ctx = await app.getNames();
     assert.deepStrictEqual(ctx[0], ["JJ", "EE"]);
     assert.deepStrictEqual(ctx[1], []);
 
@@ -98,7 +105,6 @@ test("Test Application's selectNextPerson", async () => {
     app.getRandomPerson = orgsnp;
     rdperson = app.selectNextPerson();
     assert.strictEqual(rdperson, null);
-    assert.strictEqual(rdperson, null);
     assert.strictEqual(app.selected.length, 2);
 
     let cnt = 0;
@@ -113,18 +119,16 @@ test("Test Application's selectNextPerson", async () => {
     rdperson = app.selectNextPerson();
     assert.strictEqual(rdperson, 'EE');
     assert.deepStrictEqual(app.selected, ['JJ', 'EE']);
-    fs.unlinkSync(fn_);
+    originalUnlinkSync(fn_);
 });
 
 test("Test Application's notifySelected", async () => {
-
     const fn_ = 'name_list.txt';
     const data_ = "JJ\nEE";
     await writeFile(fn_, data_, "utf-8");
 
     const app = new Application();
-    let ctx = new Array([],[]);
-    ctx = await app.getNames();
+    let ctx = await app.getNames();
     assert.deepStrictEqual(ctx[0], ["JJ", "EE"]);
     assert.deepStrictEqual(ctx[1], []);
 
@@ -155,11 +159,5 @@ test("Test Application's notifySelected", async () => {
     assert.deepStrictEqual(call.arguments, ["EE"]);
     assert.deepStrictEqual(call.result, "Congrats, EE!");
     assert.deepStrictEqual(call.error, undefined);
-    fs.unlinkSync(fn_);
+    originalUnlinkSync(fn_);
 });
-
-const { Application, MailSystem } = require('./main');
-
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
-
