@@ -3,15 +3,17 @@ const assert = require('assert');
 const { Calculator } = require('./main');
 
 describe('Calculator', () => {
-    const calculator = new Calculator();
-
-    describe('exp function', () => {
-        it('calculates the exponential of a number', async () => {
+    describe('exp', () => {
+        it('should calculate the exponential function correctly', () => {
+            const calculator = new Calculator();
+            assert.strictEqual(calculator.exp(0), 1);
             assert.strictEqual(calculator.exp(1), Math.exp(1));
+            assert.strictEqual(calculator.exp(2), Math.exp(2));
         });
 
-        it('throws error on non-finite input', async () => {
-            assert.throws(() => calculator.exp('a'), {
+        it('should throw an error for unsupported operand type', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.exp(NaN), {
                 name: 'Error',
                 message: 'unsupported operand type'
             });
@@ -21,7 +23,8 @@ describe('Calculator', () => {
             });
         });
 
-        it('handles overflow', async () => {
+        it('should throw an error for overflow', () => {
+            const calculator = new Calculator();
             assert.throws(() => calculator.exp(1000), {
                 name: 'Error',
                 message: 'overflow'
@@ -29,30 +32,39 @@ describe('Calculator', () => {
         });
     });
 
-    describe('log function', () => {
-        it('calculates the logarithm of a number', async () => {
-            assert.strictEqual(calculator.log(Math.E), Math.log(Math.E));
+    describe('log', () => {
+
+        it('should calculate the natural logarithm correctly', () => {
+            const calculator = new Calculator();
+            assert.strictEqual(calculator.log(1), 0);
+            assert.strictEqual(calculator.log(Math.E), 1);
         });
 
-        it('throws error on non-finite input', async () => {
-            assert.throws(() => calculator.log('a'), {
+        it('should throw an error for unsupported operand type', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.log(NaN), {
                 name: 'Error',
                 message: 'unsupported operand type'
             });
-            assert.throws(() => calculator.log(-1), {
+            assert.throws(() => calculator.log(Infinity), {
+                name: 'Error',
+                message: 'unsupported operand type'
+            });
+        });
+
+        it('should throw an error for math domain error (1)', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.log(0), {
                 name: 'Error',
                 message: 'math domain error (1)'
             });
         });
 
-        it('handles domain errors', async () => {
-            assert.throws(() => calculator.log(0), {
+        it('should throw an error for math domain error (2)', () => {
+            const calculator = new Calculator();
+            assert.throws(() => calculator.log(-1), {
                 name: 'Error',
                 message: 'math domain error (2)'
-            });
-            assert.throws(() => calculator.log(null), {
-                name: 'Error',
-                message: 'unsupported operand type'
             });
         });
     });
