@@ -48,7 +48,7 @@ describe('Calculator', () => {
         it('handles domain errors', async () => {
             assert.throws(() => calculator.log(0), {
                 name: 'Error',
-                message: 'math domain error (1)'
+                message: 'math domain error (2)'
             });
             assert.throws(() => calculator.log(null), {
                 name: 'Error',
