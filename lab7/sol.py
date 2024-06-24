@@ -1,14 +1,19 @@
 import angr
+
 import sys
-proj = angr.Project('./login', auto_load_libs=False)
-start_state = proj.factory.entry_state()
-simgr = proj.factory.simgr(start_state)
 
-simgr.explore(find=lambda s: b'Login success' in s.posix.dumps(1))
+proj = angr.Project('./login')
+init_state = proj.factory.entry_state()
+simulation = proj.factory.simgr(init_state)
 
-if simgr.found:
-solution_state = simgr.found[0]
-password = solution_state.posix.dumps(0).strip()
-print(password.decode())
-else:
-print("Password not found.")
+def success_condition(state):
+    return b"Login successful" in state.posix.dumps(sys.stdout.fileno())
+
+def fail_condition(state):
+    return b"Login failed" in state.posix.dumps(sys.stdout.fileno())
+
+simulation.explore(find=success_condition, avoid=fail_condition)
+
+solution = simulation.found[0]
+
+print(solution.posix.dumps(sys.stdin.fileno()))
