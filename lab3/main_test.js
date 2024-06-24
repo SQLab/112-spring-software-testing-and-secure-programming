@@ -2,7 +2,6 @@ const { describe, it } = require('node:test');
 const assert = require('assert');
 const { Calculator } = require('./main');
 
-
 describe('Calculator', () => {
     const calculator = new Calculator();
 
@@ -58,6 +57,3 @@ describe('Calculator', () => {
         });
     });
 });
-
-
-// TODO: write your tests here
