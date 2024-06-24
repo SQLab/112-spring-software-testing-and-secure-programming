@@ -17,11 +17,11 @@ const puppeteer = require('puppeteer');
     await page.type('#docsearch-input', 'Experimental WebDriver BiDi support', { delay: 150 });
 
     // Wait for search result and click on the first result
-    await page.waitForSelector('.DocSearch-Hit-content');
+    await page.waitForSelector('.DocSearch-Hit-content', { timeout: 60000 });
     await page.click('.DocSearch-Hit-content');
 
     // Locate the title
-    let textSelector = await page.waitForSelector('h1');
+    let textSelector = await page.waitForSelector('h1', { timeout: 60000 });
     let title = await textSelector.evaluate(element => element.textContent);
 
     // Print the title
