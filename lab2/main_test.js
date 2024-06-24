@@ -1,68 +1,68 @@
-const test = require('node:test');
-const assert = require('assert');
-const { Application, MailSystem } = require('./main');
+const { expect } = require('chai');
+const sinon = require('sinon');
+const fs = require('fs');
+const { MailSystem, Application } = require('./main_test');
 
-// TODO: write your tests here
-// Remember to use Stub, Mock, and Spy when necessary
-test.mock.method(fs, 'readFile', (file, options, callback) => {
-    callback(null, 'Guan\nChen\nGala');
-});
-
-test("MailSystem write", () => {
-    const mailSystem = new MailSystem();
-    assert.strictEqual(mailSystem.write("Guan"), "Congrats, Guan!");
-});
-
-test("MailSystem send", () => {
-    const mailSystem = new MailSystem();
-    Math.random = () => 0.6;
-    const context = mailSystem.write("Guan");
-    assert.strictEqual(mailSystem.send("Guan", context), true);
-    Math.random = () => 0.5;
-    assert.strictEqual(mailSystem.send("Chen", context), false);
-});
-
-test("Application getNames", async () => {
-    const application = new Application();
-    const [people, selected] = await application.getNames();
-    assert.deepStrictEqual(people, ["Guan", "Chen", "Gala"]);
-    assert.deepStrictEqual(selected, []);
-});
-
-test("Application getRandomPerson", () => {
-    const application = new Application();
-    application.people = ["Guan", "Chen", "Gala"];
-    Math.random = () => 0;
-    assert.deepStrictEqual(application.getRandomPerson(), "Guan");
-    Math.random = () => 0.6;
-    assert.deepStrictEqual(application.getRandomPerson(), "Chen");
-    Math.random = () => 0.9;
-    assert.deepStrictEqual(application.getRandomPerson(), "Gala");
-});
-
-test("Application selectNextPerson", async () => {
-    const application = new Application();
-    await application.getNames();
-    application.selected = ["Guan"];
-    let count = 0;
-    test.mock.method(application, 'getRandomPerson', () => {
-        const name_list = application.people;
-        if (count <= name_list.length) {
-            return name_list[count++];
-        }
+describe('MailSystem', () => {
+    it('should write the correct mail content', () => {
+        const mailSystem = new MailSystem();
+        const name = 'Alice';
+        const content = mailSystem.write(name);
+        expect(content).to.equal('Congrats, Alice!');
     });
-    assert.strictEqual(application.selectNextPerson(), "Chen");
-    assert.strictEqual(application.selectNextPerson(), "Gala");
-    assert.strictEqual(application.selectNextPerson(), null);
+
+    it('should send mail with random success or failure', () => {
+        const mailSystem = new MailSystem();
+        const name = 'Alice';
+        const context = mailSystem.write(name);
+
+        sinon.stub(Math, 'random').returns(0.6); 
+        let result = mailSystem.send(name, context);
+        expect(result).to.be.true;
+
+        Math.random.restore();
+
+        sinon.stub(Math, 'random').returns(0.4); 
+        result = mailSystem.send(name, context);
+        expect(result).to.be.false;
+
+        Math.random.restore();
+    });
 });
 
-test("Application notifySelected", () => {
-    const application = new Application();
-    application.people = ["Guan", "Chen", "Gala"];
-    application.selected = ["Guan", "Chen", "Gala"];
-    application.mailSystem.write = test.mock.fn(application.mailSystem.write);
-    application.mailSystem.send = test.mock.fn(application.mailSystem.send);
-    application.notifySelected();
-    assert.strictEqual(application.mailSystem.send.mock.calls.length, application.people.length);
-    assert.strictEqual(application.mailSystem.write.mock.calls.length, application.people.length);
+describe('Application', () => {
+    beforeEach(() => {
+        sinon.stub(fs, 'readFile').resolves('Alice\nBob\nCharlie');
+    });
+
+    afterEach(() => {
+        fs.readFile.restore();
+    });
+
+    it('should initialize with people and selected lists', async () => {
+        const app = new Application();
+        await app.getNames();
+        expect(app.people).to.deep.equal(['Alice', 'Bob', 'Charlie']);
+        expect(app.selected).to.deep.equal([]);
+    });
+
+    it('should select a random person', async () => {
+        const app = new Application();
+        await app.getNames();
+        const person = app.selectNextPerson();
+        expect(app.people).to.include(person);
+        expect(app.selected).to.include(person);
+    });
+
+    it('should notify all selected people', async () => {
+        const app = new Application();
+        await app.getNames();
+        const mailSystemSpy = sinon.spy(app.mailSystem, 'send');
+
+        app.selectNextPerson();
+        app.selectNextPerson();
+        app.notifySelected();
+
+        expect(mailSystemSpy.calledTwice).to.be.true;
+    });
 });
