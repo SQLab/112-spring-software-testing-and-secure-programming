@@ -1,3 +1,0 @@
-LD_LIBRARY_PATH=. ./uaf_asan
-s[0x10] = H
-s[0x10] = H
