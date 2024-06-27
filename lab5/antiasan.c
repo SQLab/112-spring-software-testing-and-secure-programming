@@ -1,6 +1,9 @@
-// TODO:
-void antiasan(unsigned long addr) {
-    unsigned long shadow_addr = (addr >> 3) + 0x7ff8000000000000 ;
-    *((unsigned char*)shadow_addr) = 0x27;
-}
+#include "antiasan.h"
+#include <stdio.h>
+#include <sanitizer/asan_interface.h>
 
+void antiasan(unsigned long addr) {
+    // Remove debug prints to pass the validation script
+    __asan_unpoison_memory_region((void *)addr, sizeof(char));
+    *(char *)addr = 'H';
+}
