@@ -2,12 +2,6 @@ const test = require('node:test');
 const assert = require('assert');
 const fs = require('fs');
 
-// Mock the file containing names
-test.mock.method(fs, 'readFile', (file, options, callback) => {
-    callback(null, 'Aqur\nBobi\ncat');
-});
-
-const { Application, MailSystem } = require('./main');
 
 test('MailSystem - write() method writes mail content', () => {
     const mailSystem = new MailSystem();
@@ -68,4 +62,5 @@ test('Application - notifySelected notifies all selected people', async () => {
     app.notifySelected();
     assert.strictEqual(app.mailSystem.send.mock.calls.length, names.length);
     assert.strictEqual(app.mailSystem.write.mock.calls.length, names.length);
+
 });

@@ -2,7 +2,6 @@ const test = require('node:test');
 const assert = require('assert');
 const { MyClass, Student } = require('./main');
 
-test("Test MyClass's addStudent", () => {
     // Test adding a valid student
     const myClass = new MyClass();
     const student1 = new Student();
